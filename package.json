@@ -1,32 +1,21 @@
 {
   "name": "chartjs-plugin-streaming",
-  "description": "Chart.js plugin for live streaming data",
   "version": "1.0.0",
-  "author": "Akihiko Kusanagi <nagi@nagi-p.com>",
-  "license": "MIT",
+  "description": "Chart.js plugin for live streaming data",
   "main": "dist/chartjs-plugin-streaming.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/chartjs/chartjs-plugin-zoom.git"
-  },
-  "browserify": {
-    "transform": [
-      "coffeeify",
-      "debowerify"
-    ]
-  },
-  "devDependencies": {
-    "bower": "*",
-    "browserify": "^14.4.0",
-    "browsernizr": "*",
-    "coffee-script": "*",
-    "coffeeify": "^2.1.0",
-    "debowerify": "^1.5.0",
-    "gulp": "^3.9.1",
-    "vinyl-source-stream": "^1.1.0"
+  "directories": {
+    "doc": "docs",
+    "test": "test"
   },
   "dependencies": {
     "chart.js": "^2.6.0",
+    "moment": "^2.18.1"
+  },
+  "devDependencies": {
+    "browserify": "^14.4.0",
+    "coffeeify": "^2.1.0",
+    "debowerify": "^1.5.0",
+    "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-eslint": "^4.0.0",
     "gulp-file": "^0.3.0",
@@ -37,6 +26,23 @@
     "gulp-uglify": "^3.0.0",
     "gulp-zip": "^4.0.0",
     "merge-stream": "^1.0.1",
-    "moment": "^2.18.1"
-  }
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nagix/chartjs-plugin-streaming.git"
+  },
+  "keywords": [
+    "chart.js",
+    "plugin",
+    "live",
+    "streaming",
+    "scroll"
+  ],
+  "author": "Akihiko Kusanagi <nagi@nagi-p.com> (https://nagix.github.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nagix/chartjs-plugin-streaming/issues"
+  },
+  "homepage": "https://nagix.github.io/chartjs-plugin-streaming"
 }
