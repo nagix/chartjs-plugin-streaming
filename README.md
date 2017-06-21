@@ -40,7 +40,7 @@ To configure this plugin, you can simply add the following entries to your chart
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `plugins.streaming` | `Object/Boolean` | `true` | The streaming options (see `plugins.streaming.*` options). Also accepts a boolean, in which case if `true`, the chart will auto-scroll using the **global options**, else if `false`, the chart will not auto-scroll.
+| `plugins.streaming` | `object`/`boolean` | `true` | The streaming options (see `plugins.streaming.*` options). Also accepts a boolean, in which case if `true`, the chart will auto-scroll using the **global options**, else if `false`, the chart will not auto-scroll.
 | `plugins.streaming.duration` | `number` | `10000` | Duration of the chart in milliseconds (how much time of data it will show).
 | `plugins.streaming.refresh` | `number` | `1000` | Reshresh interval of data in milliseconds. `onRefresh` callback function will be called at this interval.
 | `plugins.streaming.delay` | `number` | `0` | Delay added to the chart in milliseconds so that upcoming values are known before lines are plotted. This makes the chart look like a continual stream rather than very jumpy on the right hand side. Specify the maximum expected delay.
@@ -53,14 +53,16 @@ For example:
 ```
 {
     plugins: {
-        streaming: {                // enabled by default
-            duration: 20000,        // data in the past 20000 ms will be displayed
-            refresh: 1000,           // onRefresh callback will be called every 1000 ms
-            delay: 1000,             // delay of 1000 ms, so upcoming values are known before plotting a line
-            onRefresh: function() { // a callback to update datasets
-                config.data.datasets[0].data.push({
-                    x: moment(),
-                    y: Math.random() * 100)
+        streaming: {            // enabled by default
+            duration: 20000,    // data in the past 20000 ms will be displayed
+            refresh: 1000,      // onRefresh callback will be called every 1000 ms
+            delay: 1000,        // delay of 1000 ms, so upcoming values are known before plotting a line
+
+            // a callback to update datasets
+            onRefresh: function(chart) {
+                chart.data.datasets[0].data.push({
+                    x: Date.now(),
+                    y: Math.random() * 100
                 });
             }
         }
