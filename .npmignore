@@ -1,0 +1,10 @@
+/.git
+/dist/*.zip
+/node_modules
+/scripts
+
+.codeclimate.yml
+.DS_Store
+.gitignore
+.idea
+.travis.yml

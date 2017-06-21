@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link type="text/css" href="../css/style.css" media="all" rel="stylesheet">
+    <title>chartjs-plugin-streaming</title>
+    <meta property="og:title" content="chartjs-plugin-streaming" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="canonical" href="https://nagix.github.io/chartjs-plugin-streaming" />
+    <meta property="og:url" content="https://nagix.github.io/chartjs-plugin-streaming" />
+    <meta property="og:site_name" content="chartjs-plugin-streaming" />
+    <meta name="twitter:site" content="@nagix" />
+    <meta name="theme-color" content="#ffffff">
+    <script type="text/javascript" src="moment.min.js"></script>
+    <script type="text/javascript" src="Chart.min.js"></script>
+    <script type="text/javascript" src="chartjs-plugin-streaming.js"></script>
+  </head>
+  <body>
+    <section id="hero-spot" class="hero-spot">
+      <h1>chartjs-plugin-streaming</h1>
+      <h2><a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub repository</a></h2>
+    </section>
+    <section id="tutorial" class="tutorial">
+      <h2><a href="http://www.chartjs.org">Chart.js</a> plugin for live streaming data.<br />You will able to put live streaming charts on your site in a few minutes.</h2>
+
+      <h1>Let’s get started.</h1>
+
+      <ul id="user-site" class="tutorial-list wrapper active">
+
+        <li>
+          <h4>Include scripts</h4>
+          <p>First, we need to include <a href="https://momentjs.com">moment.js</a>, <a href="https://github.com/chartjs/Chart.js/releases/latest">Chart.js</a> and <a href="https://github.com/nagix/chartjs-plugin-streaming/releases/latest">chartjs-plugin-streaming.js</a> in our page.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&lt;script type="text/javascript" src="moment.js"&gt;&lt;/script&gt;</p>
+              <p>&lt;script type="text/javascript" src="Chart.js"&gt;&lt;/script&gt;</p>
+              <p>&lt;script type="text/javascript" src="chartjs-plugin-streaming.js"&gt;&lt;/script&gt;</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Create a canvas</h4>
+          <p>We need to have a canvas in our page.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&lt;canvas id="myChart"&gt;&lt;/canvas&gt;</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Create a chart</h4>
+          <p>Now, we can create a chart. We add a script to our page.<br />Use the default settings for now. These can be tweaked later.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>var ctx = document.getElementById('myChart').getContext('2d');</p>
+              <p>var chart = new Chart(ctx, {</p>
+              <p>&nbsp;&nbsp;type: 'line',</p>
+              <p>&nbsp;&nbsp;data: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;},{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;},</p>
+              <p>&nbsp;&nbsp;options: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'time'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;}</p>
+              <p>});</p>
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart1"></canvas>
+            </div>
+          </p>
+        </li>
+
+        <li>
+          <h4>Stream data</h4>
+          <p>You can appand the data in the onRefresh callback function that is called at a regular interval.<br />Each data has two properties: timestamp of the data point, and value of the data point.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;options: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;plugins: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;streaming: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chart.data.datasets.forEach(function(dataset) {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataset.data.push({</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: Date.now(),</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y: Math.random()</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart2"></canvas>
+            </div>
+          </p>
+          <p>Note that old data will be automatically deleted as it disappears off the chart.</p>
+        </li>
+
+        <li>
+          <h4>Add some delay</h4>
+          <p>The above chart shows an issue.<br />We cannot plot a line until the next data point is known. To get around this,<br />we add a delay to the chart, so upcoming values are known before we need to plot the line.</p>
+
+          <p>This makes the chart look like a continual stream rather than very jumpy on the right hand side.</p>
+
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;options: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;plugins: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;streaming: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay:2000</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart3"></canvas>
+            </div>
+          </p>
+        </li>
+
+        <li>
+          <h4>Splash of color</h4>
+          <p>Chart.js provides many options that can help you customise your charts<br />with scales, tooltips, labels, colors, custom actions, and much more.<br />See <a href="http://www.chartjs.org/docs">documentation</a> and <a href="http://www.chartjs.org/samples">samples</a> for more details.
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;data: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 1',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(255, 99, 132)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(255, 99, 132, 0.5)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tension: 0,</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderDash: [8, 4]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(54, 162, 235)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+            </div>
+          </div>
+          <p>
+            <div style="width:580px; margin:auto;">
+              <canvas id="chart4"></canvas>
+            </div>
+          </p>
+        </li>
+
+        <li>
+          <h4>...and you're done!</h4>
+          <p>See also <a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
+          <div class="hero-octicon">
+            <span class="mega-octicon octicon-check"></span>
+          </div>
+        </li>
+
+      </ul>
+    </section>
+    <script>
+      function onRefresh(chart) {
+        chart.data.datasets.forEach(function(dataset) {
+          dataset.data.push({
+            x: Date.now(),
+            y: Math.random()
+          });
+        });
+      }
+
+      var ctx1 = document.getElementById('chart1').getContext('2d');
+      var chart1 = new Chart(ctx1, {
+        type: 'line',
+        data: { datasets: [{ data: [] }, { data: [] }] },
+        options: { scales: { xAxes: [{ type: 'time' }] } }
+      });
+
+      var ctx2 = document.getElementById('chart2').getContext('2d');
+      var chart2 = new Chart(ctx2, {
+        type: 'line',
+        data: { datasets: [{ data: [] }, { data: [] }] },
+        options: {
+          scales: { xAxes: [{ type: 'time' }] },
+          plugins: { streaming: { onRefresh: onRefresh } }
+        }
+      });
+      
+      var ctx3 = document.getElementById('chart3').getContext('2d');
+      var chart3 = new Chart(ctx3, {
+        type: 'line',
+        data: { datasets: [{ data: [] }, { data: [] }] },
+        options: {
+          scales: { xAxes: [{ type: 'time' }] },
+          plugins: { streaming: { onRefresh: onRefresh, delay: 2000 } }
+        }
+      });
+
+      var ctx4 = document.getElementById('chart4').getContext('2d');
+      var chart4 = new Chart(ctx4, {
+        type: 'line',
+        data: { datasets: [{
+          data: [],
+          label: 'Dataset 1',
+          borderColor: 'rgb(255, 99, 132)',
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+          tension: 0,
+          borderDash: [8, 4]
+        }, {
+          data: [],
+          label: 'Dataset 2',
+          borderColor: 'rgb(54, 162, 235)',
+          backgroundColor: 'rgba(54, 162, 235, 0.5)'
+        }] },
+        options: {
+          scales: { xAxes: [{ type: 'time' }] },
+          plugins: { streaming: { onRefresh: onRefresh, delay: 2000 } }
+        }
+      });
+    </script>
+    <footer class="page-footer">
+      <ul class="site-footer-links">
+        <li>&copy; 2017 Akihiko Kusanagi</li>
+      </ul>
+    </footer>
+  </body>
+</html>

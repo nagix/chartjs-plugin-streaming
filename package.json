@@ -1,0 +1,42 @@
+{
+  "name": "chartjs-plugin-streaming",
+  "description": "Chart.js plugin for live streaming data",
+  "version": "1.0.0",
+  "author": "Akihiko Kusanagi <nagi@nagi-p.com>",
+  "license": "MIT",
+  "main": "dist/chartjs-plugin-streaming.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chartjs/chartjs-plugin-zoom.git"
+  },
+  "browserify": {
+    "transform": [
+      "coffeeify",
+      "debowerify"
+    ]
+  },
+  "devDependencies": {
+    "bower": "*",
+    "browserify": "^14.4.0",
+    "browsernizr": "*",
+    "coffee-script": "*",
+    "coffeeify": "^2.1.0",
+    "debowerify": "^1.5.0",
+    "gulp": "^3.9.1",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "chart.js": "^2.6.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^4.0.0",
+    "gulp-file": "^0.3.0",
+    "gulp-insert": "^0.5.0",
+    "gulp-replace": "^0.5.4",
+    "gulp-size": "^2.1.0",
+    "gulp-streamify": "^1.0.2",
+    "gulp-uglify": "^3.0.0",
+    "gulp-zip": "^4.0.0",
+    "merge-stream": "^1.0.1",
+    "moment": "^2.18.1"
+  }
+}
