@@ -49,7 +49,8 @@ function bowerTask() {
         '.codeclimate.yml',
         '.gitignore',
         '.npmignore',
-        '.travis.yml'
+        '.travis.yml',
+        'scripts'
       ]
     }, null, 2);
 
