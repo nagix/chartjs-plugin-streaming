@@ -31,12 +31,12 @@ deploy:
       - "./dist/chartjs-plugin-streaming.js"
       - "./dist/chartjs-plugin-streaming.min.js"
       - "./dist/chartjs-plugin-streaming.zip"
-  skip_cleanup: true
-  on:
-    tags: true
-- provider: npm
-  email: $NPM_AUTH_EMAIL
-  api_key: $NPM_AUTH_TOKEN
-  skip_cleanup: true
-  on:
-    tags: true
+    skip_cleanup: true
+    on:
+      tags: true
+  - provider: npm
+    email: $NPM_AUTH_EMAIL
+    api_key: $NPM_AUTH_TOKEN
+    skip_cleanup: true
+    on:
+      tags: true
