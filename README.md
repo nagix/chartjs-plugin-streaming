@@ -1,6 +1,6 @@
 # chartjs-plugin-streaming
 
-[![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-streaming) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-streaming.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-streaming) [![Travis](https://img.shields.io/travis/nagix/chartjs-plugin-streaming.svg?style=flat-square)](https://travis-ci.org/nagix/chartjs-plugin-streaming) [![Code Climate](https://img.shields.io/codeclimate/github/nagix/chartjs-plugin-streaming.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-streaming)
+[![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-streaming) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-streaming.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-streaming) [![Travis](https://img.shields.io/travis/nagix/chartjs-plugin-streaming/master.svg?style=flat-square)](https://travis-ci.org/nagix/chartjs-plugin-streaming) [![Code Climate](https://img.shields.io/codeclimate/github/nagix/chartjs-plugin-streaming.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-streaming)
 
 *[Chart.js](http://www.chartjs.org) plugin for live streaming data*
 
@@ -28,7 +28,7 @@ chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and modu
 
 chartjs-plugin-streaming requires [Moment.js](http://momentjs.com/) and [Chart.js](http://www.chartjs.org).
 
-Currently, only the [line](http://www.chartjs.org/docs/latest/charts/line.html) chart type with [point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of an object containing x and y properties) is supported. Either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the time scale is specified, the chart will auto-scroll along with that axis.
+Currently, only the [line](http://www.chartjs.org/docs/latest/charts/line.html) chart type with [point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of an object containing x and y properties) is supported. Either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the time scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
 
 ## Tutorial
 
@@ -46,7 +46,7 @@ To configure this plugin, you can simply add the following entries to your chart
 | `plugins.streaming.delay` | `number` | `0` | Delay added to the chart in milliseconds so that upcoming values are known before lines are plotted. This makes the chart look like a continual stream rather than very jumpy on the right hand side. Specify the maximum expected delay.
 | `plugins.streaming.onRefresh` | `function` | `undefined` | Callback function that will be called at a regular interval. The callback takes one argument, a reference to the chart object. You can update your datasets here. The chart will be automatically updated after returning.
 
-> **Global options** can be change through `Chart.defaults.global.plugins.streaming`, which by default defer the chart loading until the first line of pixels of the canvas appears in the viewport.
+**Global options** can be change through `Chart.defaults.global.plugins.streaming`, which by default enable auto-scroll of the charts that have a time scale.
 
 For example:
 
