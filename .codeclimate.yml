@@ -15,5 +15,6 @@ ratings:
   - "src/**/*.js"
 exclude_paths:
 - dist/**/*
+- docs/**/*
 - node_modules/**/*
 - test/**/*

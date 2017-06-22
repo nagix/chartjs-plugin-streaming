@@ -16,15 +16,15 @@ var srcDir = './src/';
 var outDir = './dist/';
 var samplesDir = './samples/';
 
-var header = "/*!\n\
- * chartjs-plugin-streaming\n\
- * http://github.com/nagix/chartjs-plugin-streaming/\n\
- * Version: {{ version }}\n\
- *\n\
- * Copyright 2017 Akihiko Kusanagi\n\
- * Released under the MIT license\n\
- * https://github.com/nagix/chartjs-plugin-streaming/blob/master/LICENSE.md\n\
- */\n";
+var header = '/*!\n' +
+	' * chartjs-plugin-streaming\n' +
+	' * http://github.com/nagix/chartjs-plugin-streaming/\n'+
+	' * Version: {{ version }}\n'+
+	' *\n'+
+	' * Copyright 2017 Akihiko Kusanagi\n'+
+	' * Released under the MIT license\n'+
+	' * https://github.com/nagix/chartjs-plugin-streaming/blob/master/LICENSE.md\n' +
+	' */\n';
 
 gulp.task('bower', bowerTask);
 gulp.task('build', buildTask);
@@ -38,72 +38,72 @@ gulp.task('default', ['build']);
  * Specs: https://github.com/bower/spec/blob/master/json.md
  */
 function bowerTask() {
-  var json = JSON.stringify({
-      name: package.name,
-      description: package.description,
-      homepage: package.homepage,
-      license: package.license,
-      version: package.version,
-      main: outDir + package.name + '.js',
-      ignore: [
-        '.codeclimate.yml',
-        '.gitignore',
-        '.npmignore',
-        '.travis.yml',
-        'scripts'
-      ]
-    }, null, 2);
+	var json = JSON.stringify({
+			name: package.name,
+			description: package.description,
+			homepage: package.homepage,
+			license: package.license,
+			version: package.version,
+			main: outDir + package.name + '.js',
+			ignore: [
+				'.codeclimate.yml',
+				'.gitignore',
+				'.npmignore',
+				'.travis.yml',
+				'scripts'
+			]
+		}, null, 2);
 
-  return file('bower.json', json, { src: true })
-    .pipe(gulp.dest('./'));
+	return file('bower.json', json, {src: true})
+		.pipe(gulp.dest('./'));
 }
 
 function buildTask() {
 
-  var nonBundled = browserify('./src/plugin.streaming.js')
-    .ignore('moment')
-    .ignore('chart.js')
-    .bundle()
-    .pipe(source(package.name + '.js'))
-    .pipe(insert.prepend(header))
-    .pipe(streamify(replace('{{ version }}', package.version)))
-    .pipe(gulp.dest(outDir))
-    .pipe(streamify(uglify()))
-    .pipe(insert.prepend(header))
-    .pipe(streamify(replace('{{ version }}', package.version)))
-    .pipe(streamify(concat(package.name + '.min.js')))
-    .pipe(gulp.dest(outDir));
+	var nonBundled = browserify('./src/plugin.streaming.js')
+		.ignore('moment')
+		.ignore('chart.js')
+		.bundle()
+		.pipe(source(package.name + '.js'))
+		.pipe(insert.prepend(header))
+		.pipe(streamify(replace('{{ version }}', package.version)))
+		.pipe(gulp.dest(outDir))
+		.pipe(streamify(uglify()))
+		.pipe(insert.prepend(header))
+		.pipe(streamify(replace('{{ version }}', package.version)))
+		.pipe(streamify(concat(package.name + '.min.js')))
+		.pipe(gulp.dest(outDir));
 
-  return nonBundled;
+	return nonBundled;
 
 }
 
 function packageTask() {
-  return merge(
-      // gather "regular" files landing in the package root
-      gulp.src([outDir + '*.js', 'LICENSE.md']),
+	return merge(
+			// gather "regular" files landing in the package root
+			gulp.src([outDir + '*.js', 'LICENSE.md']),
 
-      // since we moved the dist files one folder up (package root), we need to rewrite
-      // samples src="../dist/ to src="../ and then copy them in the /samples directory.
-      gulp.src(samplesDir + '**/*', { base: '.' })
-        .pipe(streamify(replace(/src="((?:\.\.\/)+)dist\//g, 'src="$1')))
-  )
-  // finally, create the zip archive
-  .pipe(zip(package.name + '.zip'))
-  .pipe(gulp.dest(outDir));
+			// since we moved the dist files one folder up (package root), we need to rewrite
+			// samples src="../dist/ to src="../ and then copy them in the /samples directory.
+			gulp.src(samplesDir + '**/*', {base: '.'})
+				.pipe(streamify(replace(/src="((?:\.\.\/)+)dist\//g, 'src="$1')))
+	)
+	// finally, create the zip archive
+	.pipe(zip(package.name + '.zip'))
+	.pipe(gulp.dest(outDir));
 }
 
 function watchTask() {
-  return gulp.watch('./src/**', ['build']);
+	return gulp.watch('./src/**', ['build']);
 }
 
 function lintTask() {
-  var files = [
-    srcDir + '**/*.js',
-  ];
+	var files = [
+		srcDir + '**/*.js',
+	];
 
-  return gulp.src(files)
-    .pipe(eslint())
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
+	return gulp.src(files)
+		.pipe(eslint())
+		.pipe(eslint.format())
+		.pipe(eslint.failAfterError());
 }
