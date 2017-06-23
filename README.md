@@ -40,11 +40,11 @@ To configure this plugin, you can simply add the following entries to your chart
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `plugins.streaming` | `object`/`boolean` | `true` | The streaming options (see `plugins.streaming.*` options). Also accepts a boolean, in which case if `true`, the chart will auto-scroll using the **global options**, else if `false`, the chart will not auto-scroll.
-| `plugins.streaming.duration` | `number` | `10000` | Duration of the chart in milliseconds (how much time of data it will show).
-| `plugins.streaming.refresh` | `number` | `1000` | Reshresh interval of data in milliseconds. `onRefresh` callback function will be called at this interval.
-| `plugins.streaming.delay` | `number` | `0` | Delay added to the chart in milliseconds so that upcoming values are known before lines are plotted. This makes the chart look like a continual stream rather than very jumpy on the right hand side. Specify the maximum expected delay.
-| `plugins.streaming.onRefresh` | `function` | `undefined` | Callback function that will be called at a regular interval. The callback takes one argument, a reference to the chart object. You can update your datasets here. The chart will be automatically updated after returning.
+| `plugins.streaming` | `Object` or `Boolean` | `true` | The streaming options (see `plugins.streaming.*` options). Also accepts a boolean, in which case if `true`, the chart will auto-scroll using the **global options**, else if `false`, the chart will not auto-scroll.
+| `plugins.streaming.duration` | `Number` | `10000` | Duration of the chart in milliseconds (how much time of data it will show).
+| `plugins.streaming.refresh` | `Number` | `1000` | Reshresh interval of data in milliseconds. `onRefresh` callback function will be called at this interval.
+| `plugins.streaming.delay` | `Number` | `0` | Delay added to the chart in milliseconds so that upcoming values are known before lines are plotted. This makes the chart look like a continual stream rather than very jumpy on the right hand side. Specify the maximum expected delay.
+| `plugins.streaming.onRefresh` | `Function` | `null` | Callback function that will be called at a regular interval. The callback takes one argument, a reference to the chart object. You can update your datasets here. The chart will be automatically updated after returning.
 
 **Global options** can be change through `Chart.defaults.global.plugins.streaming`, which by default enable auto-scroll of the charts that have a time scale.
 
