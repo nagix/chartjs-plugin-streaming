@@ -58,35 +58,35 @@
 			type: 'line',
 			data: {
 				datasets: [{
-					label: "Dataset (linear interpolation)",
+					label: 'Dataset (linear interpolation)',
 					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
 					borderColor: chartColors.red,
 					fill: false,
-					tension: 0,
+					lineTension: 0,
           				borderDash: [8, 4],
 					data: []
 				}, {
-					label: "Dataset (cubic interpolation)",
+					label: 'Dataset (cubic interpolation)',
 					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
 					borderColor: chartColors.blue,
 					fill: false,
-					cubicInterpolationMode: "monotone",
+					cubicInterpolationMode: 'monotone',
 					data: []
 				}]
 			},
 			options: {
 				responsive: true,
-				title:{
-					display:true,
-					text:"chartjs-plugin-streaming sample"
+				title: {
+					display: true,
+					text: 'chartjs-plugin-streaming sample'
 				},
 				scales: {
 					xAxes: [{
-						type: "time",
+						type: 'time',
 						display: true,
 					}],
 					yAxes: [{
-						type: "linear",
+						type: 'linear',
 						display: true,
 						scaleLabel: {
 							display: true,
@@ -109,7 +109,7 @@
 		};
 
 		window.onload = function() {
-			var ctx = document.getElementById("canvas").getContext("2d");
+			var ctx = document.getElementById('canvas').getContext('2d');
 			window.myLine = new Chart(ctx, config);
 		};
 
