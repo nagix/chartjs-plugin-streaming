@@ -2,6 +2,7 @@ parserOptions:
   ecmaFeatures:
     modules: true
     jsx: true
+  sourceType: module
 
 env:
   amd: true

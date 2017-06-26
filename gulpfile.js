@@ -1,31 +1,21 @@
+'use strict';
+
 var gulp = require('gulp');
-var concat = require('gulp-concat');
 var eslint = require('gulp-eslint');
 var file = require('gulp-file');
-var insert = require('gulp-insert');
+var rename = require('gulp-rename');
 var replace = require('gulp-replace');
 var streamify = require('gulp-streamify');
 var uglify = require('gulp-uglify');
 var zip = require('gulp-zip');
-var browserify = require('browserify');
-var source = require('vinyl-source-stream');
 var merge = require('merge-stream');
-var package = require('./package.json');
+var rollup = require('rollup-stream');
+var source = require('vinyl-source-stream');
+var pkg = require('./package.json');
 
 var srcDir = './src/';
 var outDir = './dist/';
 var samplesDir = './samples/';
-
-var header =
-	'/*!\n' +
-	' * chartjs-plugin-streaming\n' +
-	' * http://github.com/nagix/chartjs-plugin-streaming/\n' +
-	' * Version: {{ version }}\n' +
-	' *\n' +
-	' * Copyright 2017 Akihiko Kusanagi\n' +
-	' * Released under the MIT license\n' +
-	' * https://github.com/nagix/chartjs-plugin-streaming/blob/master/LICENSE.md\n' +
-	' */\n';
 
 gulp.task('default', ['build']);
 
@@ -35,12 +25,12 @@ gulp.task('default', ['build']);
  */
 gulp.task('bower', function() {
 	var json = JSON.stringify({
-		name: package.name,
-		description: package.description,
-		homepage: package.homepage,
-		license: package.license,
-		version: package.version,
-		main: outDir + package.name + '.js',
+		name: pkg.name,
+		description: pkg.description,
+		homepage: pkg.homepage,
+		license: pkg.license,
+		version: pkg.version,
+		main: outDir + pkg.name + '.js',
 		ignore: [
 			'.codeclimate.yml',
 			'.gitignore',
@@ -55,23 +45,12 @@ gulp.task('bower', function() {
 });
 
 gulp.task('build', function() {
-
-	var nonBundled = browserify('./src/plugin.streaming.js')
-		.ignore('moment')
-		.ignore('chart.js')
-		.bundle()
-		.pipe(source(package.name + '.js'))
-		.pipe(insert.prepend(header))
-		.pipe(streamify(replace('{{ version }}', package.version)))
+	return rollup('rollup.config.js')
+		.pipe(source(pkg.name + '.js'))
 		.pipe(gulp.dest(outDir))
-		.pipe(streamify(uglify()))
-		.pipe(insert.prepend(header))
-		.pipe(streamify(replace('{{ version }}', package.version)))
-		.pipe(streamify(concat(package.name + '.min.js')))
+		.pipe(rename(pkg.name + '.min.js'))
+		.pipe(streamify(uglify({output: {comments: 'some'}})))
 		.pipe(gulp.dest(outDir));
-
-	return nonBundled;
-
 });
 
 gulp.task('package', function() {
@@ -84,9 +63,9 @@ gulp.task('package', function() {
 		gulp.src(samplesDir + '**/*', {base: '.'})
 			.pipe(streamify(replace(/src="((?:\.\.\/)+)dist\//g, 'src="$1')))
 	)
-	// finally, create the zip archive
-	.pipe(zip(package.name + '.zip'))
-	.pipe(gulp.dest(outDir));
+		// finally, create the zip archive
+		.pipe(zip(pkg.name + '.zip'))
+		.pipe(gulp.dest(outDir));
 });
 
 gulp.task('watch', function() {
@@ -95,7 +74,8 @@ gulp.task('watch', function() {
 
 gulp.task('lint', function() {
 	var files = [
-		srcDir + '**/*.js'
+		srcDir + '**/*.js',
+		'*.js'
 	];
 
 	return gulp.src(files)

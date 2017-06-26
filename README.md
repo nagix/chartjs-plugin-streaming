@@ -46,7 +46,7 @@ To configure this plugin, you can simply add the following entries to your chart
 | `plugins.streaming.delay` | `Number` | `0` | Delay added to the chart in milliseconds so that upcoming values are known before lines are plotted. This makes the chart look like a continual stream rather than very jumpy on the right hand side. Specify the maximum expected delay.
 | `plugins.streaming.onRefresh` | `Function` | `null` | Callback function that will be called at a regular interval. The callback takes one argument, a reference to the chart object. You can update your datasets here. The chart will be automatically updated after returning.
 
-**Global options** can be change through `Chart.defaults.global.plugins.streaming`, which by default enable auto-scroll of the charts that have a time scale.
+> **Global options** can be change through `Chart.defaults.global.plugins.streaming`, which by default enable auto-scroll of the charts that have a time scale.
 
 For example:
 
@@ -81,10 +81,10 @@ npm install
 The following commands will then be available from the repository root:
 
 ```bash
-gulp build            # build dist files
-gulp build --watch    # build and watch for changes
-gulp lint             # perform code linting
-gulp package          # create an archive with dist files and samples
+gulp build      # build dist files
+gulp watch      # watch for changes and build automatically
+gulp lint       # perform code linting
+gulp package    # create an archive with dist files and samples
 ```
 
 ## License
