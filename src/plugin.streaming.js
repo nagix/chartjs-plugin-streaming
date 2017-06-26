@@ -1,12 +1,7 @@
-/* global require */
-
 'use strict';
 
-var moment = require('moment');
-moment = typeof(moment) === 'function' ? moment : window.moment;
-
-var Chart = require('chart.js');
-Chart = typeof(Chart) === 'function' ? Chart : window.Chart;
+import moment from 'moment';
+import Chart from 'chart.js';
 
 var helpers = Chart.helpers;
 var plugins = Chart.plugins;
@@ -464,5 +459,5 @@ var streamingPlugin = {
 	}
 };
 
-module.exports = streamingPlugin;
 plugins.register(streamingPlugin);
+export default streamingPlugin;

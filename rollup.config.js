@@ -16,6 +16,7 @@ export default {
 	dest: 'dist/' + pkg.name + '.js',
 	banner: banner,
 	format: 'umd',
+	moduleName: pkg.name,
 	external: [
 		'moment',
 		'chart.js'
