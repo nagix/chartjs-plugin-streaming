@@ -127,6 +127,21 @@ Chart.Ticks.generators.time = function(options, dataRange) {
 	});
 };
 
+var TimeScale = Chart.scaleService.getScaleConstructor('time');
+
+TimeScale.prototype.getPixelForOffset = function(offset) {
+	var me = this;
+	var options = me.chart.options.plugins.streaming;
+	var epochWidth = me.max - me.min;
+	var decimal = epochWidth ? (offset - me.min) / epochWidth : 0;
+
+	if (me.isHorizontal()) {
+		return me.left + (options ? (me.width * decimal) : Math.round(me.width * decimal));
+	}
+
+	return me.top + (options ? (me.height * decimal) : Math.round(me.height * decimal));
+};
+
 Chart.prototype.draw = function(easingValue) {
 	var me = this;
 
