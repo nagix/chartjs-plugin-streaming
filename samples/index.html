@@ -63,7 +63,7 @@
 					borderColor: chartColors.red,
 					fill: false,
 					lineTension: 0,
-          				borderDash: [8, 4],
+          			borderDash: [8, 4],
 					data: []
 				}, {
 					label: 'Dataset (cubic interpolation)',
@@ -82,7 +82,7 @@
 				},
 				scales: {
 					xAxes: [{
-						type: 'time',
+						type: 'realtime',
 						display: true,
 					}],
 					yAxes: [{
@@ -98,13 +98,14 @@
 					intersect: false
 				},
 				hover: {
+					mode: 'nearest',
 					intersect: false
 				},
 				plugins: {
 					streaming: {
 						duration: 20000,
 						refresh: 1000,
-						delay: 2000,
+						delay: 1000,
 						onRefresh: onRefresh
 					}
 				}

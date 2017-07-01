@@ -18,8 +18,10 @@ var realTimeScaleDefaultConfig = {
 
 	time: {
 		parser: false, // false == a pattern string from http://momentjs.com/docs/#/parsing/string-format/ or a custom callback that converts its argument to a moment
+		format: false, // DEPRECATED false == date objects, moment object, callback or a pattern string from http://momentjs.com/docs/#/parsing/string-format/
 		unit: false, // false == automatic or override with week, month, year, etc.
 		round: false, // none, or override with week, month, year, etc.
+		displayFormat: false, // DEPRECATED
 		isoWeekday: false, // override week start day - see http://momentjs.com/docs/#/get-set/iso-weekday/
 		minUnit: 'millisecond',
 
@@ -35,6 +37,12 @@ var realTimeScaleDefaultConfig = {
 			quarter: '[Q]Q - YYYY', // Q3
 			year: 'YYYY' // 2015
 		},
+	},
+	realtime: {
+		duration: 10000,
+		refresh: 1000,
+		delay: 0,
+		onRefresh: null
 	},
 	ticks: {
 		autoSkip: false
@@ -194,6 +202,39 @@ function generateTicks(options, dataRange) {
 	});
 }
 
+var transitionKeys = {
+	x: {
+		data: ['x', 'controlPointPreviousX', 'controlPointNextX'],
+		dataset: ['x'],
+		tooltip: ['x', 'caretX']
+	},
+	y: {
+		data: ['y', 'controlPointPreviousY', 'controlPointNextY'],
+		dataset: ['y'],
+		tooltip: ['y', 'caretY']
+	}
+};
+
+function transition(element, keys, translate) {
+	var start = element._start || {};
+	var view = element._view || {};
+	var model = element._model || {};
+
+	var ilen = keys.length;
+	for (var i=0; i<ilen; ++i) {
+		var key = keys[i];
+		if (start.hasOwnProperty(key)) {
+			start[key] -= translate;
+		}
+		if (view.hasOwnProperty(key) && view !== start) {
+			view[key] -= translate;
+		}
+		if (model.hasOwnProperty(key) && model !== view) {
+			model[key] -= translate;
+		}
+	}
+}
+
 var TimeScale = Chart.scaleService.getScaleConstructor('time');
 
 Chart.scaleService.getScaleConstructor = function(type) {
@@ -205,21 +246,88 @@ Chart.scaleService.getScaleConstructor = function(type) {
 };
 
 var RealTimeScale = TimeScale.extend({
+	initialize: function() {
+		TimeScale.prototype.initialize.call(this);
+
+		var me = this;
+		var options = me.options;
+
+		// For backwards compatibility
+		if (options.type === 'time' && !me.chart.options.plugins.streaming) {
+			return;
+		}
+
+		var nextRefresh = Date.now();
+		var prev = Date.now();
+
+		var frameRefresh = function() {
+			var chart = me.chart;
+			var realtimeOpts = options.realtime;
+			var duration = realtimeOpts.duration;
+			var refresh = realtimeOpts.refresh;
+			var now = Date.now();
+
+			if (now >= nextRefresh) {
+				nextRefresh = now + refresh + (now - nextRefresh) % refresh;
+				if (realtimeOpts.onRefresh) {
+					realtimeOpts.onRefresh.call(chart, me);
+				}
+
+				chart.update();
+
+			} else {
+				// Update min/max
+				me.max = now - realtimeOpts.delay;
+				me.min = me.max - duration;
+
+				var keys = me.isHorizontal() ? transitionKeys.x : transitionKeys.y;
+				var offset = me.width * (now - prev) / duration;
+
+				// Shift all the elements leftward or upward
+				helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
+					var meta = chart.getDatasetMeta(datasetIndex);
+					var elements = meta.data || [];
+					var ilen = elements.length;
+
+					for (var i=0; i<ilen; ++i) {
+						transition(elements[i], keys.data, offset);
+					}
+
+					if (meta.dataset) {
+						transition(meta.dataset, keys.dataset, offset);
+					}
+				});
+
+				transition(chart.tooltip, keys.tooltip, offset);
+
+				// Draw only when animation is inactive
+				if (!chart.animating) {
+					chart.draw();
+				}
+			}
+
+			prev = now;
+
+			helpers.requestAnimFrame.call(window, frameRefresh);
+		};
+		helpers.requestAnimFrame.call(window, frameRefresh);
+	},
+
 	buildTicks: function() {
 		var me = this;
 		var options = me.options;
-		var streamingOpts = me.chart.options.plugins.streaming;
 
 		// For backwards compatibility
-		if (options.type === 'time' && !streamingOpts) {
+		if (options.type === 'time' && !me.chart.options.plugins.streaming) {
 			TimeScale.prototype.buildTicks.call(this);
 			return;
 		}
 
 		var timeOpts = options.time;
+		var realtimeOpts = options.realtime;
 
-		var maxTimestamp = Date.now() - streamingOpts.delay;
-		var minTimestamp = maxTimestamp - streamingOpts.duration;
+		var maxTimestamp = Date.now() - realtimeOpts.delay;
+		var minTimestamp = maxTimestamp - realtimeOpts.duration;
 		var maxTicks = me.getLabelCapacity(minTimestamp);
 
 		var unit = timeOpts.unit || determineUnit(timeOpts.minUnit, minTimestamp, maxTimestamp, maxTicks);
@@ -236,7 +344,7 @@ var RealTimeScale = TimeScale.extend({
 			maxTicks: maxTicks,
 			min: minTimestamp,
 			// Add refresh interval for scroll margin
-			max: maxTimestamp + streamingOpts.refresh,
+			max: maxTimestamp + realtimeOpts.refresh,
 			stepSize: stepSize,
 			majorUnit: majorUnit,
 			unit: unit,
@@ -251,19 +359,46 @@ var RealTimeScale = TimeScale.extend({
 		me.min = minTimestamp;
 	},
 
-	getPixelForOffset: function(offset) {
+	draw: function(chartArea) {
 		var me = this;
-		var options = me.options;
-		var streamingOpts = me.chart.options.plugins.streaming;
+		var chart = me.chart;
 
 		// For backwards compatibility
-		if (options.type === 'time' && !streamingOpts) {
+		if (me.options.type === 'time' && !chart.options.plugins.streaming) {
+			return TimeScale.prototype.draw.call(this, chartArea);
+		}
+
+		var context = me.ctx;
+		var	clipArea = me.isHorizontal() ? {
+			left: chartArea.left,
+			top: 0,
+			right: chartArea.right,
+			bottom: chart.height
+		} : {
+			left: 0,
+			top: chartArea.top,
+			right: chart.width,
+			bottom: chartArea.bottom
+		};
+
+		// Clip and draw the scale
+		Chart.canvasHelpers.clipArea(context, clipArea);
+		TimeScale.prototype.draw.call(this, chartArea);
+		Chart.canvasHelpers.unclipArea(context);
+	},
+
+	getPixelForOffset: function(offset) {
+		var me = this;
+
+		// For backwards compatibility
+		if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
 			return TimeScale.prototype.getPixelForOffset.call(this, offset);
 		}
 
 		var epochWidth = me.max - me.min;
 		var decimal = epochWidth ? (offset - me.min) / epochWidth : 0;
 
+		// For smooth scroll, don't round the offset
 		if (me.isHorizontal()) {
 			return me.left + me.width * decimal;
 		}
@@ -274,106 +409,22 @@ var RealTimeScale = TimeScale.extend({
 
 Chart.scaleService.registerScaleType('realtime', RealTimeScale, realTimeScaleDefaultConfig);
 
-Chart.prototype.draw = function(easingValue) {
+function onRefresh(scale) {
 	var me = this;
+	var streamingOpts = me.options.plugins.streaming;
+	var key = scale.isHorizontal() ? 'x' : 'y';
+	var min = Date.now() - streamingOpts.delay - streamingOpts.duration - streamingOpts.refresh*2;
 
-	me.clear();
-
-	if (easingValue === undefined || easingValue === null) {
-		easingValue = 1;
+	if (streamingOpts.onRefresh) {
+		streamingOpts.onRefresh(me);
 	}
 
-	me.transition(easingValue);
-
-	if (plugins.notify(me, 'beforeDraw', [easingValue]) === false) {
-		return;
-	}
-
-	// Draw all the scales
-	me.drawBoxes();
-
-	me.drawDatasets(easingValue);
-
-	// Finally draw the tooltip
-	me.tooltip.draw();
-
-	plugins.notify(me, 'afterDraw', [easingValue]);
-};
-
-Chart.prototype.drawBoxes = function() {
-	var me = this;
-	var chartArea = me.chartArea;
-
-	helpers.each(me.boxes, function(box) {
-		if (plugins.notify(me, 'beforeBoxDraw', [box, chartArea]) === true) {
-			box.draw(me.chartArea);
-			plugins.notify(me, 'afterBoxDraw', [box, chartArea]);
-		}
-	});
-
-	if (me.scale) {
-		if (plugins.notify(me, 'beforeBoxDraw', [me.scale, chartArea]) === true) {
-			me.scale.draw();
-			plugins.notify(me, 'afterBoxDraw', [me.scale, chartArea]);
-		}
-	}
-};
-
-function extendedArea(chart, points) {
-	var pointLen = points.length;
-	if (!chart.options.plugins.streaming || pointLen === 0) {
-		return chart.chartArea;
-	}
-
-	// Returns the extended chart area includes the last point
-	var area = helpers.clone(chart.chartArea);
-	var model = points[pointLen - 1]._model;
-	if (chart.horizontalScroll) {
-		area.right = model.x;
-	}
-	if (chart.verticalScroll) {
-		area.bottom = model.y;
-	}
-	return area;
-}
-
-Chart.controllers.line.prototype.draw = function() {
-	var me = this;
-	var chart = me.chart;
-	var options = chart.options.plugins.streaming;
-	var meta = me.getMeta();
-	var points = meta.data || [];
-	var area = extendedArea(chart, points);
-	var ilen = points.length;
-	var i = 0;
-
-	// Clip if streaming is disabled
-	if (!options) {
-		Chart.canvasHelpers.clipArea(chart.ctx, chart.chartArea);
-	}
-
-	// Draw the line
-	if (helpers.getValueOrDefault(me.getDataset().showLine, chart.options.showLines)) {
-		meta.dataset.draw();
-	}
-
-	// Unclip if streaming is disabled
-	if (!options) {
-		Chart.canvasHelpers.unclipArea(chart.ctx);
-	}
-
-	// Draw the points
-	for (; i<ilen; ++i) {
-		points[i].draw(area);
-	}
-};
-
-function removeOldData(datasets, field, min) {
-	datasets.forEach(function(dataset) {
+	// Remove old data
+	me.data.datasets.forEach(function(dataset) {
 		var data = dataset.data;
 		var howMany = 0;
 		for (; howMany < data.length; ++howMany) {
-			if (moment(field(data[howMany])).isSameOrAfter(min)) {
+			if (moment(data[howMany][key]).valueOf() > min) {
 				break;
 			}
 		}
@@ -381,186 +432,51 @@ function removeOldData(datasets, field, min) {
 	});
 }
 
-function startTranslate(chart, options) {
-	var context = chart.chart.ctx;
-	var clipArea = helpers.clone(chart.chartArea);
-	var translateX = 0;
-	var translateY = 0;
-	var offsetFactor = (Date.now() - chart.lastUpdate) / options.duration;
-
-	// Save context and clip chart & time scale area
-	if (chart.horizontalScroll) {
-		clipArea.top = 0;
-		clipArea.bottom = chart.height;
-		translateX = -(clipArea.right - clipArea.left) * offsetFactor;
-	}
-	if (chart.verticalScroll) {
-		clipArea.left = 0;
-		clipArea.right = chart.width;
-		translateY = -(clipArea.bottom - clipArea.top) * offsetFactor;
-	}
-	Chart.canvasHelpers.clipArea(context, clipArea);
-
-	// Translate for scroll
-	context.translate(translateX, translateY);
-}
-
-function endTranslate(chart) {
-	// Unclip and restore context
-	Chart.canvasHelpers.unclipArea(chart.ctx);
-}
-
-function drawBorder(scale) {
-	var options = scale.options;
-	if (!options.display) {
-		return;
-	}
-
-	var context = scale.ctx;
-	var gridLines = options.gridLines;
-
-	// Extend grid border to the last tick
-	if (gridLines.drawBorder) {
-		context.lineWidth = helpers.getValueAtIndexOrDefault(gridLines.lineWidth, 0);
-		context.strokeStyle = helpers.getValueAtIndexOrDefault(gridLines.color, 0);
-
-		var x1 = scale.right;
-		var x2 = scale.getPixelForTick(scale.ticks.length - 1);
-		var y1 = scale.bottom;
-		var y2 = scale.getPixelForTick(scale.ticks.length - 1);
-
-		var aliasPixel = helpers.aliasPixel(context.lineWidth);
-		if (scale.isHorizontal()) {
-			y1 = y2 = options.position === 'top' ? scale.bottom : scale.top;
-			y1 += aliasPixel;
-			y2 += aliasPixel;
-		} else {
-			x1 = x2 = options.position === 'left' ? scale.right : scale.left;
-			x1 += aliasPixel;
-			x2 += aliasPixel;
-		}
-
-		context.beginPath();
-		context.moveTo(x1, y1);
-		context.lineTo(x2, y2);
-		context.stroke();
-	}
-}
-
 var streamingPlugin = {
 	id: 'streaming',
 
-	afterInit: function(chart, options) {
-		var nextRefresh = Date.now() + options.refresh;
-		var scroll = function() {
-			var now = Date.now();
-			if (now >= nextRefresh) {
-				nextRefresh = now + options.refresh + (now - nextRefresh) % options.refresh;
-				if (options.onRefresh) {
-					options.onRefresh(chart);
-				}
-				chart.update();
-			}
-
-			if (chart.horizontalScroll || chart.verticalScroll) {
-				chart.draw();
-			}
-
-			helpers.requestAnimFrame.call(window, scroll);
-		};
-		helpers.requestAnimFrame.call(window, scroll);
-	},
-
 	beforeUpdate: function(chart, options) {
 		var chartOpts = chart.options;
-		var scales = chartOpts.scales;
-		var xAxis = scales.xAxes[0];
-		var yAxis = scales.yAxes[0];
-		var datasets = chart.data.datasets;
+		var scalesOpts = chartOpts.scales;
 
-		xAxis.ticks.maxRotation = false;
 		chartOpts.elements.line.capBezierPoints = false;
-		chartOpts.animation.duration = 0;
+		scalesOpts.xAxes.forEach(function(scaleOpts) {
+			scaleOpts.ticks.maxRotation = false;
+		});
 
-		chart.horizontalScroll = xAxis.type === 'time' || xAxis.type === 'realtime';
-		chart.verticalScroll = yAxis.type === 'time' || yAxis.type === 'realtime';
+		scalesOpts.xAxes.concat(scalesOpts.yAxes).forEach(function(scaleOpts) {
+			if (scaleOpts.type === 'realtime' || scaleOpts.type === 'time') {
+				var realtimeOpts = scaleOpts.realtime;
 
-		// Update the range of the time scales based on duration and delay
-		var dataMin = moment().clone().subtract(options.delay + options.duration + options.refresh*2, 'ms');
-		if (chart.horizontalScroll) {
-			removeOldData(datasets, function(d) {
-				return d.x;
-			}, dataMin);
-		}
-		if (chart.verticalScroll) {
-			removeOldData(datasets, function(d) {
-				return d.y;
-			}, dataMin);
-		}
+				// For backwards compatibility
+				if (!realtimeOpts) {
+					realtimeOpts = scaleOpts.realtime = {};
+				}
 
-		chart.lastUpdate = Date.now();
+				// Copy plugin options to scale options
+				realtimeOpts.duration = options.duration;
+				realtimeOpts.refresh = options.refresh;
+				realtimeOpts.delay = options.delay;
+				realtimeOpts.onRefresh = onRefresh;
+			}
+		});
 	},
 
-	afterRender: function(chart) {
-		var tooltip = chart.tooltip;
-
-		// Trigger tooltip update for scroll
-		tooltip._active = tooltip._active || [];
-		tooltip.update(true);
-	},
-
-	beforeDraw: function(chart, easingValue, options) {
-		// Enable translate for scroll
-		startTranslate(chart, options);
-		return true;
-	},
-
-	afterDraw: function(chart) {
-		// Disable tlanstale
-		endTranslate(chart);
-
+	beforeDraw: function(chart) {
 		// Dispach mouse event for scroll
 		var event = chart.lastMouseMoveEvent;
 		if (event) {
 			chart.canvas.dispatchEvent(event.native);
 		}
-	},
-
-	beforeBoxDraw: function(chart, box) {
-		// Disable translate if the box is not a time scale
-		if (!(box.options.type === 'time' || box.options.type === 'realtime')) {
-			endTranslate(chart);
-		}
 		return true;
 	},
 
-	afterBoxDraw: function(chart, box, chartArea, options) {
-		if (!(box.options.type === 'time' || box.options.type === 'realtime')) {
-			// Enable translate for scroll again
-			startTranslate(chart, options);
-		} else {
-			// Draw grid border for scroll
-			drawBorder(box);
-		}
-	},
-
-	beforeEvent: function(chart, event, options) {
+	beforeEvent: function(chart, event) {
 		if (event.type === 'mousemove') {
 			// Save mousemove event for reuse
 			chart.lastMouseMoveEvent = event;
-
-			// Update mouse position to compensate scroll
-			var chartArea = chart.chartArea;
-			if (event.x >= chartArea.left && event.x < chartArea.right && event.y >= chartArea.top && event.y < chartArea.bottom) {
-				var offsetFactor = (Date.now() - chart.lastUpdate) / options.duration;
-				if (chart.horizontalScroll) {
-					event.x += (chartArea.right - chartArea.left) * offsetFactor;
-				}
-				if (chart.verticalScroll) {
-					event.y += (chartArea.bottom - chartArea.top) * offsetFactor;
-				}
-			}
 		} else if (event.type === 'mouseout') {
+			// Remove mousemove event
 			delete chart.lastMouseMoveEvent;
 		}
 		return true;
