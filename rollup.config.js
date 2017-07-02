@@ -12,7 +12,7 @@ const banner = `/*
  */`;
 
 export default {
-	entry: 'src/plugin.streaming.js',
+	entry: 'src/index.js',
 	dest: 'dist/' + pkg.name + '.js',
 	banner: banner,
 	format: 'umd',
