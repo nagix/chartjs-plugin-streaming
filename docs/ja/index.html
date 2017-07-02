@@ -73,7 +73,7 @@
               <p>&nbsp;&nbsp;options: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'time'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;}</p>
@@ -201,7 +201,7 @@
       var chart1 = new Chart(ctx1, {
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{ type: 'time' }] } }
+        options: { scales: { xAxes: [{ type: 'realtime' }] } }
       });
 
       var ctx2 = document.getElementById('chart2').getContext('2d');
@@ -209,17 +209,17 @@
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
         options: {
-          scales: { xAxes: [{ type: 'time' }] },
+          scales: { xAxes: [{ type: 'realtime' }] },
           plugins: { streaming: { onRefresh: onRefresh } }
         }
       });
-      
+
       var ctx3 = document.getElementById('chart3').getContext('2d');
       var chart3 = new Chart(ctx3, {
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
         options: {
-          scales: { xAxes: [{ type: 'time' }] },
+          scales: { xAxes: [{ type: 'realtime' }] },
           plugins: { streaming: { onRefresh: onRefresh, delay: 2000 } }
         }
       });
@@ -241,7 +241,7 @@
           backgroundColor: 'rgba(54, 162, 235, 0.5)'
         }] },
         options: {
-          scales: { xAxes: [{ type: 'time' }] },
+          scales: { xAxes: [{ type: 'realtime' }] },
           plugins: { streaming: { onRefresh: onRefresh, delay: 2000 } }
         }
       });
