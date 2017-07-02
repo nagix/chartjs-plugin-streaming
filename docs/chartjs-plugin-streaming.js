@@ -172,6 +172,18 @@ helpers.scaleMerge = function(/* objects ... */) {
 	});
 };
 
+// Workaround for Chart.js issue #4450
+Chart.plugins.getAll().forEach(function(plugin) {
+	if (plugin.id === 'filler') {
+		var beforeDatasetDraw = plugin.beforeDatasetDraw;
+		plugin.beforeDatasetDraw = function(chart, args) {
+			helpers.canvas.clipArea(chart.ctx, chart.chartArea);
+			beforeDatasetDraw(chart, args);
+			helpers.canvas.unclipArea(chart.ctx);
+		};
+	}
+});
+
 // Backported from Chart.js 7f15beb. No need for 2.7.0 or later.
 var interval = {
 	millisecond: {
