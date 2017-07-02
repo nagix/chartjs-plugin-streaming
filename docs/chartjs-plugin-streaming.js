@@ -63,6 +63,115 @@ var realTimeScaleDefaultConfig = {
 	}
 };
 
+// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+function isObject(value) {
+	return value !== null && Object.prototype.toString.call(value) === '[object Object]';
+}
+
+// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+function valueOrDefault(value, defaultValue) {
+	return typeof value === 'undefined'? defaultValue : value;
+}
+
+// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+function clone(source) {
+	if (helpers.isArray(source)) {
+		return source.map(clone);
+	}
+
+	if (isObject(source)) {
+		var target = {};
+		var keys = Object.keys(source);
+		var klen = keys.length;
+		var k = 0;
+
+		for (; k<klen; ++k) {
+			target[keys[k]] = clone(source[keys[k]]);
+		}
+
+		return target;
+	}
+
+	return source;
+}
+
+// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+function _merger(key, target, source, options) {
+	var tval = target[key];
+	var sval = source[key];
+
+	if (isObject(tval) && isObject(sval)) {
+		helpers.merge(tval, sval, options);
+	} else {
+		target[key] = clone(sval);
+	}
+}
+
+// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+helpers.merge = function(target, source, options) {
+	var sources = helpers.isArray(source)? source : [source];
+	var ilen = sources.length;
+	var merge, i, keys, klen, k;
+
+	if (!isObject(target)) {
+		return target;
+	}
+
+	options = options || {};
+	merge = options.merger || _merger;
+
+	for (i=0; i<ilen; ++i) {
+		source = sources[i];
+		if (!isObject(source)) {
+			continue;
+		}
+
+		keys = Object.keys(source);
+		for (k=0, klen = keys.length; k<klen; ++k) {
+			merge(keys[k], target, source, options);
+		}
+	}
+
+	return target;
+};
+
+// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+helpers.scaleMerge = function(/* objects ... */) {
+	return helpers.merge(clone(arguments[0]), [].slice.call(arguments, 1), {
+		merger: function(key, target, source, options) {
+			if (key === 'xAxes' || key === 'yAxes') {
+				var slen = source[key].length;
+				var i, type, scale, defaults;
+
+				if (!target[key]) {
+					target[key] = [];
+				}
+
+				for (i = 0; i < slen; ++i) {
+					scale = source[key][i];
+					type = valueOrDefault(scale.type, key === 'xAxes'? 'category' : 'linear');
+					defaults = Chart.scaleService.getScaleDefaults(type);
+
+					if (i >= target[key].length) {
+						target[key].push({});
+					}
+
+					if (!target[key][i].type || (scale.type && scale.type !== target[key][i].type)) {
+						// new/untyped scale or type changed: let's apply the new defaults
+						// then merge source scale to correctly overwrite the defaults.
+						helpers.merge(target[key][i], [defaults, scale]);
+					} else {
+						// scales type are the same
+						helpers.merge(target[key][i], scale);
+					}
+				}
+			} else {
+				_merger(key, target, source, options);
+			}
+		}
+	});
+};
+
 // Backported from Chart.js 7f15beb. No need for 2.7.0 or later.
 var interval = {
 	millisecond: {
@@ -352,7 +461,7 @@ var RealTimeScale = TimeScale.extend({
 		me.unit = unit;
 		me.majorUnit = majorUnit;
 
-		var optionStepSize = helpers.getValueOrDefault(timeOpts.stepSize, timeOpts.unitStepSize);
+		var optionStepSize = valueOrDefault(timeOpts.stepSize, timeOpts.unitStepSize);
 		var stepSize = optionStepSize || determineStepSize(minTimestamp, maxTimestamp, unit, maxTicks);
 		me.ticks = generateTicks({
 			maxTicks: maxTicks,
