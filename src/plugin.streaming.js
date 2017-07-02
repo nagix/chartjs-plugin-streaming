@@ -503,9 +503,9 @@ var RealTimeScale = TimeScale.extend({
 		};
 
 		// Clip and draw the scale
-		Chart.canvasHelpers.clipArea(context, clipArea);
+		helpers.canvas.clipArea(context, clipArea);
 		TimeScale.prototype.draw.call(this, chartArea);
-		Chart.canvasHelpers.unclipArea(context);
+		helpers.canvas.unclipArea(context);
 	},
 
 	getPixelForOffset: function(offset) {
