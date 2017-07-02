@@ -28,7 +28,7 @@ chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and modu
 
 chartjs-plugin-streaming requires [Moment.js](http://momentjs.com/) and [Chart.js](http://www.chartjs.org).
 
-Currently, only the [line](http://www.chartjs.org/docs/latest/charts/line.html) chart type with [point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of an object containing x and y properties) is supported. Either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the time scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
+Currently, only the [line](http://www.chartjs.org/docs/latest/charts/line.html) chart type with [point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of an object containing x and y properties) is supported. Either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the  as [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
 
 ## Tutorial
 
@@ -52,6 +52,19 @@ For example:
 
 ```
 {
+    type: 'line',               // only 'line' type is supported now
+    data: {
+        datasets: [{
+            data: []            // empty at the beggining
+        }]
+    },
+    options: {
+        scales: {
+            xAxes: [{
+                type: 'realtime'    // x axis will auto-scroll from right to left
+            }]
+        }
+    },
     plugins: {
         streaming: {            // enabled by default
             duration: 20000,    // data in the past 20000 ms will be displayed
