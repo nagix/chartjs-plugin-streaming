@@ -386,7 +386,26 @@ var RealTimeScale = TimeScale.extend({
 			var realtimeOpts = options.realtime;
 			var duration = realtimeOpts.duration;
 			var refresh = realtimeOpts.refresh;
+			var keys = me.isHorizontal() ? transitionKeys.x : transitionKeys.y;
 			var now = Date.now();
+			var offset = me.width * (now - prev) / duration;
+
+			// Shift all the elements leftward or upward
+			helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
+				var meta = chart.getDatasetMeta(datasetIndex);
+				var elements = meta.data || [];
+				var ilen = elements.length;
+
+				for (var i=0; i<ilen; ++i) {
+					transition(elements[i], keys.data, offset);
+				}
+
+				if (meta.dataset) {
+					transition(meta.dataset, keys.dataset, offset);
+				}
+			});
+
+			transition(chart.tooltip, keys.tooltip, offset);
 
 			if (now >= nextRefresh) {
 				nextRefresh = now + refresh + (now - nextRefresh) % refresh;
@@ -400,26 +419,6 @@ var RealTimeScale = TimeScale.extend({
 				// Update min/max
 				me.max = now - realtimeOpts.delay;
 				me.min = me.max - duration;
-
-				var keys = me.isHorizontal() ? transitionKeys.x : transitionKeys.y;
-				var offset = me.width * (now - prev) / duration;
-
-				// Shift all the elements leftward or upward
-				helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
-					var meta = chart.getDatasetMeta(datasetIndex);
-					var elements = meta.data || [];
-					var ilen = elements.length;
-
-					for (var i=0; i<ilen; ++i) {
-						transition(elements[i], keys.data, offset);
-					}
-
-					if (meta.dataset) {
-						transition(meta.dataset, keys.dataset, offset);
-					}
-				});
-
-				transition(chart.tooltip, keys.tooltip, offset);
 
 				// Draw only when animation is inactive
 				if (!chart.animating) {
