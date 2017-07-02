@@ -386,9 +386,18 @@ var RealTimeScale = TimeScale.extend({
 			var realtimeOpts = options.realtime;
 			var duration = realtimeOpts.duration;
 			var refresh = realtimeOpts.refresh;
-			var keys = me.isHorizontal() ? transitionKeys.x : transitionKeys.y;
+			var keys, length;
+
+			if (me.isHorizontal()) {
+				length = me.width;
+				keys = transitionKeys.x;
+			} else {
+				length = me.height;
+				keys = transitionKeys.y;
+			}
+
 			var now = Date.now();
-			var offset = me.width * (now - prev) / duration;
+			var offset = length * (now - prev) / duration;
 
 			// Shift all the elements leftward or upward
 			helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
