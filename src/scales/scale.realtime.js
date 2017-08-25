@@ -40,17 +40,17 @@ export default function(Chart, moment) {
 		}
 	};
 
-	// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
 	function isObject(value) {
 		return value !== null && Object.prototype.toString.call(value) === '[object Object]';
 	}
 
-	// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
 	function valueOrDefault(value, defaultValue) {
-		return typeof value === 'undefined'? defaultValue : value;
+		return typeof value === 'undefined' ? defaultValue : value;
 	}
 
-	// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
 	function clone(source) {
 		if (helpers.isArray(source)) {
 			return source.map(clone);
@@ -62,7 +62,7 @@ export default function(Chart, moment) {
 			var klen = keys.length;
 			var k = 0;
 
-			for (; k<klen; ++k) {
+			for (; k < klen; ++k) {
 				target[keys[k]] = clone(source[keys[k]]);
 			}
 
@@ -72,7 +72,7 @@ export default function(Chart, moment) {
 		return source;
 	}
 
-	// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
 	function _merger(key, target, source, options) {
 		var tval = target[key];
 		var sval = source[key];
@@ -84,9 +84,9 @@ export default function(Chart, moment) {
 		}
 	}
 
-	// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
 	helpers.merge = function(target, source, options) {
-		var sources = helpers.isArray(source)? source : [source];
+		var sources = helpers.isArray(source) ? source : [source];
 		var ilen = sources.length;
 		var merge, i, keys, klen, k;
 
@@ -97,14 +97,14 @@ export default function(Chart, moment) {
 		options = options || {};
 		merge = options.merger || _merger;
 
-		for (i=0; i<ilen; ++i) {
+		for (i = 0; i < ilen; ++i) {
 			source = sources[i];
 			if (!isObject(source)) {
 				continue;
 			}
 
 			keys = Object.keys(source);
-			for (k=0, klen = keys.length; k<klen; ++k) {
+			for (k = 0, klen = keys.length; k < klen; ++k) {
 				merge(keys[k], target, source, options);
 			}
 		}
@@ -112,13 +112,13 @@ export default function(Chart, moment) {
 		return target;
 	};
 
-	// Backported from Chart.js 225bfd3. No need for 2.7.0 or later.
+	// Backported from Chart.js 9ef5cc7. No need for 2.7.0 or later.
 	helpers.scaleMerge = function(/* objects ... */) {
 		return helpers.merge(clone(arguments[0]), [].slice.call(arguments, 1), {
 			merger: function(key, target, source, options) {
 				if (key === 'xAxes' || key === 'yAxes') {
 					var slen = source[key].length;
-					var i, type, scale, defaults;
+					var i, type, scale;
 
 					if (!target[key]) {
 						target[key] = [];
@@ -126,8 +126,7 @@ export default function(Chart, moment) {
 
 					for (i = 0; i < slen; ++i) {
 						scale = source[key][i];
-						type = valueOrDefault(scale.type, key === 'xAxes'? 'category' : 'linear');
-						defaults = Chart.scaleService.getScaleDefaults(type);
+						type = valueOrDefault(scale.type, key === 'xAxes' ? 'category' : 'linear');
 
 						if (i >= target[key].length) {
 							target[key].push({});
@@ -136,7 +135,7 @@ export default function(Chart, moment) {
 						if (!target[key][i].type || (scale.type && scale.type !== target[key][i].type)) {
 							// new/untyped scale or type changed: let's apply the new defaults
 							// then merge source scale to correctly overwrite the defaults.
-							helpers.merge(target[key][i], [defaults, scale]);
+							helpers.merge(target[key][i], [Chart.scaleService.getScaleDefaults(type), scale]);
 						} else {
 							// scales type are the same
 							helpers.merge(target[key][i], scale);
@@ -319,9 +318,9 @@ export default function(Chart, moment) {
 		var start = element._start || {};
 		var view = element._view || {};
 		var model = element._model || {};
+		var i, ilen;
 
-		var ilen = keys.length;
-		for (var i=0; i<ilen; ++i) {
+		for (i = 0, ilen = keys.length; i < ilen; ++i) {
 			var key = keys[i];
 			if (start.hasOwnProperty(key)) {
 				start[key] -= translate;
@@ -382,9 +381,9 @@ export default function(Chart, moment) {
 				helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
 					var meta = chart.getDatasetMeta(datasetIndex);
 					var elements = meta.data || [];
-					var ilen = elements.length;
+					var i, ilen;
 
-					for (var i=0; i<ilen; ++i) {
+					for (i = 0, ilen = elements.length; i < ilen; ++i) {
 						transition(elements[i], keys.data, offset);
 					}
 

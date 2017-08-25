@@ -13,7 +13,7 @@ export default function(Chart, moment) {
 		var me = this;
 		var streamingOpts = me.options.plugins.streaming;
 		var key = scale.isHorizontal() ? 'x' : 'y';
-		var min = Date.now() - streamingOpts.delay - streamingOpts.duration - streamingOpts.refresh*2;
+		var min = Date.now() - streamingOpts.delay - streamingOpts.duration - streamingOpts.refresh * 2;
 
 		if (streamingOpts.onRefresh) {
 			streamingOpts.onRefresh(me);

@@ -4,7 +4,7 @@ const banner = `/*
  * @license
  * ` + pkg.name + `
  * http://github.com/nagix/chartjs-plugin-streaming/
- * Version: `+ pkg.version + `
+ * Version: ` + pkg.version + `
  *
  * Copyright ` + (new Date().getFullYear()) + ` Akihiko Kusanagi
  * Released under the MIT license
