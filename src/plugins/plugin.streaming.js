@@ -44,15 +44,13 @@ export default function(Chart) {
 		beforeUpdate: function(chart, options) {
 			var chartOpts = chart.options;
 			var scalesOpts = chartOpts.scales;
+			var realtimeOpts;
 
 			chartOpts.elements.line.capBezierPoints = false;
-			scalesOpts.xAxes.forEach(function(scaleOpts) {
-				scaleOpts.ticks.maxRotation = false;
-			});
 
 			scalesOpts.xAxes.concat(scalesOpts.yAxes).forEach(function(scaleOpts) {
 				if (scaleOpts.type === 'realtime' || scaleOpts.type === 'time') {
-					var realtimeOpts = scaleOpts.realtime;
+					realtimeOpts = scaleOpts.realtime;
 
 					// For backwards compatibility
 					if (!realtimeOpts) {
