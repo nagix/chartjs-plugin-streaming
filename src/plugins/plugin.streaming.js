@@ -1,6 +1,6 @@
 'use strict';
 
-export default function(Chart, moment) {
+export default function(Chart) {
 
 	Chart.defaults.global.plugins.streaming = {
 		duration: 10000,
@@ -12,24 +12,30 @@ export default function(Chart, moment) {
 	function onRefresh(scale) {
 		var me = this;
 		var streamingOpts = me.options.plugins.streaming;
-		var key = scale.isHorizontal() ? 'x' : 'y';
-		var min = Date.now() - streamingOpts.delay - streamingOpts.duration - streamingOpts.refresh * 2;
+		var start = scale.isHorizontal() ? scale.left : scale.top;
+		var data, i, ilen, howMany;
 
 		if (streamingOpts.onRefresh) {
 			streamingOpts.onRefresh(me);
 		}
 
 		// Remove old data
-		me.data.datasets.forEach(function(dataset) {
-			var data = dataset.data;
-			var howMany = 0;
-			for (; howMany < data.length; ++howMany) {
-				if (moment(data[howMany][key]).valueOf() > min) {
+		me.data.datasets.forEach(function(dataset, datasetIndex) {
+			data = dataset.data;
+			for (i = 2, ilen = data.length; i < ilen; ++i) {
+				if (!(scale.getPixelForValue(null, i, datasetIndex) <= start)) {
 					break;
 				}
 			}
-			data.splice(0, howMany);
+			// Keep the last two data points outside the range not to affect the existing bezier curve
+			data.splice(0, i - 2);
+			if (typeof data[0] !== 'object') {
+				howMany = i - 2;
+			}
 		});
+		if (howMany) {
+			me.data.labels.splice(0, howMany);
+		}
 	}
 
 	return {

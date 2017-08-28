@@ -20,6 +20,6 @@ Chart.plugins.getAll().forEach(function(plugin) {
 	}
 });
 
-var plugin = streamingPlugin(Chart, moment);
+var plugin = streamingPlugin(Chart);
 Chart.plugins.register(plugin);
 export default plugin;
