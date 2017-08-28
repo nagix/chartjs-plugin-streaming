@@ -1,170 +1,47 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="/css/octicons.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <title>chartjs-plugin-streaming Samples</title>
+    <meta property="og:title" content="chartjs-plugin-streaming Samples" />
+    <meta property="og:locale" content="en_US" />
+    <link rel="canonical" href="https://nagix.github.io/chartjs-plugin-streaming/samples" />
+    <meta property="og:url" content="https://nagix.github.io/chartjs-plugin-streaming/samples" />
+    <meta property="og:site_name" content="chartjs-plugin-streaming/samples" />
+    <meta name="twitter:site" content="@nagix" />
+    <meta name="theme-color" content="#ffffff">
+  </head>
+  <body>
+    <section id="hero-spot" class="hero-spot">
+      <h1>chartjs-plugin-streaming<br />Samples</h1>
+      <h2><a href="https://nagix.github.io/chartjs-plugin-streaming">Tutorial</a> | <a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub</a></h2>
+    </section>
+    <section>
+      <h2>
+        <a href="./line-horizontal.html">Line chart (hotizontal scroll)</a><br />
+        <a href="./line-vertical.html">Line chart (vertical scroll)</a><br />
+        <a href="./bar-horizontal.html">Bar chart (hotizontal scroll)</a><br />
+        <a href="./bar-vertical.html">Bar chart (vertical scroll)</a><br />
+        <a href="./mixed-horizontal.html">Mixed chart (hotizontal scroll)</a><br />
+        <a href="./mixed-vertical.html">Mixed chart (vertical scroll)</a><br />
+      </h2>
+    </section>
 
-<head>
-	<title>chartjs-plugin-streaming sample</title>
-	<script src="../moment.min.js"></script>
-	<script src="../Chart.min.js"></script>
-	<script src="../chartjs-plugin-streaming.js"></script>
-	<style>
-	canvas {
-		-moz-user-select: none;
-		-webkit-user-select: none;
-		-ms-user-select: none;
-	}
-	</style>
-</head>
-
-<body>
-	<div style="width:75%;">
-		<canvas id="canvas"></canvas>
-	</div>
-	<br>
-	<br>
-	<button id="randomizeData">Randomize Data</button>
-	<button id="addDataset">Add Dataset</button>
-	<button id="removeDataset">Remove Dataset</button>
-	<button id="addData">Add Data</button>
-	<script>
-		var chartColors = {
-			red: 'rgb(255, 99, 132)',
-			orange: 'rgb(255, 159, 64)',
-			yellow: 'rgb(255, 205, 86)',
-			green: 'rgb(75, 192, 192)',
-			blue: 'rgb(54, 162, 235)',
-			purple: 'rgb(153, 102, 255)',
-			grey: 'rgb(201, 203, 207)'
-		};
-
-		function newDate(ms) {
-			return moment().add(ms, 'ms');
-		}
-
-		function randomScalingFactor() {
-			return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
-		}
-
-		function onRefresh() {
-			config.data.datasets.forEach(function(dataset) {
-				dataset.data.push({
-					x: moment(),
-					y: randomScalingFactor()
-				});
-			});
-		}
-
-		var color = Chart.helpers.color;
-		var config = {
-			type: 'line',
-			data: {
-				datasets: [{
-					label: 'Dataset (linear interpolation)',
-					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
-					borderColor: chartColors.red,
-					fill: false,
-					lineTension: 0,
-					borderDash: [8, 4],
-					data: []
-				}, {
-					label: 'Dataset (cubic interpolation)',
-					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
-					borderColor: chartColors.blue,
-					fill: false,
-					cubicInterpolationMode: 'monotone',
-					data: []
-				}]
-			},
-			options: {
-				responsive: true,
-				title: {
-					display: true,
-					text: 'chartjs-plugin-streaming sample'
-				},
-				scales: {
-					xAxes: [{
-						type: 'realtime',
-						display: true,
-					}],
-					yAxes: [{
-						type: 'linear',
-						display: true,
-						scaleLabel: {
-							display: true,
-							labelString: 'value'
-						}
-					}]
-				},
-				tooltips: {
-					intersect: false
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: false
-				},
-				plugins: {
-					streaming: {
-						duration: 20000,
-						refresh: 1000,
-						delay: 2000,
-						onRefresh: onRefresh
-					}
-				}
-			}
-		};
-
-		window.onload = function() {
-			var ctx = document.getElementById('canvas').getContext('2d');
-			window.myLine = new Chart(ctx, config);
-		};
-
-		document.getElementById('randomizeData').addEventListener('click', function() {
-			config.data.datasets.forEach(function(dataset) {
-				dataset.data.forEach(function(dataObj) {
-					dataObj.y = randomScalingFactor();
-				});
-			});
-
-			window.myLine.update();
-		});
-
-		var colorNames = Object.keys(chartColors);
-		document.getElementById('addDataset').addEventListener('click', function() {
-			var colorName = colorNames[config.data.datasets.length % colorNames.length];
-			var newColor = chartColors[colorName];
-			var newDataset = {
-				label: 'Dataset ' + config.data.datasets.length,
-				backgroundColor: color(newColor).alpha(0.5).rgbString(),
-				borderColor: newColor,
-				fill: false,
-				lineTension: 0,
-				data: []
-			};
-
-			config.data.datasets.push(newDataset);
-			window.myLine.update();
-		});
-
-		document.getElementById('removeDataset').addEventListener('click', function() {
-			config.data.datasets.pop();
-			window.myLine.update();
-		});
-
-		document.getElementById('addData').addEventListener('click', function() {
-			onRefresh();
-
-			window.myLine.update();
-		});
-	</script>
-
-	<script>
-		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-		ga('create', 'UA-39988758-2', 'auto');
-		ga('send', 'pageview');
-	</script>
-</body>
-
+    <footer class="page-footer">
+      <ul class="site-footer-links right">
+        <li><a href="https://github.com/nagix"><i class="fa fa-github-square fa-2x" style="color: #999;"></i></a></li>
+        <li><a href="https://twitter.com/nagix"><i class="fa fa-twitter-square fa-2x" style="color: #999;"></i></a></li>
+        <li><a href="https://www.linkedin.com/in/akihiko-kusanagi"><i class="fa fa-linkedin-square fa-2x" style="color: #999;"></i></a></li>
+      </ul>
+      <a href="/">
+        <img src="/favicon-32x32-glay.png" style="position: absolute; top: 34px; left: 50%; margin-left: -16px;">
+      </a>
+      <ul class="site-footer-links">
+        <li>&copy; 2017 Akihiko Kusanagi</li>
+      </ul>
+    </footer>
+  </body>
 </html>

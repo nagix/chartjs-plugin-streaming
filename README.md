@@ -28,9 +28,9 @@ chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and modu
 
 chartjs-plugin-streaming requires [Moment.js](http://momentjs.com/) and [Chart.js](http://www.chartjs.org).
 
-Currently, only the [line](http://www.chartjs.org/docs/latest/charts/line.html) chart type with [point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of an object containing x and y properties) is supported. Either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the  as [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
+Version 1.2 supports the [line](http://www.chartjs.org/docs/latest/charts/line.html) and [bar](http://www.chartjs.org/docs/latest/charts/bar.html) chart type with both [Number data](http://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of an object containing x and y properties) is supported. In case of Point data, either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
 
-## Tutorial
+## Tutorial and samples
 
 You can find a tutorial and samples at [nagix.github.io/chartjs-plugin-streaming](https://nagix.github.io/chartjs-plugin-streaming).
 
