@@ -1,6 +1,6 @@
 {
   "name": "chartjs-plugin-streaming",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Chart.js plugin for live streaming data",
   "main": "dist/chartjs-plugin-streaming.js",
   "directories": {
@@ -21,7 +21,7 @@
     "gulp-uglify": "^3.0.0",
     "gulp-zip": "^4.0.0",
     "merge-stream": "^1.0.1",
-    "rollup-stream": "^1.21.0",
+    "rollup-stream": "^1.23.1",
     "vinyl-source-stream": "^1.1.0"
   },
   "repository": {
