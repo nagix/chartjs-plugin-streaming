@@ -47,21 +47,27 @@
 		function onRefresh() {
 			config.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
-					x: moment(),
-					y: randomScalingFactor()
+					x: randomScalingFactor(),
+					y: moment()
 				});
 			});
 		}
 
 		var color = Chart.helpers.color;
 		var config = {
-			type: 'bar',
+			type: 'horizontalBar',
 			data: {
-				labels: [],
 				datasets: [{
 					label: 'Dataset',
+					type: 'line',
 					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
                 	borderColor: chartColors.red,
+                	fill: false,
+					data: []
+				}, {
+					label: 'Dataset',
+					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: chartColors.blue,
                 	borderWidth: 1,
 					data: []
 				}]
@@ -70,22 +76,22 @@
 				responsive: true,
 				title: {
 					display: true,
-					text: 'Bar chart (hotizontal scroll) sample'
+					text: 'Mixed chart (vertical scroll) sample'
 				},
 				scales: {
 					xAxes: [{
-						type: 'realtime',
-						display: true,
-						time: {
-							unitStepSize: 1
-						}
-					}],
-					yAxes: [{
 						type: 'linear',
 						display: true,
 						scaleLabel: {
 							display: true,
 							labelString: 'value'
+						}
+					}],
+					yAxes: [{
+						type: 'realtime',
+						display: true,
+						time: {
+							unitStepSize: 1
 						}
 					}]
 				},
@@ -100,7 +106,7 @@
 					streaming: {
 						duration: 20000,
 						refresh: 1000,
-						delay: 1000,
+						delay: 2000,
 						onRefresh: onRefresh
 					}
 				}
@@ -115,7 +121,7 @@
 		document.getElementById('randomizeData').addEventListener('click', function() {
 			config.data.datasets.forEach(function(dataset) {
 				dataset.data.forEach(function(dataObj) {
-					dataObj.y = randomScalingFactor();
+					dataObj.x = randomScalingFactor();
 				});
 			});
 

@@ -45,11 +45,9 @@
 		}
 
 		function onRefresh() {
+			config.data.labels.push(moment());
 			config.data.datasets.forEach(function(dataset) {
-				dataset.data.push({
-					x: moment(),
-					y: randomScalingFactor()
-				});
+				dataset.data.push(randomScalingFactor());
 			});
 		}
 
@@ -59,9 +57,17 @@
 			data: {
 				labels: [],
 				datasets: [{
-					label: 'Dataset',
+					label: 'Dataset (line)',
+					type: 'line',
 					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
                 	borderColor: chartColors.red,
+					fill: false,
+					cubicInterpolationMode: 'monotone',
+					data: []
+				}, {
+					label: 'Dataset (bars)',
+					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: chartColors.blue,
                 	borderWidth: 1,
 					data: []
 				}]
@@ -70,7 +76,7 @@
 				responsive: true,
 				title: {
 					display: true,
-					text: 'Bar chart (hotizontal scroll) sample'
+					text: 'Mixed chart (horizontal scroll) sample'
 				},
 				scales: {
 					xAxes: [{
@@ -100,7 +106,7 @@
 					streaming: {
 						duration: 20000,
 						refresh: 1000,
-						delay: 1000,
+						delay: 2000,
 						onRefresh: onRefresh
 					}
 				}
@@ -114,9 +120,9 @@
 
 		document.getElementById('randomizeData').addEventListener('click', function() {
 			config.data.datasets.forEach(function(dataset) {
-				dataset.data.forEach(function(dataObj) {
-					dataObj.y = randomScalingFactor();
-				});
+				for (var i = 0; i < dataset.data.length; ++i) {
+					dataset.data[i] = randomScalingFactor();
+				}
 			});
 
 			window.myBar.update();
@@ -128,10 +134,12 @@
 			var newColor = chartColors[colorName];
 			var newDataset = {
 				label: 'Dataset ' + config.data.datasets.length,
+				type: 'line',
 				backgroundColor: color(newColor).alpha(0.5).rgbString(),
 				borderColor: newColor,
-				borderWidth: 1,
-				data: []
+				fill: false,
+				cubicInterpolationMode: 'monotone',
+				data: new Array(config.data.labels.length)
 			};
 
 			config.data.datasets.push(newDataset);

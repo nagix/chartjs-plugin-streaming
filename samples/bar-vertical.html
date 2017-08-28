@@ -45,9 +45,11 @@
 		}
 
 		function onRefresh() {
-			config.data.labels.push(moment());
 			config.data.datasets.forEach(function(dataset) {
-				dataset.data.push(randomScalingFactor());
+				dataset.data.push({
+					x: randomScalingFactor(),
+					y: moment()
+				});
 			});
 		}
 
@@ -97,7 +99,7 @@
 					streaming: {
 						duration: 20000,
 						refresh: 1000,
-						delay: 2000,
+						delay: 1000,
 						onRefresh: onRefresh
 					}
 				}
@@ -111,9 +113,9 @@
 
 		document.getElementById('randomizeData').addEventListener('click', function() {
 			config.data.datasets.forEach(function(dataset) {
-				for (var i = 0; i < dataset.data.length; ++i) {
-					dataset.data[i] = randomScalingFactor();
-				}
+				dataset.data.forEach(function(dataObj) {
+					dataObj.x = randomScalingFactor();
+				});
 			});
 
 			window.myBar.update();
@@ -128,7 +130,7 @@
 				backgroundColor: color(newColor).alpha(0.5).rgbString(),
 				borderColor: newColor,
 				borderWidth: 1,
-				data: new Array(config.data.labels.length)
+				data: []
 			};
 
 			config.data.datasets.push(newDataset);
