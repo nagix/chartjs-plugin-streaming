@@ -63,20 +63,21 @@ For example:
             xAxes: [{
                 type: 'realtime'    // x axis will auto-scroll from right to left
             }]
-        }
-    },
-    plugins: {
-        streaming: {            // enabled by default
-            duration: 20000,    // data in the past 20000 ms will be displayed
-            refresh: 1000,      // onRefresh callback will be called every 1000 ms
-            delay: 1000,        // delay of 1000 ms, so upcoming values are known before plotting a line
+        },
+    
+        plugins: {
+            streaming: {            // enabled by default
+                duration: 20000,    // data in the past 20000 ms will be displayed
+                refresh: 1000,      // onRefresh callback will be called every 1000 ms
+                delay: 1000,        // delay of 1000 ms, so upcoming values are known before plotting a line
 
-            // a callback to update datasets
-            onRefresh: function(chart) {
-                chart.data.datasets[0].data.push({
-                    x: Date.now(),
-                    y: Math.random() * 100
-                });
+                // a callback to update datasets
+                onRefresh: function(chart) {
+                    chart.data.datasets[0].data.push({
+                        x: Date.now(),
+                        y: Math.random() * 100
+                    });
+                }
             }
         }
     }
