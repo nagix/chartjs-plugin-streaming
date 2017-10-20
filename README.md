@@ -4,7 +4,7 @@
 
 *[Chart.js](http://www.chartjs.org) plugin for live streaming data*
 
-Requires Chart.js 2.6.0 or later.
+Requires Chart.js 2.6.0. Note that chartjs-plugin-streaming does not support Chart.js 2.7.0 yet.
 
 ## Installation
 

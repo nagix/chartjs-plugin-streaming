@@ -12,11 +12,11 @@ const banner = `/*
  */`;
 
 export default {
-	entry: 'src/index.js',
-	dest: 'dist/' + pkg.name + '.js',
+	input: 'src/index.js',
+	output: 'dist/' + pkg.name + '.js',
 	banner: banner,
 	format: 'umd',
-	moduleName: pkg.name,
+	name: pkg.name,
 	external: [
 		'moment',
 		'chart.js'
