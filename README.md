@@ -83,6 +83,15 @@ For example:
 }
 ```
 
+Note that the following options are ignored for the 'realtime' scale.
+
+- `bounds`
+- `distribution` (always `'linear'`)
+- `offset` (always `false`)
+- `ticks.major.enabled` (always `true`)
+- `time.max`
+- `time.min`
+
 ## Building
 
 You first need to install node dependencies (requires [Node.js](https://nodejs.org/)):
