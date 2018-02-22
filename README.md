@@ -4,7 +4,7 @@
 
 *[Chart.js](http://www.chartjs.org) plugin for live streaming data*
 
-Requires Chart.js 2.6.0. Note that chartjs-plugin-streaming does not support Chart.js 2.7.0 yet.
+Requires Chart.js 2.7.0.
 
 ## Installation
 
@@ -28,7 +28,7 @@ chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and modu
 
 chartjs-plugin-streaming requires [Moment.js](http://momentjs.com/) and [Chart.js](http://www.chartjs.org).
 
-Version 1.2 supports the [line](http://www.chartjs.org/docs/latest/charts/line.html) and [bar](http://www.chartjs.org/docs/latest/charts/bar.html) chart type with both [Number data](http://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of an object containing x and y properties) is supported. In case of Point data, either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
+Version 1.3 supports the [line](http://www.chartjs.org/docs/latest/charts/line.html) and [bar](http://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](http://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) are supported. In case of Point data, either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
 
 ## Tutorial and samples
 
@@ -63,20 +63,20 @@ For example:
             xAxes: [{
                 type: 'realtime'    // x axis will auto-scroll from right to left
             }]
-        }
-    },
-    plugins: {
-        streaming: {            // enabled by default
-            duration: 20000,    // data in the past 20000 ms will be displayed
-            refresh: 1000,      // onRefresh callback will be called every 1000 ms
-            delay: 1000,        // delay of 1000 ms, so upcoming values are known before plotting a line
+        },
+        plugins: {
+            streaming: {            // enabled by default
+                duration: 20000,    // data in the past 20000 ms will be displayed
+                refresh: 1000,      // onRefresh callback will be called every 1000 ms
+                delay: 1000,        // delay of 1000 ms, so upcoming values are known before plotting a line
 
-            // a callback to update datasets
-            onRefresh: function(chart) {
-                chart.data.datasets[0].data.push({
-                    x: Date.now(),
-                    y: Math.random() * 100
-                });
+                // a callback to update datasets
+                onRefresh: function(chart) {
+                    chart.data.datasets[0].data.push({
+                        x: Date.now(),
+                        y: Math.random() * 100
+                    });
+                }
             }
         }
     }

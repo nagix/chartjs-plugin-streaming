@@ -6,6 +6,8 @@ export default function(Chart, moment) {
 
 	var realTimeScaleDefaultConfig = {
 		position: 'bottom',
+		distribution: 'linear',
+		bounds: 'data',
 
 		time: {
 			parser: false, // false == a pattern string from http://momentjs.com/docs/#/parsing/string-format/ or a custom callback that converts its argument to a moment
@@ -36,269 +38,254 @@ export default function(Chart, moment) {
 			onRefresh: null
 		},
 		ticks: {
-			autoSkip: false
+			autoSkip: false,
+			source: 'auto',
+			major: {
+				enabled: true
+			}
 		}
 	};
 
-	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
-	function isObject(value) {
-		return value !== null && Object.prototype.toString.call(value) === '[object Object]';
-	}
+	// Ported from Chart.js 2.7.1 37ec838.
+	var MAX_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
 
-	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
-	function valueOrDefault(value, defaultValue) {
-		return typeof value === 'undefined' ? defaultValue : value;
-	}
-
-	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
-	function clone(source) {
-		if (helpers.isArray(source)) {
-			return source.map(clone);
-		}
-
-		if (isObject(source)) {
-			var target = {};
-			var keys = Object.keys(source);
-			var klen = keys.length;
-			var k = 0;
-
-			for (; k < klen; ++k) {
-				target[keys[k]] = clone(source[keys[k]]);
-			}
-
-			return target;
-		}
-
-		return source;
-	}
-
-	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
-	function _merger(key, target, source, options) {
-		var tval = target[key];
-		var sval = source[key];
-
-		if (isObject(tval) && isObject(sval)) {
-			helpers.merge(tval, sval, options);
-		} else {
-			target[key] = clone(sval);
-		}
-	}
-
-	// Backported from Chart.js 4c763bf. No need for 2.7.0 or later.
-	helpers.merge = function(target, source, options) {
-		var sources = helpers.isArray(source) ? source : [source];
-		var ilen = sources.length;
-		var merge, i, keys, klen, k;
-
-		if (!isObject(target)) {
-			return target;
-		}
-
-		options = options || {};
-		merge = options.merger || _merger;
-
-		for (i = 0; i < ilen; ++i) {
-			source = sources[i];
-			if (!isObject(source)) {
-				continue;
-			}
-
-			keys = Object.keys(source);
-			for (k = 0, klen = keys.length; k < klen; ++k) {
-				merge(keys[k], target, source, options);
-			}
-		}
-
-		return target;
-	};
-
-	// Backported from Chart.js 9ef5cc7. No need for 2.7.0 or later.
-	helpers.scaleMerge = function(/* objects ... */) {
-		return helpers.merge(clone(arguments[0]), [].slice.call(arguments, 1), {
-			merger: function(key, target, source, options) {
-				if (key === 'xAxes' || key === 'yAxes') {
-					var slen = source[key].length;
-					var i, type, scale;
-
-					if (!target[key]) {
-						target[key] = [];
-					}
-
-					for (i = 0; i < slen; ++i) {
-						scale = source[key][i];
-						type = valueOrDefault(scale.type, key === 'xAxes' ? 'category' : 'linear');
-
-						if (i >= target[key].length) {
-							target[key].push({});
-						}
-
-						if (!target[key][i].type || (scale.type && scale.type !== target[key][i].type)) {
-							// new/untyped scale or type changed: let's apply the new defaults
-							// then merge source scale to correctly overwrite the defaults.
-							helpers.merge(target[key][i], [Chart.scaleService.getScaleDefaults(type), scale]);
-						} else {
-							// scales type are the same
-							helpers.merge(target[key][i], scale);
-						}
-					}
-				} else {
-					_merger(key, target, source, options);
-				}
-			}
-		});
-	};
-
-	// Backported from Chart.js 7f15beb. No need for 2.7.0 or later.
-	var interval = {
+	// Ported from Chart.js 2.7.1 37ec838.
+	var INTERVALS = {
 		millisecond: {
+			common: true,
 			size: 1,
 			steps: [1, 2, 5, 10, 20, 50, 100, 250, 500]
 		},
 		second: {
+			common: true,
 			size: 1000,
 			steps: [1, 2, 5, 10, 30]
 		},
 		minute: {
+			common: true,
 			size: 60000,
 			steps: [1, 2, 5, 10, 30]
 		},
 		hour: {
+			common: true,
 			size: 3600000,
 			steps: [1, 2, 3, 6, 12]
 		},
 		day: {
+			common: true,
 			size: 86400000,
 			steps: [1, 2, 5]
 		},
 		week: {
+			common: false,
 			size: 604800000,
-			maxStep: 4
+			steps: [1, 2, 3, 4]
 		},
 		month: {
+			common: true,
 			size: 2.628e9,
-			maxStep: 3
+			steps: [1, 2, 3]
 		},
 		quarter: {
+			common: false,
 			size: 7.884e9,
-			maxStep: 4
+			steps: [1, 2, 3, 4]
 		},
 		year: {
-			size: 3.154e10,
-			maxStep: false
+			common: true,
+			size: 3.154e10
 		}
 	};
 
-	// Backported from Chart.js 7f15beb. No need for 2.7.0 or later.
-	function generateTicksNiceRange(options, dataRange, niceRange) {
-		var ticks = [];
-		if (options.maxTicks) {
-			var stepSize = options.stepSize;
-			var startTick = options.min !== undefined ? options.min : niceRange.min;
-			var majorUnit = options.majorUnit;
-			var majorUnitStart = majorUnit ? moment(startTick).add(1, majorUnit).startOf(majorUnit) : startTick;
-			var startRange = majorUnitStart.valueOf() - startTick;
-			var stepValue = interval[options.unit].size * stepSize;
-			var startFraction = startRange % stepValue;
-			var alignedTick = startTick;
-			if (startFraction && majorUnit && !options.timeOpts.round && !options.timeOpts.isoWeekday) {
-				alignedTick += startFraction - stepValue;
-				ticks.push(alignedTick);
-			} else {
-				ticks.push(startTick);
-			}
-			var cur = moment(alignedTick);
-			var realMax = options.max || niceRange.max;
-			while (cur.add(stepSize, options.unit).valueOf() < realMax) {
-				ticks.push(cur.valueOf());
-			}
-			ticks.push(cur.valueOf());
+	// Ported from Chart.js 2.7.1 37ec838.
+	var UNITS = Object.keys(INTERVALS);
+
+	// Ported from Chart.js 2.7.1 37ec838.
+	function momentify(value, options) {
+		var parser = options.parser;
+		var format = options.parser || options.format;
+
+		if (typeof parser === 'function') {
+			return parser(value);
 		}
-		return ticks;
+
+		if (typeof value === 'string' && typeof format === 'string') {
+			return moment(value, format);
+		}
+
+		if (!(value instanceof moment)) {
+			value = moment(value);
+		}
+
+		if (value.isValid()) {
+			return value;
+		}
+
+		// Labels are in an incompatible moment format and no `parser` has been provided.
+		// The user might still use the deprecated `format` option to convert his inputs.
+		if (typeof format === 'function') {
+			return format(value);
+		}
+
+		return value;
 	}
 
-	// Backported from Chart.js 7f15beb. No need for 2.7.0 or later.
-	function determineUnit(minUnit, min, max, maxTicks) {
-		var units = Object.keys(interval);
-		var unit;
-		var numUnits = units.length;
+	// Ported from Chart.js 2.7.1 37ec838.
+	function determineStepSize(min, max, unit, capacity) {
+		var range = max - min;
+		var interval = INTERVALS[unit];
+		var milliseconds = interval.size;
+		var steps = interval.steps;
+		var i, ilen, factor;
 
-		for (var i = units.indexOf(minUnit); i < numUnits; i++) {
-			unit = units[i];
-			var unitDetails = interval[unit];
-			var steps = (unitDetails.steps && unitDetails.steps[unitDetails.steps.length - 1]) || unitDetails.maxStep;
-			if (steps === undefined || Math.ceil((max - min) / (steps * unitDetails.size)) <= maxTicks) {
+		if (!steps) {
+			return Math.ceil(range / (capacity * milliseconds));
+		}
+
+		for (i = 0, ilen = steps.length; i < ilen; ++i) {
+			factor = steps[i];
+			if (Math.ceil(range / (milliseconds * factor)) <= capacity) {
 				break;
 			}
 		}
 
-		return unit;
+		return factor;
 	}
 
-	// Backported from Chart.js 7f15beb. No need for 2.7.0 or later.
+	// Ported from Chart.js 2.7.1 37ec838.
+	function determineUnitForAutoTicks(minUnit, min, max, capacity) {
+		var ilen = UNITS.length;
+		var i, interval, factor;
+
+		for (i = UNITS.indexOf(minUnit); i < ilen - 1; ++i) {
+			interval = INTERVALS[UNITS[i]];
+			factor = interval.steps ? interval.steps[interval.steps.length - 1] : MAX_INTEGER;
+
+			if (interval.common && Math.ceil((max - min) / (factor * interval.size)) <= capacity) {
+				return UNITS[i];
+			}
+		}
+
+		return UNITS[ilen - 1];
+	}
+
+	// Ported from Chart.js 2.7.1 37ec838.
+	function determineUnitForFormatting(ticks, minUnit, min, max) {
+		var duration = moment.duration(moment(max).diff(moment(min)));
+		var ilen = UNITS.length;
+		var i, unit;
+
+		for (i = ilen - 1; i >= UNITS.indexOf(minUnit); i--) {
+			unit = UNITS[i];
+			if (INTERVALS[unit].common && duration.as(unit) >= ticks.length) {
+				return unit;
+			}
+		}
+
+		return UNITS[minUnit ? UNITS.indexOf(minUnit) : 0];
+	}
+
+	// Ported from Chart.js 2.7.1 37ec838.
 	function determineMajorUnit(unit) {
-		var units = Object.keys(interval);
-		var unitIndex = units.indexOf(unit);
-		while (unitIndex < units.length) {
-			var majorUnit = units[++unitIndex];
-			// exclude 'week' and 'quarter' units
-			if (majorUnit !== 'week' && majorUnit !== 'quarter') {
-				return majorUnit;
+		for (var i = UNITS.indexOf(unit) + 1, ilen = UNITS.length; i < ilen; ++i) {
+			if (INTERVALS[UNITS[i]].common) {
+				return UNITS[i];
 			}
 		}
-
-		return null;
 	}
 
-	// Backported from Chart.js 7f15beb. No need for 2.7.0 or later.
-	function determineStepSize(min, max, unit, maxTicks) {
-		// Using our unit, figure out what we need to scale as
-		var unitDefinition = interval[unit];
-		var unitSizeInMilliSeconds = unitDefinition.size;
-		var sizeInUnits = Math.ceil((max - min) / unitSizeInMilliSeconds);
-		var multiplier = 1;
-		var range = max - min;
+	// Ported from Chart.js 2.7.1 37ec838. Modified for realtime scale.
+	function generate(min, max, capacity, options) {
+		var timeOpts = options.time;
+		var minor = timeOpts.unit || determineUnitForAutoTicks(timeOpts.minUnit, min, max, capacity);
+		var major = determineMajorUnit(minor);
+		var stepSize = helpers.valueOrDefault(timeOpts.stepSize, timeOpts.unitStepSize);
+		var weekday = minor === 'week' ? timeOpts.isoWeekday : false;
+		// For realtime scale: Major ticks are always enabled.
+		var majorTicksEnabled = true;
+		var interval = INTERVALS[minor];
+		var first = moment(min);
+		// For realtime scale: Add delay and refresh interval for scroll margin.
+		var last = moment(max + options.realtime.delay + options.realtime.refresh);
+		var ticks = [];
+		var time;
 
-		if (unitDefinition.steps) {
-			// Have an array of steps
-			var numSteps = unitDefinition.steps.length;
-			for (var i = 0; i < numSteps && sizeInUnits > maxTicks; i++) {
-				multiplier = unitDefinition.steps[i];
-				sizeInUnits = Math.ceil(range / (unitSizeInMilliSeconds * multiplier));
-			}
-		} else {
-			while (sizeInUnits > maxTicks && maxTicks > 0) {
-				++multiplier;
-				sizeInUnits = Math.ceil(range / (unitSizeInMilliSeconds * multiplier));
-			}
+		if (!stepSize) {
+			stepSize = determineStepSize(min, max, minor, capacity);
 		}
 
-		return multiplier;
+		// For 'week' unit, handle the first day of week option
+		if (weekday) {
+			first = first.isoWeekday(weekday);
+			last = last.isoWeekday(weekday);
+		}
+
+		// Align first/last ticks on unit
+		first = first.startOf(weekday ? 'day' : minor);
+		last = last.startOf(weekday ? 'day' : minor);
+
+		// Make sure that the last tick include max
+		if (last < max) {
+			last.add(1, minor);
+		}
+
+		time = moment(first);
+
+		if (majorTicksEnabled && major && !weekday && !timeOpts.round) {
+			// Align the first tick on the previous `minor` unit aligned on the `major` unit:
+			// we first aligned time on the previous `major` unit then add the number of full
+			// stepSize there is between first and the previous major time.
+			time.startOf(major);
+			time.add(~~((first - time) / (interval.size * stepSize)) * stepSize, minor);
+		}
+
+		for (; time < last; time.add(stepSize, minor)) {
+			ticks.push(+time);
+		}
+
+		ticks.push(+time);
+
+		return ticks;
 	}
 
-	// Backported from Chart.js 7f15beb. No need for 2.7.0 or later.
-	function generateTicks(options, dataRange) {
-		var niceMin;
-		var niceMax;
-		var isoWeekday = options.timeOpts.isoWeekday;
-		if (options.unit === 'week' && isoWeekday !== false) {
-			niceMin = moment(dataRange.min).startOf('isoWeek').isoWeekday(isoWeekday).valueOf();
-			niceMax = moment(dataRange.max).startOf('isoWeek').isoWeekday(isoWeekday);
-			if (dataRange.max - niceMax > 0) {
-				niceMax.add(1, 'week');
-			}
-			niceMax = niceMax.valueOf();
-		} else {
-			niceMin = moment(dataRange.min).startOf(options.unit).valueOf();
-			niceMax = moment(dataRange.max).startOf(options.unit);
-			if (dataRange.max - niceMax > 0) {
-				niceMax.add(1, options.unit);
-			}
-			niceMax = niceMax.valueOf();
+	// Ported from Chart.js 2.7.1 37ec838.
+	function ticksFromTimestamps(values, majorUnit) {
+		var ticks = [];
+		var i, ilen, value, major;
+
+		for (i = 0, ilen = values.length; i < ilen; ++i) {
+			value = values[i];
+			major = majorUnit ? value === +moment(value).startOf(majorUnit) : false;
+
+			ticks.push({
+				value: value,
+				major: major
+			});
 		}
-		return generateTicksNiceRange(options, dataRange, {
-			min: niceMin,
-			max: niceMax
-		});
+
+		return ticks;
+	}
+
+	// Ported from Chart.js 2.7.1 37ec838.
+	function determineLabelFormat(data, timeOpts) {
+		var i, momentDate, hasTime;
+		var ilen = data.length;
+
+		// find the label with the most parts (milliseconds, minutes, etc.)
+		// format all labels with the same level of detail as the most specific label
+		for (i = 0; i < ilen; i++) {
+			momentDate = momentify(data[i], timeOpts);
+			if (momentDate.millisecond() !== 0) {
+				return 'MMM D, YYYY h:mm:ss.SSS a';
+			}
+			if (momentDate.second() !== 0 || momentDate.minute() !== 0 || momentDate.hour() !== 0) {
+				hasTime = true;
+			}
+		}
+		if (hasTime) {
+			return 'MMM D, YYYY h:mm:ss a';
+		}
+		return 'MMM D, YYYY';
 	}
 
 	var transitionKeys = {
@@ -404,8 +391,8 @@ export default function(Chart, moment) {
 
 				} else {
 					// Update min/max
-					me.max = now - realtimeOpts.delay;
-					me.min = me.max - duration;
+					me.max = me._table[1].time = now - realtimeOpts.delay;
+					me.min = me._table[0].time = me.max - duration;
 
 					// Draw only when animation is inactive
 					if (!chart.animating) {
@@ -432,38 +419,48 @@ export default function(Chart, moment) {
 
 			var timeOpts = options.time;
 			var realtimeOpts = options.realtime;
+			var max = Date.now() - realtimeOpts.delay;
+			var min = max - realtimeOpts.duration;
+			var timestamps = [];
 
-			var maxTimestamp = Date.now() - realtimeOpts.delay;
-			var minTimestamp = maxTimestamp - realtimeOpts.duration;
-			var maxTicks = me.getLabelCapacity(minTimestamp);
+			switch (options.ticks.source) {
+			case 'data':
+				timestamps = me._timestamps.data;
+				break;
+			case 'labels':
+				timestamps = me._timestamps.labels;
+				break;
+			case 'auto':
+			default:
+				timestamps = generate(min, max, me.getLabelCapacity(min), options);
+			}
 
-			var unit = timeOpts.unit || determineUnit(timeOpts.minUnit, minTimestamp, maxTimestamp, maxTicks);
-			var majorUnit = determineMajorUnit(unit);
+			me.min = min;
+			me.max = max;
 
-			me.displayFormat = timeOpts.displayFormats[unit];
-			me.majorDisplayFormat = timeOpts.displayFormats[majorUnit];
-			me.unit = unit;
-			me.majorUnit = majorUnit;
+			// PRIVATE
+			me._unit = timeOpts.unit || determineUnitForFormatting(timestamps, timeOpts.minUnit, me.min, me.max);
+			me._majorUnit = determineMajorUnit(me._unit);
+			// realtime scale only supports linear distribution.
+			me._table = [{time: min, pos: 0}, {time: max, pos: 1}];
+			// offset is always disabled.
+			me._offsets = {left: 0, right: 0};
+			me._labelFormat = determineLabelFormat(me._timestamps.data, timeOpts);
 
-			var optionStepSize = valueOrDefault(timeOpts.stepSize, timeOpts.unitStepSize);
-			var stepSize = optionStepSize || determineStepSize(minTimestamp, maxTimestamp, unit, maxTicks);
-			me.ticks = generateTicks({
-				maxTicks: maxTicks,
-				min: minTimestamp,
-				// Add refresh interval for scroll margin
-				max: maxTimestamp + realtimeOpts.refresh,
-				stepSize: stepSize,
-				majorUnit: majorUnit,
-				unit: unit,
-				timeOpts: timeOpts
-			}, {
-				min: me.dataMin,
-				max: me.dataMax
-			});
+			return ticksFromTimestamps(timestamps, me._majorUnit);
+		},
 
-			// max and min are set based on the duration and delay settings
-			me.max = maxTimestamp;
-			me.min = minTimestamp;
+		fit: function() {
+			TimeScale.prototype.fit.call(this);
+
+			var me = this;
+			var options = me.options;
+
+			if (options.ticks.display && options.display && me.isHorizontal()) {
+				me.paddingLeft = 3;
+				me.paddingRight = 3;
+				me.handleMargins();
+			}
 		},
 
 		draw: function(chartArea) {
@@ -476,41 +473,23 @@ export default function(Chart, moment) {
 			}
 
 			var context = me.ctx;
-			var	clipArea = me.isHorizontal() ? {
-				left: chartArea.left,
-				top: 0,
-				right: chartArea.right,
-				bottom: chart.height
-			} : {
-				left: 0,
-				top: chartArea.top,
-				right: chart.width,
-				bottom: chartArea.bottom
-			};
+			var	clipArea = me.isHorizontal() ?
+				{
+					left: chartArea.left,
+					top: 0,
+					right: chartArea.right,
+					bottom: chart.height
+				} : {
+					left: 0,
+					top: chartArea.top,
+					right: chart.width,
+					bottom: chartArea.bottom
+				};
 
 			// Clip and draw the scale
 			helpers.canvas.clipArea(context, clipArea);
 			TimeScale.prototype.draw.call(this, chartArea);
 			helpers.canvas.unclipArea(context);
-		},
-
-		getPixelForOffset: function(offset) {
-			var me = this;
-
-			// For backwards compatibility
-			if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
-				return TimeScale.prototype.getPixelForOffset.call(this, offset);
-			}
-
-			var epochWidth = me.max - me.min;
-			var decimal = epochWidth ? (offset - me.min) / epochWidth : 0;
-
-			// For smooth scroll, don't round the offset
-			if (me.isHorizontal()) {
-				return me.left + me.width * decimal;
-			}
-
-			return me.top + me.height * decimal;
 		}
 	});
 

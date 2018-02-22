@@ -78,8 +78,15 @@ gulp.task('lint', function() {
 		'*.js'
 	];
 
+	var options = {
+		rules: {
+			complexity: [1, 10],
+			'max-statements': [1, 30]
+		}
+	};
+
 	return gulp.src(files)
-		.pipe(eslint())
+		.pipe(eslint(options))
 		.pipe(eslint.format())
 		.pipe(eslint.failAfterError());
 });
