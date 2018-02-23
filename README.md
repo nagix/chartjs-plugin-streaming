@@ -52,7 +52,7 @@ For example:
 
 ```
 {
-    type: 'line',               // only 'line' type is supported now
+    type: 'line',               // 'line' and 'bar' types are supported
     data: {
         datasets: [{
             data: []            // empty at the beggining
