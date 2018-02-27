@@ -81,10 +81,7 @@
 				scales: {
 					xAxes: [{
 						type: 'realtime',
-						display: true,
-						time: {
-							unitStepSize: 1
-						}
+						display: true
 					}],
 					yAxes: [{
 						type: 'linear',
@@ -96,6 +93,7 @@
 					}]
 				},
 				tooltips: {
+					mode: 'nearest',
 					intersect: false
 				},
 				hover: {
