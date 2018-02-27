@@ -288,6 +288,18 @@ export default function(Chart, moment) {
 		return 'MMM D, YYYY';
 	}
 
+	var hidden, visibilityChange;
+	if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
+		hidden = 'hidden';
+		visibilityChange = 'visibilitychange';
+	} else if (typeof document.msHidden !== 'undefined') {
+		hidden = 'msHidden';
+		visibilityChange = 'msvisibilitychange';
+	} else if (typeof document.webkitHidden !== 'undefined') {
+		hidden = 'webkitHidden';
+		visibilityChange = 'webkitvisibilitychange';
+	}
+
 	var transitionKeys = {
 		x: {
 			data: ['x', 'controlPointPreviousX', 'controlPointNextX'],
@@ -336,6 +348,7 @@ export default function(Chart, moment) {
 			TimeScale.prototype.initialize.call(this);
 
 			var me = this;
+			var id = me.id;
 			var options = me.options;
 
 			// For backwards compatibility
@@ -343,15 +356,22 @@ export default function(Chart, moment) {
 				return;
 			}
 
-			var nextRefresh = Date.now();
 			var prev = Date.now();
+
+			document.addEventListener(visibilityChange, function() {
+				if (!document[hidden]) {
+					me.chart.update(0);
+					prev = Date.now();
+				}
+			}, false);
 
 			var frameRefresh = function() {
 				var chart = me.chart;
 				var realtimeOpts = options.realtime;
 				var duration = realtimeOpts.duration;
-				var refresh = realtimeOpts.refresh;
-				var keys, length;
+				var tooltip = chart.tooltip;
+				var activeTooltip = tooltip._active;
+				var keys, length, meta;
 
 				if (me.isHorizontal()) {
 					length = me.width;
@@ -366,38 +386,35 @@ export default function(Chart, moment) {
 
 				// Shift all the elements leftward or upward
 				helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
-					var meta = chart.getDatasetMeta(datasetIndex);
-					var elements = meta.data || [];
-					var i, ilen;
+					meta = chart.getDatasetMeta(datasetIndex);
+					if (id === meta.xAxisID || id === meta.yAxisID) {
+						var elements = meta.data || [];
+						var i, ilen;
 
-					for (i = 0, ilen = elements.length; i < ilen; ++i) {
-						transition(elements[i], keys.data, offset);
-					}
+						for (i = 0, ilen = elements.length; i < ilen; ++i) {
+							transition(elements[i], keys.data, offset);
+						}
 
-					if (meta.dataset) {
-						transition(meta.dataset, keys.dataset, offset);
+						if (meta.dataset) {
+							transition(meta.dataset, keys.dataset, offset);
+						}
 					}
 				});
 
-				transition(chart.tooltip, keys.tooltip, offset);
-
-				if (now >= nextRefresh) {
-					nextRefresh = now + refresh + (now - nextRefresh) % refresh;
-					if (realtimeOpts.onRefresh) {
-						realtimeOpts.onRefresh.call(chart, me);
+				// Shift tooltip leftward or upward
+				if (activeTooltip && activeTooltip[0]) {
+					meta = chart.getDatasetMeta(activeTooltip[0]._datasetIndex);
+					if (id === meta.xAxisID || id === meta.yAxisID) {
+						transition(tooltip, keys.tooltip, offset);
 					}
+				}
 
-					chart.update();
+				me.max = me._table[1].time = now - realtimeOpts.delay;
+				me.min = me._table[0].time = me.max - duration;
 
-				} else {
-					// Update min/max
-					me.max = me._table[1].time = now - realtimeOpts.delay;
-					me.min = me._table[0].time = me.max - duration;
-
-					// Draw only when animation is inactive
-					if (!chart.animating) {
-						chart.draw();
-					}
+				// Draw only when animation is inactive
+				if (!chart.animating) {
+					chart.draw();
 				}
 
 				prev = now;

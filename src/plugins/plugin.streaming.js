@@ -9,37 +9,58 @@ export default function(Chart) {
 		onRefresh: null
 	};
 
-	function onRefresh(scale) {
-		var me = this;
-		var streamingOpts = me.options.plugins.streaming;
-		var start = scale.isHorizontal() ? scale.left : scale.top;
-		var data, i, ilen, howMany;
+	var realTimeScale = Chart.scaleService.getScaleConstructor('realtime');
+
+	function removeOldData(scale, lower, data, datasetIndex) {
+		var i, ilen;
+
+		for (i = 2, ilen = data.length; i < ilen; ++i) {
+			if (!(scale.getPixelForValue(null, i, datasetIndex) <= lower)) {
+				break;
+			}
+		}
+		// Keep the last two data points outside the range not to affect the existing bezier curve
+		data.splice(0, i - 2);
+		if (typeof data[0] !== 'object') {
+			return i - 2;
+		}
+	}
+
+	function onRefresh(chart) {
+		var streamingOpts = chart.options.plugins.streaming;
+		var numToRemove;
 
 		if (streamingOpts.onRefresh) {
-			streamingOpts.onRefresh(me);
+			streamingOpts.onRefresh(chart);
 		}
 
 		// Remove old data
-		me.data.datasets.forEach(function(dataset, datasetIndex) {
-			data = dataset.data;
-			for (i = 2, ilen = data.length; i < ilen; ++i) {
-				if (!(scale.getPixelForValue(null, i, datasetIndex) <= start)) {
-					break;
-				}
+		chart.data.datasets.forEach(function(dataset, datasetIndex) {
+			var meta = chart.getDatasetMeta(datasetIndex);
+			var scale = meta.controller.getScaleForId(meta.xAxisID);
+			if (scale instanceof realTimeScale) {
+				numToRemove = removeOldData(scale, scale.left, dataset.data, datasetIndex);
 			}
-			// Keep the last two data points outside the range not to affect the existing bezier curve
-			data.splice(0, i - 2);
-			if (typeof data[0] !== 'object') {
-				howMany = i - 2;
+			scale = meta.controller.getScaleForId(meta.yAxisID);
+			if (scale instanceof realTimeScale) {
+				numToRemove = removeOldData(scale, scale.top, dataset.data, datasetIndex);
 			}
 		});
-		if (howMany) {
-			me.data.labels.splice(0, howMany);
+		if (numToRemove) {
+			chart.data.labels.splice(0, numToRemove);
 		}
+
+		chart.update();
 	}
 
 	return {
 		id: 'streaming',
+
+		afterInit: function(chart, options) {
+			setInterval(function() {
+				onRefresh(chart);
+			}, options.refresh);
+		},
 
 		beforeUpdate: function(chart, options) {
 			var chartOpts = chart.options;
@@ -64,6 +85,7 @@ export default function(Chart) {
 					realtimeOpts.onRefresh = onRefresh;
 				}
 			});
+			return true;
 		},
 
 		beforeDraw: function(chart) {
