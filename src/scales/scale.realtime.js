@@ -357,6 +357,7 @@ export default function(Chart, moment) {
 			}
 
 			var prev = Date.now();
+			var lastDrawn = 0;
 
 			document.addEventListener(visibilityChange, function() {
 				if (!document[hidden]) {
@@ -369,8 +370,10 @@ export default function(Chart, moment) {
 				var chart = me.chart;
 				var realtimeOpts = options.realtime;
 				var duration = realtimeOpts.duration;
+				var frameDuration = 1000 / (Math.max(realtimeOpts.frameRate, 0) || 30);
 				var tooltip = chart.tooltip;
 				var activeTooltip = tooltip._active;
+				var now = Date.now();
 				var keys, length, meta;
 
 				if (me.isHorizontal()) {
@@ -381,7 +384,6 @@ export default function(Chart, moment) {
 					keys = transitionKeys.y;
 				}
 
-				var now = Date.now();
 				var offset = length * (now - prev) / duration;
 
 				// Shift all the elements leftward or upward
@@ -412,9 +414,15 @@ export default function(Chart, moment) {
 				me.max = me._table[1].time = now - realtimeOpts.delay;
 				me.min = me._table[0].time = me.max - duration;
 
-				// Draw only when animation is inactive
-				if (!chart.animating) {
-					chart.draw();
+				if (lastDrawn + frameDuration <= now) {
+					// Draw only when animation is inactive
+					if (!chart.animating) {
+						chart.draw();
+					}
+					lastDrawn += frameDuration;
+					if (lastDrawn + frameDuration <= now) {
+						lastDrawn = now;
+					}
 				}
 
 				prev = now;

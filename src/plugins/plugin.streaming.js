@@ -6,6 +6,7 @@ export default function(Chart) {
 		duration: 10000,
 		refresh: 1000,
 		delay: 0,
+		frameRate: 30,
 		onRefresh: null
 	};
 
@@ -50,7 +51,11 @@ export default function(Chart) {
 			chart.data.labels.splice(0, numToRemove);
 		}
 
+		// Buffer any update calls so that renders do not occur
+		chart._bufferedRender = true;
 		chart.update();
+		chart._bufferedRender = false;
+		chart._bufferedRequest = null;
 	}
 
 	return {
@@ -82,6 +87,7 @@ export default function(Chart) {
 					realtimeOpts.duration = options.duration;
 					realtimeOpts.refresh = options.refresh;
 					realtimeOpts.delay = options.delay;
+					realtimeOpts.frameRate = options.frameRate;
 					realtimeOpts.onRefresh = onRefresh;
 				}
 			});
