@@ -348,11 +348,10 @@ export default function(Chart, moment) {
 			TimeScale.prototype.initialize.call(this);
 
 			var me = this;
-			var id = me.id;
-			var options = me.options;
+			var chart = me.chart;
 
 			// For backwards compatibility
-			if (options.type === 'time' && !me.chart.options.plugins.streaming) {
+			if (me.options.type === 'time' && !chart.options.plugins.streaming) {
 				return;
 			}
 
@@ -361,19 +360,18 @@ export default function(Chart, moment) {
 
 			document.addEventListener(visibilityChange, function() {
 				if (!document[hidden]) {
-					me.chart.update(0);
+					chart.update(0);
 					prev = Date.now();
 				}
 			}, false);
 
 			var frameRefresh = function() {
-				var chart = me.chart;
-				var realtimeOpts = options.realtime;
+				var realtimeOpts = me.options.realtime;
 				var duration = realtimeOpts.duration;
-				var frameDuration = 1000 / (Math.max(realtimeOpts.frameRate, 0) || 30);
+				var id = me.id;
 				var tooltip = chart.tooltip;
 				var activeTooltip = tooltip._active;
-				var now = Date.now();
+				var frameDuration = 1000 / (Math.max(realtimeOpts.frameRate, 0) || 30);
 				var keys, length, meta;
 
 				if (me.isHorizontal()) {
@@ -384,6 +382,7 @@ export default function(Chart, moment) {
 					keys = transitionKeys.y;
 				}
 
+				var now = Date.now();
 				var offset = length * (now - prev) / duration;
 
 				// Shift all the elements leftward or upward
