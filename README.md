@@ -28,9 +28,9 @@ chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and modu
 
 chartjs-plugin-streaming requires [Moment.js](http://momentjs.com/) and [Chart.js](http://www.chartjs.org).
 
-Version 1.3 supports the [line](http://www.chartjs.org/docs/latest/charts/line.html) and [bar](http://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](http://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) are supported. In case of Point data, either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
+Version 1.4 supports the [line](http://www.chartjs.org/docs/latest/charts/line.html) and [bar](http://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](http://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) are supported. In case of Point data, either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
 
-## Tutorial and samples
+## Tutorial and Samples
 
 You can find a tutorial and samples at [nagix.github.io/chartjs-plugin-streaming](https://nagix.github.io/chartjs-plugin-streaming).
 
@@ -44,6 +44,7 @@ To configure this plugin, you can simply add the following entries to your chart
 | `plugins.streaming.duration` | `Number` | `10000` | Duration of the chart in milliseconds (how much time of data it will show).
 | `plugins.streaming.refresh` | `Number` | `1000` | Reshresh interval of data in milliseconds. `onRefresh` callback function will be called at this interval.
 | `plugins.streaming.delay` | `Number` | `0` | Delay added to the chart in milliseconds so that upcoming values are known before lines are plotted. This makes the chart look like a continual stream rather than very jumpy on the right hand side. Specify the maximum expected delay.
+| `plugins.streaming.frameRate` | `Number` | `30` | Frequency at which the chart is drawn on a display (frames per second). Decrease this value to save CPU power. [more...](#lowering-cpu-usage)
 | `plugins.streaming.onRefresh` | `Function` | `null` | Callback function that will be called at a regular interval. The callback takes one argument, a reference to the chart object. You can update your datasets here. The chart will be automatically updated after returning.
 
 > **Global options** can be change through `Chart.defaults.global.plugins.streaming`, which by default enable auto-scroll of the charts that have a time scale.
@@ -69,6 +70,7 @@ For example:
                 duration: 20000,    // data in the past 20000 ms will be displayed
                 refresh: 1000,      // onRefresh callback will be called every 1000 ms
                 delay: 1000,        // delay of 1000 ms, so upcoming values are known before plotting a line
+                frameRate: 30,      // chart is drawn 30 times every second
 
                 // a callback to update datasets
                 onRefresh: function(chart) {
@@ -91,6 +93,27 @@ Note that the following options are ignored for the 'realtime' scale.
 - `ticks.major.enabled` (always `true`)
 - `time.max`
 - `time.min`
+
+## Lowering CPU Usage
+
+If you are using this plugin on resource constrained devices or drawing multiple charts on a large screen, it might be a good idea to decrease the frame rate to lower CPU usage. The following settings also reduce CPU usage by disabling animation, and improve general page performance.
+
+```
+    options: {
+        animation: {
+            duration: 0                    // general animation time
+        },
+        hover: {
+            animationDuration: 0           // duration of animations when hovering an item
+        },
+        responsiveAnimationDuration: 0,    // animation duration after a resize
+        plugins: {
+            streaming: {
+                frameRate: 5               // chart is drawn 5 times every second
+            }
+        }
+    }
+```
 
 ## Building
 
