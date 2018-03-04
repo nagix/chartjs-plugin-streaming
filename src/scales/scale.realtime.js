@@ -35,6 +35,7 @@ export default function(Chart, moment) {
 			duration: 10000,
 			refresh: 1000,
 			delay: 0,
+			frameRate: 30,
 			onRefresh: null
 		},
 		ticks: {
