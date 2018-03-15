@@ -4,6 +4,19 @@ export default function(Chart, moment) {
 
 	var helpers = Chart.helpers;
 
+	helpers.cancelAnimFrame = (function() {
+		if (typeof window !== 'undefined') {
+			return window.cancelAnimationFrame ||
+				window.webkitCancelAnimationFrame ||
+				window.mozCancelAnimationFrame ||
+				window.oCancelAnimationFrame ||
+				window.msCancelAnimationFrame ||
+				function(id) {
+					return window.clearTimeout(id);
+				};
+		}
+	}());
+
 	var realTimeScaleDefaultConfig = {
 		position: 'bottom',
 		distribution: 'linear',
@@ -427,9 +440,9 @@ export default function(Chart, moment) {
 
 				prev = now;
 
-				helpers.requestAnimFrame.call(window, frameRefresh);
+				me.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
 			};
-			helpers.requestAnimFrame.call(window, frameRefresh);
+			me.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
 		},
 
 		buildTicks: function() {
@@ -515,6 +528,15 @@ export default function(Chart, moment) {
 			helpers.canvas.clipArea(context, clipArea);
 			TimeScale.prototype.draw.call(this, chartArea);
 			helpers.canvas.unclipArea(context);
+		},
+
+		destroy: function() {
+			var me = this;
+			var frameRequestID = me.frameRequestID;
+
+			if (frameRequestID) {
+				helpers.cancelAnimFrame.call(window, frameRequestID);
+			}
 		}
 	});
 

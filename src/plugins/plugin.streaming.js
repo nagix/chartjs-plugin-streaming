@@ -12,6 +12,8 @@ export default function(Chart) {
 
 	var realTimeScale = Chart.scaleService.getScaleConstructor('realtime');
 
+	var refreshTimerID;
+
 	function removeOldData(scale, lower, data, datasetIndex) {
 		var i, ilen;
 
@@ -62,7 +64,7 @@ export default function(Chart) {
 		id: 'streaming',
 
 		afterInit: function(chart, options) {
-			setInterval(function() {
+			refreshTimerID = setInterval(function() {
 				onRefresh(chart);
 			}, options.refresh);
 		},
@@ -112,6 +114,17 @@ export default function(Chart) {
 				delete chart.lastMouseMoveEvent;
 			}
 			return true;
+		},
+
+		destroy: function(chart) {
+			if (refreshTimerID) {
+				clearInterval(refreshTimerID);
+			}
+			Chart.helpers.each(chart.scales, function(scale) {
+				if (scale instanceof realTimeScale) {
+					scale.destroy();
+				}
+			});
 		}
 	};
 }
