@@ -100,7 +100,17 @@ export default function(Chart) {
 			// Dispach mouse event for scroll
 			var event = chart.lastMouseMoveEvent;
 			if (event) {
-				chart.canvas.dispatchEvent(event.native);
+				if (typeof MouseEvent === 'function') {
+					chart.canvas.dispatchEvent(event);
+				} else {
+					var newEvent = document.createEvent('MouseEvents');
+					newEvent.initMouseEvent(
+						event.type, event.bubbles, event.cancelable, event.view, event.detail,
+						event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey,
+						event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget
+					);
+					chart.canvas.dispatchEvent(newEvent);
+				}
 			}
 			return true;
 		},
@@ -108,7 +118,7 @@ export default function(Chart) {
 		beforeEvent: function(chart, event) {
 			if (event.type === 'mousemove') {
 				// Save mousemove event for reuse
-				chart.lastMouseMoveEvent = event;
+				chart.lastMouseMoveEvent = event.native;
 			} else if (event.type === 'mouseout') {
 				// Remove mousemove event
 				delete chart.lastMouseMoveEvent;
