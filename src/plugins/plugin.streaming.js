@@ -12,8 +12,6 @@ export default function(Chart) {
 
 	var realTimeScale = Chart.scaleService.getScaleConstructor('realtime');
 
-	var refreshTimerID;
-
 	function removeOldData(scale, lower, data, datasetIndex) {
 		var i, ilen;
 
@@ -64,7 +62,7 @@ export default function(Chart) {
 		id: 'streaming',
 
 		afterInit: function(chart, options) {
-			refreshTimerID = setInterval(function() {
+			chart.refreshTimerID = setInterval(function() {
 				onRefresh(chart);
 			}, options.refresh);
 		},
@@ -127,6 +125,8 @@ export default function(Chart) {
 		},
 
 		destroy: function(chart) {
+			var refreshTimerID = chart.refreshTimerID;
+
 			if (refreshTimerID) {
 				clearInterval(refreshTimerID);
 			}
