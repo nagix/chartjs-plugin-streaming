@@ -451,8 +451,7 @@ export default function(Chart, moment) {
 
 			// For backwards compatibility
 			if (options.type === 'time' && !me.chart.options.plugins.streaming) {
-				TimeScale.prototype.buildTicks.call(this);
-				return;
+				return TimeScale.prototype.buildTicks.call(this);
 			}
 
 			var timeOpts = options.time;
