@@ -29,7 +29,7 @@ export default function(Chart) {
 
 	function onRefresh(chart) {
 		var streamingOpts = chart.options.plugins.streaming;
-		var numToRemove;
+		var meta, scale, numToRemove;
 
 		if (streamingOpts.onRefresh) {
 			streamingOpts.onRefresh(chart);
@@ -37,14 +37,18 @@ export default function(Chart) {
 
 		// Remove old data
 		chart.data.datasets.forEach(function(dataset, datasetIndex) {
-			var meta = chart.getDatasetMeta(datasetIndex);
-			var scale = meta.controller.getScaleForId(meta.xAxisID);
-			if (scale instanceof realTimeScale) {
-				numToRemove = removeOldData(scale, scale.left, dataset.data, datasetIndex);
+			meta = chart.getDatasetMeta(datasetIndex);
+			if (meta.xAxisID) {
+				scale = meta.controller.getScaleForId(meta.xAxisID);
+				if (scale instanceof realTimeScale) {
+					numToRemove = removeOldData(scale, scale.left, dataset.data, datasetIndex);
+				}
 			}
-			scale = meta.controller.getScaleForId(meta.yAxisID);
-			if (scale instanceof realTimeScale) {
-				numToRemove = removeOldData(scale, scale.top, dataset.data, datasetIndex);
+			if (meta.yAxisID) {
+				scale = meta.controller.getScaleForId(meta.yAxisID);
+				if (scale instanceof realTimeScale) {
+					numToRemove = removeOldData(scale, scale.top, dataset.data, datasetIndex);
+				}
 			}
 		});
 		if (numToRemove) {
@@ -72,25 +76,28 @@ export default function(Chart) {
 			var scalesOpts = chartOpts.scales;
 			var realtimeOpts;
 
-			chartOpts.elements.line.capBezierPoints = false;
+			if (scalesOpts) {
+				scalesOpts.xAxes.concat(scalesOpts.yAxes).forEach(function(scaleOpts) {
+					if (scaleOpts.type === 'realtime' || scaleOpts.type === 'time') {
+						realtimeOpts = scaleOpts.realtime;
 
-			scalesOpts.xAxes.concat(scalesOpts.yAxes).forEach(function(scaleOpts) {
-				if (scaleOpts.type === 'realtime' || scaleOpts.type === 'time') {
-					realtimeOpts = scaleOpts.realtime;
+						// For backwards compatibility
+						if (!realtimeOpts) {
+							realtimeOpts = scaleOpts.realtime = {};
+						}
 
-					// For backwards compatibility
-					if (!realtimeOpts) {
-						realtimeOpts = scaleOpts.realtime = {};
+						// Copy plugin options to scale options
+						realtimeOpts.duration = options.duration;
+						realtimeOpts.refresh = options.refresh;
+						realtimeOpts.delay = options.delay;
+						realtimeOpts.frameRate = options.frameRate;
+						realtimeOpts.onRefresh = onRefresh;
+
+						// Keep Bézier control inside the chart
+						chartOpts.elements.line.capBezierPoints = false;
 					}
-
-					// Copy plugin options to scale options
-					realtimeOpts.duration = options.duration;
-					realtimeOpts.refresh = options.refresh;
-					realtimeOpts.delay = options.delay;
-					realtimeOpts.frameRate = options.frameRate;
-					realtimeOpts.onRefresh = onRefresh;
-				}
-			});
+				});
+			}
 			return true;
 		},
 
