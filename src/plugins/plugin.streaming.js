@@ -2,6 +2,8 @@
 
 export default function(Chart) {
 
+	var helpers = Chart.helpers;
+
 	Chart.defaults.global.plugins.streaming = {
 		duration: 10000,
 		refresh: 1000,
@@ -120,6 +122,31 @@ export default function(Chart) {
 			return true;
 		},
 
+		beforeDatasetDraw: function(chart, args) {
+			var meta = args.meta;
+			var chartArea = chart.chartArea;
+			var clipArea = {
+				left: 0,
+				top: 0,
+				right: chart.width,
+				bottom: chart.height
+			};
+			if (meta.xAxisID && meta.controller.getScaleForId(meta.xAxisID) instanceof realTimeScale) {
+				clipArea.left = chartArea.left;
+				clipArea.right = chartArea.right;
+			}
+			if (meta.yAxisID && meta.controller.getScaleForId(meta.yAxisID) instanceof realTimeScale) {
+				clipArea.top = chartArea.top;
+				clipArea.bottom = chartArea.bottom;
+			}
+			helpers.canvas.clipArea(chart.ctx, clipArea);
+			return true;
+		},
+
+		afterDatasetDraw: function(chart) {
+			helpers.canvas.unclipArea(chart.ctx);
+		},
+
 		beforeEvent: function(chart, event) {
 			if (event.type === 'mousemove') {
 				// Save mousemove event for reuse
@@ -137,7 +164,7 @@ export default function(Chart) {
 			if (refreshTimerID) {
 				clearInterval(refreshTimerID);
 			}
-			Chart.helpers.each(chart.scales, function(scale) {
+			helpers.each(chart.scales, function(scale) {
 				if (scale instanceof realTimeScale) {
 					scale.destroy();
 				}
