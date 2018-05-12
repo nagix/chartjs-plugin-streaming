@@ -28,7 +28,7 @@ chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and modu
 
 chartjs-plugin-streaming requires [Moment.js](https://momentjs.com/) and [Chart.js](https://www.chartjs.org).
 
-Version 1.4 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](https://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](https://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) are supported. In case of Point data, either x or y must be in any of the [date formats](https://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
+Version 1.4 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](https://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](https://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) as well as the [bubble](https://www.chartjs.org/docs/latest/charts/bubble.html) and [scatter](https://www.chartjs.org/docs/latest/charts/scatter.html) chart types with Point data. In case of Point data, either x or y must be in any of the [date formats](https://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
 
 ## Tutorial and Samples
 
@@ -53,7 +53,7 @@ For example:
 
 ```
 {
-    type: 'line',               // 'line' and 'bar' types are supported
+    type: 'line',               // 'line', 'bar', 'bubble' and 'scatter' types are supported
     data: {
         datasets: [{
             data: []            // empty at the beggining
