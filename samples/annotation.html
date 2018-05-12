@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>chartjs-plugin-streaming sample</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.0/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.js"></script>
+	<script src="../dist/chartjs-plugin-streaming.js"></script>
+	<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+</head>
+
+<body>
+	<div style="width:75%;">
+		<canvas id="canvas"></canvas>
+	</div>
+	<br>
+	<br>
+	<button id="randomizeData">Randomize Data</button>
+	<button id="addDataset">Add Dataset</button>
+	<button id="removeDataset">Remove Dataset</button>
+	<button id="addData">Add Data</button>
+	<script>
+		var chartColors = {
+			red: 'rgb(255, 99, 132)',
+			orange: 'rgb(255, 159, 64)',
+			yellow: 'rgb(255, 205, 86)',
+			green: 'rgb(75, 192, 192)',
+			blue: 'rgb(54, 162, 235)',
+			purple: 'rgb(153, 102, 255)',
+			grey: 'rgb(201, 203, 207)'
+		};
+
+		function newDate(ms) {
+			return moment().add(ms, 'ms');
+		}
+
+		function randomScalingFactor() {
+			return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
+		}
+
+		function onRefresh() {
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data.push({
+					x: moment(),
+					y: randomScalingFactor()
+				});
+			});
+		}
+
+		var color = Chart.helpers.color;
+		var config = {
+			type: 'line',
+			data: {
+				datasets: [{
+					label: 'Dataset (linear interpolation)',
+					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
+					borderColor: chartColors.red,
+					fill: false,
+					lineTension: 0,
+					borderDash: [8, 4],
+					data: []
+				}, {
+					label: 'Dataset (cubic interpolation)',
+					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: chartColors.blue,
+					fill: false,
+					cubicInterpolationMode: 'monotone',
+					data: []
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Annotation plugin sample'
+				},
+				scales: {
+					xAxes: [{
+						type: 'realtime',
+						display: true,
+					}],
+					yAxes: [{
+						type: 'linear',
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'value'
+						}
+					}]
+				},
+				tooltips: {
+					mode: 'nearest',
+					intersect: false
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: false
+				},
+				annotation: {
+					events: ["click"],
+					annotations: [
+						{
+							drawTime: "afterDatasetsDraw",
+							id: "hline",
+							type: "line",
+							mode: "horizontal",
+							scaleID: "y-axis-0",
+							value: randomScalingFactor(),
+							borderColor: "black",
+							borderWidth: 5,
+							label: {
+								backgroundColor: "red",
+								content: "Test Label",
+								enabled: true
+							},
+							onClick: function(e) {
+								console.log("Annotation", e.type, this);
+							}
+						},
+						{
+							drawTime: "beforeDatasetsDraw",
+							type: "box",
+							yScaleID: "y-axis-0",
+							yMin: randomScalingFactor(),
+							yMax: randomScalingFactor(),
+							backgroundColor: color(chartColors.purple).alpha(0.25).rgbString(),
+							borderColor: color(chartColors.purple),
+							borderWidth: 1,
+							onClick: function(e) {
+								console.log("Box", e.type, this);
+							}
+						}
+					]
+				},
+				plugins: {
+					streaming: {
+						duration: 20000,
+						refresh: 1000,
+						delay: 2000,
+						onRefresh: onRefresh
+					}
+				}
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+		};
+
+		document.getElementById('randomizeData').addEventListener('click', function() {
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data.forEach(function(dataObj) {
+					dataObj.y = randomScalingFactor();
+				});
+			});
+
+			window.myLine.update();
+		});
+
+		var colorNames = Object.keys(chartColors);
+		document.getElementById('addDataset').addEventListener('click', function() {
+			var colorName = colorNames[config.data.datasets.length % colorNames.length];
+			var newColor = chartColors[colorName];
+			var newDataset = {
+				label: 'Dataset ' + config.data.datasets.length,
+				backgroundColor: color(newColor).alpha(0.5).rgbString(),
+				borderColor: newColor,
+				fill: false,
+				lineTension: 0,
+				data: []
+			};
+
+			config.data.datasets.push(newDataset);
+			window.myLine.update();
+		});
+
+		document.getElementById('removeDataset').addEventListener('click', function() {
+			config.data.datasets.pop();
+			window.myLine.update();
+		});
+
+		document.getElementById('addData').addEventListener('click', function() {
+			onRefresh();
+
+			window.myLine.update();
+		});
+	</script>
+</body>
+
+</html>

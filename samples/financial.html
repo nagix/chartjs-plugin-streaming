@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>chartjs-plugin-streaming sample</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.0/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+	<script src="https://rawgit.com/chartjs/chartjs-chart-financial/master/docs/Chart.Financial.js"></script>
+	<script src="../dist/chartjs-plugin-streaming.js"></script>
+	<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+</head>
+
+<body>
+	<div style="width:75%;">
+		<canvas id="canvas"></canvas>
+	</div>
+	<script>
+		var chartColors = {
+			red: 'rgb(255, 99, 132)',
+			orange: 'rgb(255, 159, 64)',
+			yellow: 'rgb(255, 205, 86)',
+			green: 'rgb(75, 192, 192)',
+			blue: 'rgb(54, 162, 235)',
+			purple: 'rgb(153, 102, 255)',
+			grey: 'rgb(201, 203, 207)'
+		};
+
+		function newDate(ms) {
+			return moment().add(ms, 'ms');
+		}
+
+		function randomScalingFactor() {
+			return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
+		}
+
+		function onRefresh(chart) {
+			var data = chart.data.datasets[0].data;
+			var last = data[data.length - 1];
+			var t = Date.now();
+			t -= t % 5000;
+			if (!last || t != last.t) {
+				var c = last ? last.c : 100;
+				last = { t: t, o: c, h: c, l: c, c: c };
+				data.push(last);
+			}
+			last.c += Math.random() - 0.5;
+			last.h = Math.max(last.h, last.c);
+			last.l = Math.min(last.l, last.c);
+		}
+
+		var color = Chart.helpers.color;
+		var config = {
+			type: 'candlestick',
+			data: {
+				datasets: [{
+					data: []
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Financial chart sample'
+				},
+				legend: {
+					display: false,
+				},
+				scales: {
+					xAxes: [{
+						type: 'realtime',
+						display: true,
+					}]
+				},
+				tooltips: {
+					enabled: false
+				},
+				plugins: {
+					streaming: {
+						duration: 120000,
+						refresh: 500,
+						delay: 0,
+						onRefresh: onRefresh
+					}
+				}
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+		};
+	</script>
+</body>
+
+</html>
