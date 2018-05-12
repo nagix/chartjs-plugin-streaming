@@ -3,7 +3,7 @@ const pkg = require('./package.json');
 const banner = `/*
  * @license
  * ` + pkg.name + `
- * http://github.com/nagix/chartjs-plugin-streaming/
+ * https://github.com/nagix/chartjs-plugin-streaming/
  * Version: ` + pkg.version + `
  *
  * Copyright ` + (new Date().getFullYear()) + ` Akihiko Kusanagi

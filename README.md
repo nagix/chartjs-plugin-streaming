@@ -2,7 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-streaming) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-streaming.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-streaming) [![Travis](https://img.shields.io/travis/nagix/chartjs-plugin-streaming/master.svg?style=flat-square)](https://travis-ci.org/nagix/chartjs-plugin-streaming) [![Code Climate](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-streaming.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-streaming)
 
-*[Chart.js](http://www.chartjs.org) plugin for live streaming data*
+*[Chart.js](https://www.chartjs.org) plugin for live streaming data*
 
 Version 1.2 or earlier requires Chart.js 2.6.x. Version 1.3 or later requires Chart.js 2.7.x.
 
@@ -26,9 +26,9 @@ bower install chartjs-plugin-streaming --save
 
 chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and module loaders.
 
-chartjs-plugin-streaming requires [Moment.js](http://momentjs.com/) and [Chart.js](http://www.chartjs.org).
+chartjs-plugin-streaming requires [Moment.js](https://momentjs.com/) and [Chart.js](https://www.chartjs.org).
 
-Version 1.4 supports the [line](http://www.chartjs.org/docs/latest/charts/line.html) and [bar](http://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](http://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](http://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) are supported. In case of Point data, either x or y must be in any of the [date formats](http://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](http://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
+Version 1.4 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](https://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](https://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) are supported. In case of Point data, either x or y must be in any of the [date formats](https://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted as it disappears off the chart.
 
 ## Tutorial and Samples
 
@@ -134,4 +134,4 @@ gulp package    # create an archive with dist files and samples
 
 ## License
 
-chartjs-plugin-streaming is available under the [MIT license](http://opensource.org/licenses/MIT).
+chartjs-plugin-streaming is available under the [MIT license](https://opensource.org/licenses/MIT).
