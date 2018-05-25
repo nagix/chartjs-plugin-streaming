@@ -49,7 +49,7 @@ export default function(Chart, moment) {
 			refresh: 1000,
 			delay: 0,
 			frameRate: 30,
-			onRefresh: null
+			onDraw: null
 		},
 		ticks: {
 			autoSkip: false,
@@ -220,7 +220,7 @@ export default function(Chart, moment) {
 		var interval = INTERVALS[minor];
 		var first = moment(min);
 		// For realtime scale: Add delay and refresh interval for scroll margin.
-		var last = moment(max + options.realtime.delay + options.realtime.refresh);
+		var last = moment(max + options.realtime.refresh);
 		var ticks = [];
 		var time;
 
@@ -239,7 +239,7 @@ export default function(Chart, moment) {
 		last = last.startOf(weekday ? 'day' : minor);
 
 		// Make sure that the last tick include max
-		if (last < max) {
+		if (last < max + options.realtime.refresh) {
 			last.add(1, minor);
 		}
 
@@ -429,8 +429,11 @@ export default function(Chart, moment) {
 
 				if (lastDrawn + frameDuration <= now) {
 					// Draw only when animation is inactive
-					if (!chart.animating) {
+					if (!chart.animating && !chart.tooltip._start) {
 						chart.draw();
+					}
+					if (realtimeOpts.onDraw) {
+						realtimeOpts.onDraw(chart);
 					}
 					lastDrawn += frameDuration;
 					if (lastDrawn + frameDuration <= now) {

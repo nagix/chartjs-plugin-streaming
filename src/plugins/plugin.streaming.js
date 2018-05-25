@@ -29,6 +29,45 @@ export default function(Chart) {
 		}
 	}
 
+	/**
+	 * Update the chart data keeping the current animation but suppressing a new one
+	 * @param chart {Chart} chart to update
+	 */
+	function updateChartData(chart) {
+		var animationOpts = chart.options.animation;
+		var datasets = chart.data.datasets;
+		var newControllers = chart.buildOrUpdateControllers();
+
+		datasets.forEach(function(dataset, datasetIndex) {
+			chart.getDatasetMeta(datasetIndex).controller.buildOrUpdateElements();
+		});
+		chart.updateLayout();
+		if (animationOpts && animationOpts.duration) {
+			helpers.each(newControllers, function(controller) {
+				controller.reset();
+			});
+		}
+		chart.updateDatasets();
+
+		if (chart.animating) {
+			// If the chart is animating, keep it until the duration is over
+			Chart.animationService.animations.forEach(function(animation) {
+				if (animation.chart === chart) {
+					chart.render((animation.numSteps - animation.currentStep) * 16.66);
+				}
+			});
+		} else {
+			// If the chart is not animating, make sure that all elements are at the final positions
+			datasets.forEach(function(dataset, datasetIndex) {
+				chart.getDatasetMeta(datasetIndex).controller.transition(1);
+			});
+		}
+
+		if (chart.tooltip._active) {
+			chart.tooltip.update(true);
+		}
+	}
+
 	function onRefresh(chart) {
 		var streamingOpts = chart.options.plugins.streaming;
 		var meta, scale, numToRemove;
@@ -57,11 +96,25 @@ export default function(Chart) {
 			chart.data.labels.splice(0, numToRemove);
 		}
 
-		// Buffer any update calls so that renders do not occur
-		chart._bufferedRender = true;
-		chart.update();
-		chart._bufferedRender = false;
-		chart._bufferedRequest = null;
+		updateChartData(chart);
+	}
+
+	function onDraw(chart) {
+		// Dispach mouse event for scroll
+		var event = chart.lastMouseMoveEvent;
+		if (event) {
+			if (typeof MouseEvent === 'function') {
+				chart.canvas.dispatchEvent(event);
+			} else {
+				var newEvent = document.createEvent('MouseEvents');
+				newEvent.initMouseEvent(
+					event.type, event.bubbles, event.cancelable, event.view, event.detail,
+					event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey,
+					event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget
+				);
+				chart.canvas.dispatchEvent(newEvent);
+			}
+		}
 	}
 
 	return {
@@ -93,31 +146,12 @@ export default function(Chart) {
 						realtimeOpts.refresh = options.refresh;
 						realtimeOpts.delay = options.delay;
 						realtimeOpts.frameRate = options.frameRate;
-						realtimeOpts.onRefresh = onRefresh;
+						realtimeOpts.onDraw = onDraw;
 
 						// Keep Bézier control inside the chart
 						chartOpts.elements.line.capBezierPoints = false;
 					}
 				});
-			}
-			return true;
-		},
-
-		beforeDraw: function(chart) {
-			// Dispach mouse event for scroll
-			var event = chart.lastMouseMoveEvent;
-			if (event) {
-				if (typeof MouseEvent === 'function') {
-					chart.canvas.dispatchEvent(event);
-				} else {
-					var newEvent = document.createEvent('MouseEvents');
-					newEvent.initMouseEvent(
-						event.type, event.bubbles, event.cancelable, event.view, event.detail,
-						event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey,
-						event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget
-					);
-					chart.canvas.dispatchEvent(newEvent);
-				}
 			}
 			return true;
 		},
