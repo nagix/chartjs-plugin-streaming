@@ -14,6 +14,24 @@ export default function(Chart) {
 
 	var realTimeScale = Chart.scaleService.getScaleConstructor('realtime');
 
+	function generateMouseMoveEvent(chart) {
+		// Dispach mouse event for scroll
+		var event = chart.lastMouseMoveEvent;
+		if (event) {
+			if (typeof MouseEvent === 'function') {
+				chart.canvas.dispatchEvent(event);
+			} else {
+				var newEvent = document.createEvent('MouseEvents');
+				newEvent.initMouseEvent(
+					event.type, event.bubbles, event.cancelable, event.view, event.detail,
+					event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey,
+					event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget
+				);
+				chart.canvas.dispatchEvent(newEvent);
+			}
+		}
+	}
+
 	function removeOldData(scale, lower, data, datasetIndex) {
 		var i, ilen;
 
@@ -66,6 +84,8 @@ export default function(Chart) {
 		if (chart.tooltip._active) {
 			chart.tooltip.update(true);
 		}
+
+		generateMouseMoveEvent(chart);
 	}
 
 	function onRefresh(chart) {
@@ -99,24 +119,6 @@ export default function(Chart) {
 		updateChartData(chart);
 	}
 
-	function onDraw(chart) {
-		// Dispach mouse event for scroll
-		var event = chart.lastMouseMoveEvent;
-		if (event) {
-			if (typeof MouseEvent === 'function') {
-				chart.canvas.dispatchEvent(event);
-			} else {
-				var newEvent = document.createEvent('MouseEvents');
-				newEvent.initMouseEvent(
-					event.type, event.bubbles, event.cancelable, event.view, event.detail,
-					event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey,
-					event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget
-				);
-				chart.canvas.dispatchEvent(newEvent);
-			}
-		}
-	}
-
 	return {
 		id: 'streaming',
 
@@ -146,7 +148,7 @@ export default function(Chart) {
 						realtimeOpts.refresh = options.refresh;
 						realtimeOpts.delay = options.delay;
 						realtimeOpts.frameRate = options.frameRate;
-						realtimeOpts.onDraw = onDraw;
+						realtimeOpts.onDraw = generateMouseMoveEvent;
 
 						// Keep Bézier control inside the chart
 						chartOpts.elements.line.capBezierPoints = false;
