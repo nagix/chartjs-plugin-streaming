@@ -9,6 +9,7 @@ export default function(Chart) {
 		refresh: 1000,
 		delay: 0,
 		frameRate: 30,
+		pause: false,
 		onRefresh: null
 	};
 
@@ -148,6 +149,7 @@ export default function(Chart) {
 						realtimeOpts.refresh = options.refresh;
 						realtimeOpts.delay = options.delay;
 						realtimeOpts.frameRate = options.frameRate;
+						realtimeOpts.pause = options.pause;
 						realtimeOpts.onDraw = generateMouseMoveEvent;
 
 						// Keep Bézier control inside the chart

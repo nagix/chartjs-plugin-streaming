@@ -49,6 +49,7 @@ export default function(Chart, moment) {
 			refresh: 1000,
 			delay: 0,
 			frameRate: 30,
+			pause: false,
 			onDraw: null
 		},
 		ticks: {
@@ -359,25 +360,26 @@ export default function(Chart, moment) {
 
 	var RealTimeScale = TimeScale.extend({
 		initialize: function() {
-			TimeScale.prototype.initialize.call(this);
-
 			var me = this;
 			var chart = me.chart;
+
+			TimeScale.prototype.initialize.apply(me, arguments);
 
 			// For backwards compatibility
 			if (me.options.type === 'time' && !chart.options.plugins.streaming) {
 				return;
 			}
 
-			var prev = Date.now();
+			me.head = Date.now();
 			var lastDrawn = 0;
 
-			document.addEventListener(visibilityChange, function() {
+			me.visibilityChangeListener = function() {
 				if (!document[hidden]) {
 					chart.update(0);
-					prev = Date.now();
+					me.head = Date.now();
 				}
-			}, false);
+			};
+			document.addEventListener(visibilityChange, me.visibilityChangeListener, false);
 
 			var frameRefresh = function() {
 				var realtimeOpts = me.options.realtime;
@@ -397,7 +399,7 @@ export default function(Chart, moment) {
 				}
 
 				var now = Date.now();
-				var offset = length * (now - prev) / duration;
+				var offset = length * (now - me.head) / duration;
 
 				// Shift all the elements leftward or upward
 				helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
@@ -441,11 +443,32 @@ export default function(Chart, moment) {
 					}
 				}
 
-				prev = now;
+				me.head = now;
 
 				me.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
 			};
 			me.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+		},
+
+		update: function() {
+			var me = this;
+			var options = me.options;
+
+			// For backwards compatibility
+			if (options.type === 'time' && !me.chart.options.plugins.streaming) {
+				return TimeScale.prototype.update.apply(me, arguments);
+			}
+
+			var pause = options.realtime.pause;
+			var frameRequestID = me.frameRequestID;
+
+			if (!frameRequestID && !pause) {
+				me.initialize();
+			} else if (frameRequestID && pause) {
+				me.destroy();
+			}
+
+			return TimeScale.prototype.update.apply(me, arguments);
 		},
 
 		buildTicks: function() {
@@ -454,12 +477,12 @@ export default function(Chart, moment) {
 
 			// For backwards compatibility
 			if (options.type === 'time' && !me.chart.options.plugins.streaming) {
-				return TimeScale.prototype.buildTicks.call(this);
+				return TimeScale.prototype.buildTicks.apply(me, arguments);
 			}
 
 			var timeOpts = options.time;
 			var realtimeOpts = options.realtime;
-			var max = Date.now() - realtimeOpts.delay;
+			var max = me.head - realtimeOpts.delay;
 			var min = max - realtimeOpts.duration;
 			var timestamps = [];
 
@@ -491,10 +514,15 @@ export default function(Chart, moment) {
 		},
 
 		fit: function() {
-			TimeScale.prototype.fit.call(this);
-
 			var me = this;
 			var options = me.options;
+
+			TimeScale.prototype.fit.apply(me, arguments);
+
+			// For backwards compatibility
+			if (options.type === 'time' && !me.chart.options.plugins.streaming) {
+				return;
+			}
 
 			if (options.ticks.display && options.display && me.isHorizontal()) {
 				me.paddingLeft = 3;
@@ -509,7 +537,8 @@ export default function(Chart, moment) {
 
 			// For backwards compatibility
 			if (me.options.type === 'time' && !chart.options.plugins.streaming) {
-				return TimeScale.prototype.draw.call(this, chartArea);
+				TimeScale.prototype.draw.apply(me, arguments);
+				return;
 			}
 
 			var context = me.ctx;
@@ -528,16 +557,22 @@ export default function(Chart, moment) {
 
 			// Clip and draw the scale
 			helpers.canvas.clipArea(context, clipArea);
-			TimeScale.prototype.draw.call(this, chartArea);
+			TimeScale.prototype.draw.apply(me, arguments);
 			helpers.canvas.unclipArea(context);
 		},
 
 		destroy: function() {
 			var me = this;
+			var visibilityChangeListener = me.visibilityChangeListener;
 			var frameRequestID = me.frameRequestID;
 
+			if (visibilityChangeListener) {
+				document.removeEventListener(visibilityChange, visibilityChangeListener, false);
+				me.visibilityChangeListener = null;
+			}
 			if (frameRequestID) {
 				helpers.cancelAnimFrame.call(window, frameRequestID);
+				me.frameRequestID = null;
 			}
 		}
 	});
