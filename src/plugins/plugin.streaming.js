@@ -120,13 +120,32 @@ export default function(Chart) {
 		updateChartData(chart);
 	}
 
+	function clearRefreshTimer(chart) {
+		var refreshTimerID = chart.refreshTimerID;
+
+		if (refreshTimerID) {
+			clearInterval(refreshTimerID);
+			delete chart.refreshTimerID;
+			delete chart.refresh;
+		}
+	}
+
+	function setRefreshTimer(chart, refresh) {
+		chart.refreshTimerID = setInterval(function() {
+			onRefresh(chart);
+			if (chart.refresh !== chart.options.plugins.streaming.refresh) {
+				clearRefreshTimer(chart);
+				setRefreshTimer(chart, chart.options.plugins.streaming.refresh);
+			}
+		}, refresh);
+		chart.refresh = refresh;
+	}
+
 	return {
 		id: 'streaming',
 
 		afterInit: function(chart, options) {
-			chart.refreshTimerID = setInterval(function() {
-				onRefresh(chart);
-			}, options.refresh);
+			setRefreshTimer(chart, options.refresh);
 		},
 
 		beforeUpdate: function(chart, options) {
@@ -197,11 +216,7 @@ export default function(Chart) {
 		},
 
 		destroy: function(chart) {
-			var refreshTimerID = chart.refreshTimerID;
-
-			if (refreshTimerID) {
-				clearInterval(refreshTimerID);
-			}
+			clearRefreshTimer(chart);
 			helpers.each(chart.scales, function(scale) {
 				if (scale instanceof realTimeScale) {
 					scale.destroy();

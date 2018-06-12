@@ -568,11 +568,11 @@ export default function(Chart, moment) {
 
 			if (visibilityChangeListener) {
 				document.removeEventListener(visibilityChange, visibilityChangeListener, false);
-				me.visibilityChangeListener = null;
+				delete me.visibilityChangeListener;
 			}
 			if (frameRequestID) {
 				helpers.cancelAnimFrame.call(window, frameRequestID);
-				me.frameRequestID = null;
+				delete me.frameRequestID;
 			}
 		}
 	});
