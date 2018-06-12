@@ -1,0 +1,223 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>chartjs-plugin-streaming sample</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.0/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+	<script src="https://github.com/nagix/chartjs-plugin-streaming/releases/download/v1.4.1/chartjs-plugin-streaming.min.js"></script>
+	<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+</head>
+
+<body>
+	<div style="width:75%;">
+		<canvas id="canvas"></canvas>
+	</div>
+	<br>
+	<div>
+		<button id="randomizeData">Randomize Data</button>
+		<button id="addDataset">Add Dataset</button>
+		<button id="removeDataset">Remove Dataset</button>
+		<button id="addData">Add Data</button>
+	</div>
+	<div>
+		<div>
+			<span style="display:inline-block;text-align:right;width:100px">duration:</span>
+			<span id="durationValue" style="display:inline-block;width:50px">20000</span>
+			<span><input type="range" min="1000" max="60000" step="100" value="20000" id="duration" style="width:200px"></span>
+		</div>
+		<div>
+			<span style="display:inline-block;text-align:right;width:100px">refresh:</span>
+			<span id="refreshValue" style="display:inline-block;width:50px">1000</span>
+			<span><input type="range" min="50" max="3000" step="50" value="1000" id="refresh" style="width:200px"></span>
+		</div>
+		<div>
+			<span style="display:inline-block;text-align:right;width:100px">delay:</span>
+			<span id="delayValue" style="display:inline-block;width:50px">2000</span>
+			<span><input type="range" min="0" max="5000" step="100" value="2000" id="delay" style="width:200px"></span>
+		</div>
+		<div>
+			<span style="display:inline-block;text-align:right;width:100px">frameRate:</span>
+			<span id="frameRateValue" style="display:inline-block;width:50px">30</span>
+			<span><input type="range" min="1" max="60" step="1" value="30" id="frameRate" style="width:200px"></span>
+		</div>
+		<div>
+			<span style="display:inline-block;text-align:right;width:100px">pause:</span>
+			<span id="pauseValue" style="display:inline-block;width:50px">false</span>
+			<span><input type="checkbox" id="pause"></span>
+		</div>
+	</div>
+	<script>
+		var isIE = navigator.userAgent.indexOf('MSIE') !== -1 || navigator.userAgent.indexOf('Trident') !== -1;
+
+		var chartColors = {
+			red: 'rgb(255, 99, 132)',
+			orange: 'rgb(255, 159, 64)',
+			yellow: 'rgb(255, 205, 86)',
+			green: 'rgb(75, 192, 192)',
+			blue: 'rgb(54, 162, 235)',
+			purple: 'rgb(153, 102, 255)',
+			grey: 'rgb(201, 203, 207)'
+		};
+
+		function newDate(ms) {
+			return moment().add(ms, 'ms');
+		}
+
+		function randomScalingFactor() {
+			return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
+		}
+
+		function onRefresh() {
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data.push({
+					x: moment(),
+					y: randomScalingFactor()
+				});
+			});
+		}
+
+		var color = Chart.helpers.color;
+		var config = {
+			type: 'line',
+			data: {
+				datasets: [{
+					label: 'Dataset (linear interpolation)',
+					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
+					borderColor: chartColors.red,
+					fill: false,
+					lineTension: 0,
+					borderDash: [8, 4],
+					data: []
+				}, {
+					label: 'Dataset (cubic interpolation)',
+					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: chartColors.blue,
+					fill: false,
+					cubicInterpolationMode: 'monotone',
+					data: []
+				}]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Interactions sample'
+				},
+				scales: {
+					xAxes: [{
+						type: 'realtime',
+						display: true,
+					}],
+					yAxes: [{
+						type: 'linear',
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'value'
+						}
+					}]
+				},
+				tooltips: {
+					mode: 'nearest',
+					intersect: false
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: false
+				},
+				plugins: {
+					streaming: {
+						duration: 20000,
+						refresh: 1000,
+						delay: 2000,
+						frameRate: 30,
+						pause: false,
+						onRefresh: onRefresh
+					}
+				}
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+		};
+
+		document.getElementById('randomizeData').addEventListener('click', function() {
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data.forEach(function(dataObj) {
+					dataObj.y = randomScalingFactor();
+				});
+			});
+
+			window.myLine.update();
+		});
+
+		var colorNames = Object.keys(chartColors);
+		document.getElementById('addDataset').addEventListener('click', function() {
+			var colorName = colorNames[config.data.datasets.length % colorNames.length];
+			var newColor = chartColors[colorName];
+			var newDataset = {
+				label: 'Dataset ' + config.data.datasets.length,
+				backgroundColor: color(newColor).alpha(0.5).rgbString(),
+				borderColor: newColor,
+				fill: false,
+				lineTension: 0,
+				data: []
+			};
+
+			config.data.datasets.push(newDataset);
+			window.myLine.update();
+		});
+
+		document.getElementById('removeDataset').addEventListener('click', function() {
+			config.data.datasets.pop();
+			window.myLine.update();
+		});
+
+		document.getElementById('addData').addEventListener('click', function() {
+			onRefresh();
+
+			window.myLine.update();
+		});
+
+		document.getElementById('duration').addEventListener(isIE ? 'change' : 'input', function() {
+			config.options.plugins.streaming.duration = +this.value;
+			window.myLine.update(0);
+			document.getElementById('durationValue').innerHTML = this.value;
+		});
+
+		document.getElementById('refresh').addEventListener(isIE ? 'change' : 'input', function() {
+			config.options.plugins.streaming.refresh = +this.value;
+			window.myLine.update(0);
+			document.getElementById('refreshValue').innerHTML = this.value;
+		});
+
+		document.getElementById('delay').addEventListener(isIE ? 'change' : 'input', function() {
+			config.options.plugins.streaming.delay = +this.value;
+			window.myLine.update(0);
+			document.getElementById('delayValue').innerHTML = this.value;
+		});
+
+		document.getElementById('frameRate').addEventListener(isIE ? 'change' : 'input', function() {
+			config.options.plugins.streaming.frameRate = +this.value;
+			window.myLine.update(0);
+			document.getElementById('frameRateValue').innerHTML = this.value;
+		});
+
+		document.getElementById('pause').addEventListener('change', function() {
+			config.options.plugins.streaming.pause = this.checked;
+			window.myLine.update(0);
+			document.getElementById('pauseValue').innerHTML = this.checked;
+		});
+	</script>
+</body>
+
+</html>
