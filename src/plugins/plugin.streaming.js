@@ -33,7 +33,30 @@ export default function(Chart) {
 		}
 	}
 
-	function removeOldData(scale, lower, data, datasetIndex) {
+	var datasetPropertyKeys = [
+		'pointBackgroundColor',
+		'pointBorderColor',
+		'pointBorderWidth',
+		'pointRadius',
+		'pointStyle',
+		'pointHitRadius',
+		'pointHoverBackgroundColor',
+		'pointHoverBorderColor',
+		'pointHoverBorderWidth',
+		'pointHoverRadius',
+		'backgroundColor',
+		'borderColor',
+		'borderWidth',
+		'hoverBackgroundColor',
+		'hoverBorderColor',
+		'hoverBorderWidth',
+		'hoverRadius',
+		'hitRadius',
+		'radius'
+	];
+
+	function removeOldData(scale, lower, dataset, datasetIndex) {
+		var data = dataset.data;
 		var i, ilen;
 
 		for (i = 2, ilen = data.length; i < ilen; ++i) {
@@ -43,6 +66,11 @@ export default function(Chart) {
 		}
 		// Keep the last two data points outside the range not to affect the existing bezier curve
 		data.splice(0, i - 2);
+		datasetPropertyKeys.forEach(function(key) {
+			if (dataset.hasOwnProperty(key) && helpers.isArray(dataset[key])) {
+				dataset[key].splice(0, i - 2);
+			}
+		});
 		if (typeof data[0] !== 'object') {
 			return i - 2;
 		}
@@ -103,13 +131,13 @@ export default function(Chart) {
 			if (meta.xAxisID) {
 				scale = meta.controller.getScaleForId(meta.xAxisID);
 				if (scale instanceof realTimeScale) {
-					numToRemove = removeOldData(scale, scale.left, dataset.data, datasetIndex);
+					numToRemove = removeOldData(scale, scale.left, dataset, datasetIndex);
 				}
 			}
 			if (meta.yAxisID) {
 				scale = meta.controller.getScaleForId(meta.yAxisID);
 				if (scale instanceof realTimeScale) {
-					numToRemove = removeOldData(scale, scale.top, dataset.data, datasetIndex);
+					numToRemove = removeOldData(scale, scale.top, dataset, datasetIndex);
 				}
 			}
 		});
