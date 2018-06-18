@@ -375,8 +375,10 @@ export default function(Chart, moment) {
 
 			me.visibilityChangeListener = function() {
 				if (!document[hidden]) {
-					chart.update(0);
 					me.head = Date.now();
+					chart.update({
+						duration: 0
+					});
 				}
 			};
 			document.addEventListener(visibilityChange, me.visibilityChangeListener, false);

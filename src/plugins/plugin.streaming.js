@@ -100,7 +100,9 @@ export default function(Chart) {
 			// If the chart is animating, keep it until the duration is over
 			Chart.animationService.animations.forEach(function(animation) {
 				if (animation.chart === chart) {
-					chart.render((animation.numSteps - animation.currentStep) * 16.66);
+					chart.render({
+						duration: (animation.numSteps - animation.currentStep) * 16.66
+					});
 				}
 			});
 		} else {
