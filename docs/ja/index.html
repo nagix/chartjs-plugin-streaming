@@ -28,7 +28,13 @@
 
       <h1>早速始めましょう。</h1>
 
-      <ul id="user-site" class="tutorial-list wrapper active">
+      <ul class="tabs">
+        <li><a href="#plain-js" class="selected">プレーン JS</a></li>
+        <li><a href="#angular2">Angular 2+</a></li>
+        <li><a href="#react">React</a></li>
+      </ul>
+
+      <ul id="plain-js" class="tutorial-list wrapper active">
 
         <li>
           <h4>スクリプトを含める</h4>
@@ -66,7 +72,7 @@
               <p>&nbsp;&nbsp;data: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;},{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;},</p>
@@ -186,6 +192,283 @@
         </li>
 
       </ul>
+
+      <ul id="angular2" class="tutorial-list wrapper">
+
+        <li>
+          <h4>アプリケーションを新たに作成する</h4>
+          <p><a href="https://github.com/angular/angular-cli">Angular CLI</a> をインストールし、angular-streaming-chart というプロジェクトを作成します。<br />そして、プロジェクトディレクトリに移動し、アプリケーションを起動します。<br />ブラウザ上の <a href="http://localhost:4200/">http://localhost:4200/</a> にてアプリが動作しているはずです。</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p><span class="prompt">$</span>npm install -g @angular/cli</p>
+              <p><span class="prompt">$</span>ng new angular-streaming-chart</p>
+              <p><span class="prompt">$</span>cd angular-streaming-chart</p>
+              <p><span class="prompt">$</span>ng serve --open</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>モジュールをインストールする</h4>
+          <p><a href="https://valor-software.com/ng2-charts/">ng2-charts</a> および <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> をプロジェクトにインストールします。</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p><span class="prompt">$</span>npm install ng2-charts chartjs-plugin-streaming --save</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>モジュールをインポートする</h4>
+          <p>ng2-chart の ChartsModule を app モジュールにインポートします。</p>
+          <div class="terminal">
+            <div class="header">src/app/app.module.ts</div>
+            <div class="shell">
+              <p>import { BrowserModule } from '@angular/platform-browser';</p>
+              <p>import { NgModule } from '@angular/core';</p>
+              <p>import { ChartsModule } from 'ng2-charts';</p>
+              <br />
+              <p>import { AppComponent } from './app.component';</p>
+              <br />
+              <p>@NgModule({</p>
+              <p>&nbsp;&nbsp;declarations: [</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;AppComponent</p>
+              <p>&nbsp;&nbsp;],</p>
+              <p>&nbsp;&nbsp;imports: [</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;BrowserModule,</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;ChartsModule</p>
+              <p>&nbsp;&nbsp;],</p>
+              <p>&nbsp;&nbsp;providers: [],</p>
+              <p>&nbsp;&nbsp;bootstrap: [AppComponent]</p>
+              <p>})</p>
+              <p>export class AppModule { }</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Canvas を作成する</h4>
+          <p>ng2-charts では HTML Canvas 要素で baseChart ディレクティブを使用することができます。<br />下記の例では、いくつかのオプションを入力として渡しています。</p>
+          <div class="terminal">
+            <div class="header">src/app/app.component.html</div>
+            <div class="shell">
+              <p>&lt;div&gt;</p>
+              <p>&nbsp;&nbsp;&lt;canvas</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;baseChart</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;[chartType]="'line'"</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;[datasets]="datasets"</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;[options]="options"&gt;</p>
+              <p>&nbsp;&nbsp;&lt;/canvas&gt;</p>
+              <p>&lt;/div&gt;</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>チャートを作成する</h4>
+          <p>そして、コンポーネントクラスはこのようになります。moment、chartjs-plugin-streaming<br />をインポートして、realtime スケールを持つチャートを作成します。</p>
+          <div class="terminal">
+            <div class="header">src/app/app.component.ts</div>
+            <div class="shell">
+              <p>import { Component } from '@angular/core';</p>
+              <p>import * as moment from 'moment';</p>
+              <p>import 'chartjs-plugin-streaming';</p>
+              <br />
+              <p>@Component({</p>
+              <p>&nbsp;&nbsp;selector: 'app-root',</p>
+              <p>&nbsp;&nbsp;templateUrl: './app.component.html',</p>
+              <p>&nbsp;&nbsp;styleUrls: ['./app.component.css']</p>
+              <p>})</p>
+              <p>export class AppComponent {</p>
+              <p>&nbsp;&nbsp;datasets: any[] = [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
+              <p>&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
+              <p>&nbsp;&nbsp;}];</p>
+              <p>&nbsp;&nbsp;options: any = {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;};</p>
+              <p>}</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>データを流し込む</h4>
+          <p>コールバック関数でデータを追加し、様々なチャートオプションを指定することができます。<br />ブラウザは自動更新され、ストリーミングチャートが表示されます。<br />カスタマイズのオプションについては Chart.js の<a href="https://www.chartjs.org/docs">ドキュメント</a>や<a href="https://www.chartjs.org/samples">サンプル</a>、<br />ng2-charts の<a href="https://valor-software.com/ng2-charts/">ドキュメント</a>をご覧ください。</p>
+          <div class="terminal">
+            <div class="header">src/app/app.component.ts (一部)</div>
+            <div class="shell">
+              <p>...</p>
+              <p>export class AppComponent {</p>
+              <p>&nbsp;&nbsp;datasets: any[] = [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 1',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;lineTension: 0,</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;borderDash: [8, 4]</p>
+              <p>&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2'</p>
+              <p>&nbsp;&nbsp;}];</p>
+              <p>&nbsp;&nbsp;options: any = {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;plugins: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;streaming: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart: any) {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chart.data.datasets.forEach(function(dataset: any) {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataset.data.push({</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: Date.now(),</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y: Math.random()</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay: 2000</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;};</p>
+              <p>}</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>...これで完了です！</h4>
+          <p><a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub リポジトリ</a>と<a href="../samples">サンプル</a>もご覧ください。</p>
+          <div class="hero-octicon">
+            <span class="mega-octicon octicon-check"></span>
+          </div>
+        </li>
+
+      </ul>
+
+      <ul id="react" class="tutorial-list wrapper">
+
+        <li>
+          <h4>アプリケーションを新たに作成する</h4>
+          <p><a href="http://github.com/facebookincubator/create-react-app">Create React App</a> をインストールし、react-streaming-chart というプロジェクトを作成します。<br />そして、プロジェクトディレクトリに移動し、アプリケーションを起動します。<br />ブラウザ上の <a href="http://localhost:3000/">http://localhost:3000/</a> にてアプリが動作しているはずです。</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p><span class="prompt">$</span>npm install -g create-react-app</p>
+              <p><span class="prompt">$</span>create-react-app react-streaming-chart</p>
+              <p><span class="prompt">$</span>cd react-streaming-chart</p>
+              <p><span class="prompt">$</span>npm start --open</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>モジュールをインストールする</h4>
+          <p><a href="http://jerairrest.github.io/react-chartjs-2/">react-chartjs-2</a> および <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> をプロジェクトにインストールします。</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p><span class="prompt">$</span>npm install react-chartjs-2 chartjs-plugin-streaming --save</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>チャートを作成する</h4>
+          <p>react-chartjs-2 の Line チャートコンポーネント、moment、chartjs-plugin-streaming<br />をインポートして、realtime スケールを持つチャートを作成します。</p>
+          <div class="terminal">
+            <div class="header">src/App.js</div>
+            <div class="shell">
+              <p>import React, { Component } from 'react';</p>
+              <p>import { Line } from 'react-chartjs-2';</p>
+              <p>import * as moment from 'moment';</p>
+              <p>import 'chartjs-plugin-streaming';</p>
+              <p>import './App.css';</p>
+              <br />
+              <p>class App extends Component {</p>
+              <p>&nbsp;&nbsp;render() {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;return (</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;Line</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data={{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options={{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&gt;</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;);</p>
+              <p>&nbsp;&nbsp;}</p>
+              <p>}</p>
+              <br />
+              <p>export default App;</p>
+            </div>
+          </div>
+        </li>
+
+       <li>
+          <h4>データを流し込む</h4>
+          <p>コールバック関数でデータを追加し、様々なチャートオプションを指定することができます。<br />ブラウザは自動更新され、ストリーミングチャートが表示されます。<br />カスタマイズのオプションについては Chart.js の<a href="https://www.chartjs.org/docs">ドキュメント</a>や<a href="https://www.chartjs.org/samples">サンプル</a>、<br />react-chartjs-2 の<a href="https://github.com/jerairrest/react-chartjs-2">ドキュメント</a>をご覧ください。</p>
+          <div class="terminal">
+            <div class="header">src/App.js (一部)</div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;Line</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data={{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 1',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(255, 99, 132)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(255, 99, 132, 0.5)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineTension: 0,</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderDash: [8, 4]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(54, 162, 235)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options={{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plugins: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;streaming: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chart.data.datasets.forEach(function(dataset) {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataset.data.push({</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: Date.now(),</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y: Math.random()</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay: 2000</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&gt;</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>...これで完了です！</h4>
+          <p><a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub リポジトリ</a>と<a href="../samples">サンプル</a>もご覧ください。</p>
+          <div class="hero-octicon">
+            <span class="mega-octicon octicon-check"></span>
+          </div>
+        </li>
+
+      </ul>
+
     </section>
     <script>
       function onRefresh(chart) {
@@ -246,6 +529,8 @@
         }
       });
     </script>
+    <script src="/js/jquery.js"></script>
+    <script src="/js/application.js"></script>
     <footer class="page-footer">
       <ul class="site-footer-links right">
         <li><a href="https://github.com/nagix"><i class="fa fa-github-square fa-2x" style="color: #999;"></i></a></li>
