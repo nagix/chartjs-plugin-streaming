@@ -32,6 +32,7 @@
         <li><a href="#plain-js" class="selected">Plain JS</a></li>
         <li><a href="#angular2">Angular 2+</a></li>
         <li><a href="#react">React</a></li>
+        <li><a href="#vue">Vue.js</a></li>
       </ul>
 
       <ul id="plain-js" class="tutorial-list wrapper active">
@@ -95,7 +96,7 @@
 
         <li>
           <h4>Stream data</h4>
-          <p>You can appand the data in the onRefresh callback function that is called at a regular interval.<br />Each data has two properties: timestamp of the data point, and value of the data point.</p>
+          <p>You can append the data in the onRefresh callback function that is called at a regular interval.<br />Each data has two properties: timestamp of the data point, and value of the data point.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
@@ -154,7 +155,7 @@
 
         <li>
           <h4>Splash of color</h4>
-          <p>Chart.js provides many options that can help you customise your charts<br />with scales, tooltips, labels, colors, custom actions, and much more.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a> and <a href="https://www.chartjs.org/samples">samples</a> for more details.</p>
+          <p>Chart.js provides many options that can help you customize your charts<br />with scales, tooltips, labels, colors, custom actions, and much more.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a> and <a href="https://www.chartjs.org/samples">samples</a> for more details.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
@@ -268,12 +269,11 @@
 
         <li>
           <h4>Create a chart</h4>
-          <p>And, here’s what it can look like in our component class.<br />Import moment and chartjs-plugin-streaming, and create a chart with a realtime scale.</p>
+          <p>And, here’s what it can look like in our component class.<br />Import chartjs-plugin-streaming, and create a chart with a realtime scale.</p>
           <div class="terminal">
             <div class="header">src/app/app.component.ts</div>
             <div class="shell">
               <p>import { Component } from '@angular/core';</p>
-              <p>import * as moment from 'moment';</p>
               <p>import 'chartjs-plugin-streaming';</p>
               <br />
               <p>@Component({</p>
@@ -301,7 +301,7 @@
 
         <li>
           <h4>Stream data</h4>
-          <p>You can appand the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming charts.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and ng2-charts <a href="https://valor-software.com/ng2-charts/">documentation</a><br /> for the customization options.</p>
+          <p>You can append the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming chart.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and ng2-charts <a href="https://valor-software.com/ng2-charts/">documentation</a><br />for the customization options.</p>
           <div class="terminal">
             <div class="header">src/app/app.component.ts (Partial)</div>
             <div class="shell">
@@ -375,14 +375,13 @@
         </li>
 
         <li>
-          <h4>Create a chart</h4>
-          <p>Now you’ll want to import the Line chart component from react-chartjs-2<br />as well as moment and chartjs-plugin-streaming.<br />Create a chart with a realtime scale.</p>
+          <h4>Create a chart component</h4>
+          <p>Now you’ll want to create a chart component with a realtime scale.<br />Import a Line chart component from react-chartjs-2 as well as<br />chartjs-plugin-streaming, and extend it.</p>
           <div class="terminal">
             <div class="header">src/App.js</div>
             <div class="shell">
               <p>import React, { Component } from 'react';</p>
               <p>import { Line } from 'react-chartjs-2';</p>
-              <p>import * as moment from 'moment';</p>
               <p>import 'chartjs-plugin-streaming';</p>
               <p>import './App.css';</p>
               <br />
@@ -416,7 +415,7 @@
 
        <li>
           <h4>Stream data</h4>
-          <p>You can appand the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming charts.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and react-chartjs-2 <a href="https://github.com/jerairrest/react-chartjs-2">documentation</a><br />for the customization options.</p>
+          <p>You can append the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming chart.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and react-chartjs-2 <a href="https://github.com/jerairrest/react-chartjs-2">documentation</a><br />for the customization options.</p>
           <div class="terminal">
             <div class="header">src/App.js (Patial)</div>
             <div class="shell">
@@ -455,6 +454,144 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&gt;</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>...and you're done!</h4>
+          <p>See also <a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
+          <div class="hero-octicon">
+            <span class="mega-octicon octicon-check"></span>
+          </div>
+        </li>
+
+      </ul>
+
+      <ul id="vue" class="tutorial-list wrapper">
+
+        <li>
+          <h4>Create a new application</h4>
+          <p>Install the <a href="https://github.com/vuejs/vue-cli">Vue CLI</a>, and create a new project named vue-streaming-chart.<br />Then, go to the project directory and launch the application.<br />You should see the app running at <a href="http://localhost:8080/">http://localhost:8080/</a> in your browser.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p><span class="prompt">$</span>npm install -g @vue/cli</p>
+              <p><span class="prompt">$</span>vue create --default vue-streaming-chart</p>
+              <p><span class="prompt">$</span>cd vue-streaming-chart</p>
+              <p><span class="prompt">$</span>npm run serve</p>
+            </div>
+          </div>
+         </li>
+
+        <li>
+          <h4>Install modules</h4>
+          <p>Install <a href="https://vue-chartjs.org/">vue-chartjs</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
+          <div class="terminal">
+            <div class="header"></div>
+            <div class="shell">
+              <p><span class="prompt">$</span>npm install vue-chartjs chartjs-plugin-streaming --save</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Edit a main App component</h4>
+          <p>First, we'll start with the main top level component.<br />The Vue CLI already generates a main component that can be found in src/App.vue.<br />We import a MyChart component which will be created later.</p>
+          <div class="terminal">
+            <div class="header">src/App.vue</div>
+            <div class="shell">
+              <p>&lt;template&gt;</p>
+              <p>&nbsp;&nbsp;&lt;div id="app"&gt;</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&lt;MyChart /&gt;</p>
+              <p>&nbsp;&nbsp;&lt;/div&gt;</p>
+              <p>&lt;/template&gt;</p>
+              <br />
+              <p>&lt;script&gt;</p>
+              <p>import MyChart from './components/MyChart.vue'</p>
+              <br />
+              <p>export default {</p>
+              <p>&nbsp;&nbsp;name: 'app',</p>
+              <p>&nbsp;&nbsp;components: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;MyChart</p>
+              <p>&nbsp;&nbsp;}</p>
+              <p>}</p>
+              <p>&lt;/script&gt;</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Create a chart component</h4>
+          <p>Now you’ll want to create a chart component named MyChart with a realtime scale.<br />Import a Line chart component from vue-chartjs as well as<br />chartjs-plugin-streaming, and extend it.</p>
+          <div class="terminal">
+            <div class="header">src/components/MyChart.vue</div>
+            <div class="shell">
+              <p>&lt;script&gt;</p>
+              <p>import { Line } from 'vue-chartjs'</p>
+              <p>import 'chartjs-plugin-streaming';</p>
+              <br />
+              <p>export default {</p>
+              <p>&nbsp;&nbsp;extends: Line,</p>
+              <p>&nbsp;&nbsp;mounted () {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;this.renderChart({</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data: []</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;}</p>
+              <p>}</p>
+              <p>&lt;/script&gt;</p>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Stream data</h4>
+          <p>You can append the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming chart.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and vue-chartjs <a href="https://vue-chartjs.org/#/Home">documentation</a><br />for the customization options.</p>
+          <div class="terminal">
+            <div class="header">src/components/MyChart.vue (Patial)</div>
+            <div class="shell">
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;this.renderChart({</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;datasets: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 1',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(255, 99, 132)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(255, 99, 132, 0.5)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineTension: 0,</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderDash: [8, 4]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(54, 162, 235)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plugins: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;streaming: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chart.data.datasets.forEach(function(dataset) {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataset.data.push({</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: Date.now(),</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y: Math.random()</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay: 2000</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;});</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
             </div>
           </div>
         </li>
