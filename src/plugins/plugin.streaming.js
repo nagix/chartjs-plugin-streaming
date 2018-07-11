@@ -58,26 +58,28 @@ export default function(Chart) {
 	function removeOldData(scale, lower, dataset, datasetIndex) {
 		var ttl = scale.options.realtime.ttl;
 		var data = dataset.data;
+		var backlog = 2;
 		var i, ilen;
 
 		if (!isNaN(ttl)) {
 			lower = scale.getPixelForValue(Date.now() - ttl);
+			backlog = 0;
 		}
 
-		for (i = 2, ilen = data.length; i < ilen; ++i) {
+		for (i = backlog, ilen = data.length; i < ilen; ++i) {
 			if (!(scale.getPixelForValue(null, i, datasetIndex) <= lower)) {
 				break;
 			}
 		}
 		// Keep the last two data points outside the range not to affect the existing bezier curve
-		data.splice(0, i - 2);
+		data.splice(0, i - backlog);
 		datasetPropertyKeys.forEach(function(key) {
 			if (dataset.hasOwnProperty(key) && helpers.isArray(dataset[key])) {
-				dataset[key].splice(0, i - 2);
+				dataset[key].splice(0, i - backlog);
 			}
 		});
 		if (typeof data[0] !== 'object') {
-			return i - 2;
+			return i - backlog;
 		}
 	}
 
