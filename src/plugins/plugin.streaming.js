@@ -56,8 +56,13 @@ export default function(Chart) {
 	];
 
 	function removeOldData(scale, lower, dataset, datasetIndex) {
+		var ttl = scale.options.realtime.ttl;
 		var data = dataset.data;
 		var i, ilen;
+
+		if (!isNaN(ttl)) {
+			lower = scale.getPixelForValue(Date.now() - ttl);
+		}
 
 		for (i = 2, ilen = data.length; i < ilen; ++i) {
 			if (!(scale.getPixelForValue(null, i, datasetIndex) <= lower)) {
@@ -195,6 +200,7 @@ export default function(Chart) {
 
 						// Copy plugin options to scale options
 						realtimeOpts.duration = options.duration;
+						realtimeOpts.ttl = options.ttl;
 						realtimeOpts.refresh = options.refresh;
 						realtimeOpts.delay = options.delay;
 						realtimeOpts.frameRate = options.frameRate;
