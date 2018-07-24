@@ -7,24 +7,34 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 	<script src="../dist/chartjs-plugin-streaming.js"></script>
 	<style>
-	canvas {
-		-moz-user-select: none;
-		-webkit-user-select: none;
-		-ms-user-select: none;
-	}
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+		.chart {
+			margin: auto;
+			width: 75%;
+		}
+		.text-center {
+			text-align: center;
+		}
 	</style>
 </head>
 
 <body>
-	<div style="width:75%;">
-		<canvas id="canvas"></canvas>
+	<div class="chart">
+		<canvas id="myChart"></canvas>
 	</div>
-	<br>
-	<br>
-	<button id="randomizeData">Randomize Data</button>
-	<button id="addDataset">Add Dataset</button>
-	<button id="removeDataset">Remove Dataset</button>
-	<button id="addData">Add Data</button>
+	<div>
+		<p class="text-center">
+			<button id="randomizeData">Randomize Data</button>
+			<button id="addDataset">Add Dataset</button>
+			<button id="removeDataset">Remove Dataset</button>
+			<button id="addData">Add Data</button>
+		</p>
+	</div>
+
 	<script>
 		var chartColors = {
 			red: 'rgb(255, 99, 132)',
@@ -36,17 +46,13 @@
 			grey: 'rgb(201, 203, 207)'
 		};
 
-		function newDate(ms) {
-			return moment().add(ms, 'ms');
-		}
-
 		function randomScalingFactor() {
 			return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
 		}
 
-		function onRefresh() {
-			config.data.labels.push(moment());
-			config.data.datasets.forEach(function(dataset) {
+		function onRefresh(chart) {
+			chart.config.data.labels.push(Date.now());
+			chart.config.data.datasets.forEach(function(dataset) {
 				dataset.data.push(randomScalingFactor());
 			});
 		}
@@ -57,35 +63,31 @@
 			data: {
 				labels: [],
 				datasets: [{
-					label: 'Dataset (line)',
+					label: 'Dataset 1 (line)',
 					type: 'line',
 					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
-                	borderColor: chartColors.red,
+					borderColor: chartColors.red,
 					fill: false,
 					cubicInterpolationMode: 'monotone',
 					data: []
 				}, {
-					label: 'Dataset (bars)',
+					label: 'Dataset 2 (bars)',
 					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
 					borderColor: chartColors.blue,
-                	borderWidth: 1,
+					borderWidth: 1,
 					data: []
 				}]
 			},
 			options: {
-				responsive: true,
 				title: {
 					display: true,
 					text: 'Mixed chart (horizontal scroll) sample'
 				},
 				scales: {
 					xAxes: [{
-						type: 'realtime',
-						display: true
+						type: 'realtime'
 					}],
 					yAxes: [{
-						type: 'linear',
-						display: true,
 						scaleLabel: {
 							display: true,
 							labelString: 'value'
@@ -112,8 +114,8 @@
 		};
 
 		window.onload = function() {
-			var ctx = document.getElementById('canvas').getContext('2d');
-			window.myBar = new Chart(ctx, config);
+			var ctx = document.getElementById('myChart').getContext('2d');
+			window.myChart = new Chart(ctx, config);
 		};
 
 		document.getElementById('randomizeData').addEventListener('click', function() {
@@ -123,7 +125,7 @@
 				}
 			});
 
-			window.myBar.update();
+			window.myChart.update();
 		});
 
 		var colorNames = Object.keys(chartColors);
@@ -131,7 +133,7 @@
 			var colorName = colorNames[config.data.datasets.length % colorNames.length];
 			var newColor = chartColors[colorName];
 			var newDataset = {
-				label: 'Dataset ' + config.data.datasets.length,
+				label: 'Dataset ' + (config.data.datasets.length + 1),
 				type: 'line',
 				backgroundColor: color(newColor).alpha(0.5).rgbString(),
 				borderColor: newColor,
@@ -141,18 +143,17 @@
 			};
 
 			config.data.datasets.push(newDataset);
-			window.myBar.update();
+			window.myChart.update();
 		});
 
 		document.getElementById('removeDataset').addEventListener('click', function() {
 			config.data.datasets.pop();
-			window.myBar.update();
+			window.myChart.update();
 		});
 
 		document.getElementById('addData').addEventListener('click', function() {
-			onRefresh();
-
-			window.myBar.update();
+			onRefresh(window.myChart);
+			window.myChart.update();
 		});
 	</script>
 </body>

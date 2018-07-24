@@ -3,28 +3,190 @@
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/js/bootstrap.min.js"></script>
+	<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 	<script src="https://github.com/nagix/chartjs-plugin-streaming/releases/download/v1.5.0/chartjs-plugin-streaming.min.js"></script>
 	<style>
-	canvas {
-		-moz-user-select: none;
-		-webkit-user-select: none;
-		-ms-user-select: none;
-	}
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+		.chart {
+			margin: auto;
+			width: 75%;
+		}
 	</style>
 </head>
 
 <body>
-	<div style="width:75%;">
-		<canvas id="canvas"></canvas>
+	<div class="chart">
+		<canvas id="myChart"></canvas>
 	</div>
-	<br>
-	<br>
-	<button id="randomizeData">Randomize Data</button>
-	<button id="addDataset">Add Dataset</button>
-	<button id="removeDataset">Remove Dataset</button>
-	<button id="addData">Add Data</button>
+	<div class="container mt-3">
+		<p class="text-center">
+			<button type="button" class="btn btn-outline-primary btn-sm" id="randomizeData">Randomize Data</button>
+			<button type="button" class="btn btn-outline-primary btn-sm" id="addDataset">Add Dataset</button>
+			<button type="button" class="btn btn-outline-primary btn-sm" id="removeDataset">Remove Dataset</button>
+			<button type="button" class="btn btn-outline-primary btn-sm" id="addData">Add Data</button>
+		</p>
+	</div>
+	<div class="container mt-3">
+		<ul class="nav nav-tabs mb-2" id="myTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" id="js-tab" data-toggle="tab" href="#js" role="tab" aria-controls="js" aria-selected="true">JavaScript</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="html-tab" data-toggle="tab" href="#html" role="tab" aria-controls="html" aria-selected="false">HTML</a>
+			</li>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade show active" id="js" role="tabpanel" aria-labelledby="js-tab">
+				<pre class="prettyprint lang-js p-3 bg-light">var chartColors = {
+	red: 'rgb(255, 99, 132)',
+	orange: 'rgb(255, 159, 64)',
+	yellow: 'rgb(255, 205, 86)',
+	green: 'rgb(75, 192, 192)',
+	blue: 'rgb(54, 162, 235)',
+	purple: 'rgb(153, 102, 255)',
+	grey: 'rgb(201, 203, 207)'
+};
+
+function randomScalingFactor() {
+	return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
+}
+
+function onRefresh(chart) {
+	chart.config.data.datasets.forEach(function(dataset) {
+		dataset.data.push({
+			x: Date.now(),
+			y: randomScalingFactor()
+		});
+	});
+}
+
+var color = Chart.helpers.color;
+var config = {
+	type: 'line',
+	data: {
+		datasets: [{
+			label: 'Dataset 1 (linear interpolation)',
+			backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
+			borderColor: chartColors.red,
+			fill: false,
+			lineTension: 0,
+			borderDash: [8, 4],
+			data: []
+		}, {
+			label: 'Dataset 2 (cubic interpolation)',
+			backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+			borderColor: chartColors.blue,
+			fill: false,
+			cubicInterpolationMode: 'monotone',
+			data: []
+		}]
+	},
+	options: {
+		title: {
+			display: true,
+			text: 'Line chart (hotizontal scroll) sample'
+		},
+		scales: {
+			xAxes: [{
+				type: 'realtime'
+			}],
+			yAxes: [{
+				scaleLabel: {
+					display: true,
+					labelString: 'value'
+				}
+			}]
+		},
+		tooltips: {
+			mode: 'nearest',
+			intersect: false
+		},
+		hover: {
+			mode: 'nearest',
+			intersect: false
+		},
+		plugins: {
+			streaming: {
+				duration: 20000,
+				refresh: 1000,
+				delay: 2000,
+				onRefresh: onRefresh
+			}
+		}
+	}
+};
+
+window.onload = function() {
+	var ctx = document.getElementById('myChart').getContext('2d');
+	window.myChart = new Chart(ctx, config);
+};
+
+document.getElementById('randomizeData').addEventListener('click', function() {
+	config.data.datasets.forEach(function(dataset) {
+		dataset.data.forEach(function(dataObj) {
+			dataObj.y = randomScalingFactor();
+		});
+	});
+	window.myChart.update();
+});
+
+var colorNames = Object.keys(chartColors);
+document.getElementById('addDataset').addEventListener('click', function() {
+	var colorName = colorNames[config.data.datasets.length % colorNames.length];
+	var newColor = chartColors[colorName];
+	var newDataset = {
+		label: 'Dataset ' + (config.data.datasets.length + 1),
+		backgroundColor: color(newColor).alpha(0.5).rgbString(),
+		borderColor: newColor,
+		fill: false,
+		lineTension: 0,
+		data: []
+	};
+
+	config.data.datasets.push(newDataset);
+	window.myChart.update();
+});
+
+document.getElementById('removeDataset').addEventListener('click', function() {
+	config.data.datasets.pop();
+	window.myChart.update();
+});
+
+document.getElementById('addData').addEventListener('click', function() {
+	onRefresh(window.myChart);
+	window.myChart.update();
+});</pre>
+			</div>
+			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
+				<pre class="prettyprint lang-html p-3 bg-light">&lt;head&gt;
+	&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://github.com/nagix/chartjs-plugin-streaming/releases/download/v1.5.0/chartjs-plugin-streaming.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;div&gt;
+		&lt;canvas id="myChart"&gt;&lt;/canvas&gt;
+	&lt;/div&gt;
+	&lt;p&gt;
+		&lt;button id="randomizeData"&gt;Randomize Data&lt;/button&gt;
+		&lt;button id="addDataset"&gt;Add Dataset&lt;/button&gt;
+		&lt;button id="removeDataset"&gt;Remove Dataset&lt;/button&gt;
+		&lt;button id="addData"&gt;Add Data&lt;/button&gt;
+	&lt;/p&gt;
+&lt;/body&gt;</pre>
+			</div>
+		</div>
+	</div>
+
 	<script>
 		var chartColors = {
 			red: 'rgb(255, 99, 132)',
@@ -36,18 +198,14 @@
 			grey: 'rgb(201, 203, 207)'
 		};
 
-		function newDate(ms) {
-			return moment().add(ms, 'ms');
-		}
-
 		function randomScalingFactor() {
 			return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
 		}
 
-		function onRefresh() {
-			config.data.datasets.forEach(function(dataset) {
+		function onRefresh(chart) {
+			chart.config.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
-					x: moment(),
+					x: Date.now(),
 					y: randomScalingFactor()
 				});
 			});
@@ -58,7 +216,7 @@
 			type: 'line',
 			data: {
 				datasets: [{
-					label: 'Dataset (linear interpolation)',
+					label: 'Dataset 1 (linear interpolation)',
 					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
 					borderColor: chartColors.red,
 					fill: false,
@@ -66,7 +224,7 @@
 					borderDash: [8, 4],
 					data: []
 				}, {
-					label: 'Dataset (cubic interpolation)',
+					label: 'Dataset 2 (cubic interpolation)',
 					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
 					borderColor: chartColors.blue,
 					fill: false,
@@ -75,19 +233,15 @@
 				}]
 			},
 			options: {
-				responsive: true,
 				title: {
 					display: true,
 					text: 'Line chart (hotizontal scroll) sample'
 				},
 				scales: {
 					xAxes: [{
-						type: 'realtime',
-						display: true,
+						type: 'realtime'
 					}],
 					yAxes: [{
-						type: 'linear',
-						display: true,
 						scaleLabel: {
 							display: true,
 							labelString: 'value'
@@ -114,8 +268,8 @@
 		};
 
 		window.onload = function() {
-			var ctx = document.getElementById('canvas').getContext('2d');
-			window.myLine = new Chart(ctx, config);
+			var ctx = document.getElementById('myChart').getContext('2d');
+			window.myChart = new Chart(ctx, config);
 		};
 
 		document.getElementById('randomizeData').addEventListener('click', function() {
@@ -124,8 +278,7 @@
 					dataObj.y = randomScalingFactor();
 				});
 			});
-
-			window.myLine.update();
+			window.myChart.update();
 		});
 
 		var colorNames = Object.keys(chartColors);
@@ -133,7 +286,7 @@
 			var colorName = colorNames[config.data.datasets.length % colorNames.length];
 			var newColor = chartColors[colorName];
 			var newDataset = {
-				label: 'Dataset ' + config.data.datasets.length,
+				label: 'Dataset ' + (config.data.datasets.length + 1),
 				backgroundColor: color(newColor).alpha(0.5).rgbString(),
 				borderColor: newColor,
 				fill: false,
@@ -142,18 +295,17 @@
 			};
 
 			config.data.datasets.push(newDataset);
-			window.myLine.update();
+			window.myChart.update();
 		});
 
 		document.getElementById('removeDataset').addEventListener('click', function() {
 			config.data.datasets.pop();
-			window.myLine.update();
+			window.myChart.update();
 		});
 
 		document.getElementById('addData').addEventListener('click', function() {
-			onRefresh();
-
-			window.myLine.update();
+			onRefresh(window.myChart);
+			window.myChart.update();
 		});
 	</script>
 </body>
