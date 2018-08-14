@@ -15,21 +15,23 @@ export default function(Chart) {
 
 	var realTimeScale = Chart.scaleService.getScaleConstructor('realtime');
 
+	// Dispach mouse event for scroll
 	function generateMouseMoveEvent(chart) {
-		// Dispach mouse event for scroll
 		var event = chart.lastMouseMoveEvent;
+		var newEvent;
+
 		if (event) {
 			if (typeof MouseEvent === 'function') {
-				chart.canvas.dispatchEvent(event);
+				newEvent = new MouseEvent('mousemove', event);
 			} else {
-				var newEvent = document.createEvent('MouseEvents');
+				newEvent = document.createEvent('MouseEvents');
 				newEvent.initMouseEvent(
-					event.type, event.bubbles, event.cancelable, event.view, event.detail,
+					'mousemove', event.bubbles, event.cancelable, event.view, event.detail,
 					event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey,
 					event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget
 				);
-				chart.canvas.dispatchEvent(newEvent);
 			}
+			chart.canvas.dispatchEvent(newEvent);
 		}
 	}
 
@@ -181,6 +183,17 @@ export default function(Chart) {
 	return {
 		id: 'streaming',
 
+		beforeInit: function(chart) {
+			var canvas = chart.canvas;
+			var listener = function(event) {
+				chart.lastMouseMoveEvent = event;
+			};
+
+			canvas.addEventListener('mousedown', listener);
+			canvas.addEventListener('mouseup', listener);
+			chart.mouseButtonListener = listener;
+		},
+
 		afterInit: function(chart, options) {
 			setRefreshTimer(chart, options.refresh);
 		},
@@ -254,6 +267,12 @@ export default function(Chart) {
 		},
 
 		destroy: function(chart) {
+			var canvas = chart.canvas;
+			var listener = chart.mouseButtonListener;
+
+			canvas.removeEventListener('mousedown', listener);
+			canvas.removeEventListener('mouseup', listener);
+
 			clearRefreshTimer(chart);
 			helpers.each(chart.scales, function(scale) {
 				if (scale instanceof realTimeScale) {
