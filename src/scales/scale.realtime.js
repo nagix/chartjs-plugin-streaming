@@ -44,14 +44,6 @@ export default function(Chart, moment) {
 				year: 'YYYY' // 2015
 			},
 		},
-		realtime: {
-			duration: 10000,
-			refresh: 1000,
-			delay: 0,
-			frameRate: 30,
-			pause: false,
-			onDraw: null
-		},
 		ticks: {
 			autoSkip: false,
 			source: 'auto',
@@ -61,10 +53,10 @@ export default function(Chart, moment) {
 		}
 	};
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	var MAX_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	var INTERVALS = {
 		millisecond: {
 			common: true,
@@ -112,10 +104,10 @@ export default function(Chart, moment) {
 		}
 	};
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	var UNITS = Object.keys(INTERVALS);
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	function momentify(value, options) {
 		var parser = options.parser;
 		var format = options.parser || options.format;
@@ -145,7 +137,7 @@ export default function(Chart, moment) {
 		return value;
 	}
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	function determineStepSize(min, max, unit, capacity) {
 		var range = max - min;
 		var interval = INTERVALS[unit];
@@ -167,7 +159,7 @@ export default function(Chart, moment) {
 		return factor;
 	}
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	function determineUnitForAutoTicks(minUnit, min, max, capacity) {
 		var ilen = UNITS.length;
 		var i, interval, factor;
@@ -184,7 +176,7 @@ export default function(Chart, moment) {
 		return UNITS[ilen - 1];
 	}
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	function determineUnitForFormatting(ticks, minUnit, min, max) {
 		var duration = moment.duration(moment(max).diff(moment(min)));
 		var ilen = UNITS.length;
@@ -200,7 +192,7 @@ export default function(Chart, moment) {
 		return UNITS[minUnit ? UNITS.indexOf(minUnit) : 0];
 	}
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	function determineMajorUnit(unit) {
 		for (var i = UNITS.indexOf(unit) + 1, ilen = UNITS.length; i < ilen; ++i) {
 			if (INTERVALS[UNITS[i]].common) {
@@ -209,8 +201,8 @@ export default function(Chart, moment) {
 		}
 	}
 
-	// Ported from Chart.js 2.7.1 37ec838. Modified for realtime scale.
-	function generate(min, max, capacity, options) {
+	// Ported from Chart.js 2.7.2 37ec838. Modified for realtime scale.
+	function generate(min, max, capacity, options, refresh) {
 		var timeOpts = options.time;
 		var minor = timeOpts.unit || determineUnitForAutoTicks(timeOpts.minUnit, min, max, capacity);
 		var major = determineMajorUnit(minor);
@@ -220,8 +212,8 @@ export default function(Chart, moment) {
 		var majorTicksEnabled = true;
 		var interval = INTERVALS[minor];
 		var first = moment(min);
-		// For realtime scale: Add delay and refresh interval for scroll margin.
-		var last = moment(max + options.realtime.refresh);
+		// For realtime scale: Add refresh interval for scroll margin.
+		var last = moment(max + refresh);
 		var ticks = [];
 		var time;
 
@@ -240,7 +232,7 @@ export default function(Chart, moment) {
 		last = last.startOf(weekday ? 'day' : minor);
 
 		// Make sure that the last tick include max
-		if (last < max + options.realtime.refresh) {
+		if (last < max + refresh) {
 			last.add(1, minor);
 		}
 
@@ -263,7 +255,7 @@ export default function(Chart, moment) {
 		return ticks;
 	}
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	function ticksFromTimestamps(values, majorUnit) {
 		var ticks = [];
 		var i, ilen, value, major;
@@ -281,7 +273,7 @@ export default function(Chart, moment) {
 		return ticks;
 	}
 
-	// Ported from Chart.js 2.7.1 37ec838.
+	// Ported from Chart.js 2.7.2 37ec838.
 	function determineLabelFormat(data, timeOpts) {
 		var i, momentDate, hasTime;
 		var ilen = data.length;
@@ -370,26 +362,31 @@ export default function(Chart, moment) {
 				return;
 			}
 
-			me.head = Date.now();
+			var requestAnimFrame = helpers.requestAnimFrame;
+			var realtime = me.realtime = me.realtime || {};
 			var lastDrawn = 0;
-
-			me.visibilityChangeListener = function() {
+			var visibilityChangeListener = function() {
 				if (!document[hidden]) {
-					me.head = Date.now();
+					realtime.head = Date.now();
 					chart.update({
 						duration: 0
 					});
 				}
 			};
-			document.addEventListener(visibilityChange, me.visibilityChangeListener, false);
+			document.addEventListener(visibilityChange, visibilityChangeListener, false);
+			realtime.visibilityChangeListener = visibilityChangeListener;
 
 			var frameRefresh = function() {
-				var realtimeOpts = me.options.realtime;
-				var duration = realtimeOpts.duration;
+				var valueOrDefault = helpers.valueOrDefault;
+				var realtimeOpts = me.options.realtime || {};
+				var streamingOpts = chart.options.plugins.streaming || {};
+				var duration = valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
+				var delay = valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
+				var frameRate = valueOrDefault(realtimeOpts.frameRate, streamingOpts.frameRate);
 				var id = me.id;
 				var tooltip = chart.tooltip;
 				var activeTooltip = tooltip._active;
-				var frameDuration = 1000 / (Math.max(realtimeOpts.frameRate, 0) || 30);
+				var frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
 				var keys, length, meta;
 
 				if (me.isHorizontal()) {
@@ -401,7 +398,7 @@ export default function(Chart, moment) {
 				}
 
 				var now = Date.now();
-				var offset = length * (now - me.head) / duration;
+				var offset = length * (now - realtime.head) / duration;
 
 				// Shift all the elements leftward or upward
 				helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
@@ -428,41 +425,42 @@ export default function(Chart, moment) {
 					}
 				}
 
-				me.max = me._table[1].time = now - realtimeOpts.delay;
+				me.max = me._table[1].time = now - delay;
 				me.min = me._table[0].time = me.max - duration;
 
 				if (lastDrawn + frameDuration <= now) {
 					// Draw only when animation is inactive
-					if (!chart.animating && !chart.tooltip._start) {
+					if (!chart.animating && !tooltip._start) {
 						chart.draw();
 					}
-					if (realtimeOpts.onDraw) {
-						realtimeOpts.onDraw(chart);
-					}
+					chart.streaming.onDraw(chart);
 					lastDrawn += frameDuration;
 					if (lastDrawn + frameDuration <= now) {
 						lastDrawn = now;
 					}
 				}
 
-				me.head = now;
-
-				me.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+				realtime.head = now;
+				realtime.frameRequestID = requestAnimFrame.call(window, frameRefresh);
 			};
-			me.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+
+			realtime.head = Date.now();
+			realtime.frameRequestID = requestAnimFrame.call(window, frameRefresh);
 		},
 
 		update: function() {
 			var me = this;
 			var options = me.options;
+			var chart = me.chart;
 
 			// For backwards compatibility
-			if (options.type === 'time' && !me.chart.options.plugins.streaming) {
+			if (options.type === 'time' && !chart.options.plugins.streaming) {
 				return TimeScale.prototype.update.apply(me, arguments);
 			}
 
-			var pause = options.realtime.pause;
-			var frameRequestID = me.frameRequestID;
+			var frameRequestID = me.realtime.frameRequestID;
+			var streamingOpts = chart.options.plugins.streaming || {};
+			var pause = streamingOpts.pause;
 
 			if (!frameRequestID && !pause) {
 				me.initialize();
@@ -476,16 +474,22 @@ export default function(Chart, moment) {
 		buildTicks: function() {
 			var me = this;
 			var options = me.options;
+			var chart = me.chart;
 
 			// For backwards compatibility
-			if (options.type === 'time' && !me.chart.options.plugins.streaming) {
+			if (options.type === 'time' && !chart.options.plugins.streaming) {
 				return TimeScale.prototype.buildTicks.apply(me, arguments);
 			}
 
+			var valueOrDefault = helpers.valueOrDefault;
 			var timeOpts = options.time;
-			var realtimeOpts = options.realtime;
-			var max = me.head - realtimeOpts.delay;
-			var min = max - realtimeOpts.duration;
+			var realtimeOpts = options.realtime || {};
+			var streamingOpts = chart.options.plugins.streaming || {};
+			var duration = valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
+			var delay = valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
+			var refresh = valueOrDefault(streamingOpts.refresh, 0);
+			var max = me.realtime.head - delay;
+			var min = max - duration;
 			var timestamps = [];
 
 			switch (options.ticks.source) {
@@ -497,7 +501,7 @@ export default function(Chart, moment) {
 				break;
 			case 'auto':
 			default:
-				timestamps = generate(min, max, me.getLabelCapacity(min), options);
+				timestamps = generate(min, max, me.getLabelCapacity(min), options, refresh);
 			}
 
 			me.min = min;
@@ -564,17 +568,17 @@ export default function(Chart, moment) {
 		},
 
 		destroy: function() {
-			var me = this;
-			var visibilityChangeListener = me.visibilityChangeListener;
-			var frameRequestID = me.frameRequestID;
+			var realtime = this.realtime;
+			var visibilityChangeListener = realtime.visibilityChangeListener;
+			var frameRequestID = realtime.frameRequestID;
 
 			if (visibilityChangeListener) {
 				document.removeEventListener(visibilityChange, visibilityChangeListener, false);
-				delete me.visibilityChangeListener;
+				delete realtime.visibilityChangeListener;
 			}
 			if (frameRequestID) {
 				helpers.cancelAnimFrame.call(window, frameRequestID);
-				delete me.frameRequestID;
+				delete realtime.frameRequestID;
 			}
 		}
 	});

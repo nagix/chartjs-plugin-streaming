@@ -6,18 +6,19 @@ export default function(Chart) {
 
 	Chart.defaults.global.plugins.streaming = {
 		duration: 10000,
-		refresh: 1000,
 		delay: 0,
 		frameRate: 30,
+		refresh: 1000,
+		onRefresh: null,
 		pause: false,
-		onRefresh: null
+		ttl: undefined
 	};
 
 	var realTimeScale = Chart.scaleService.getScaleConstructor('realtime');
 
 	// Dispach mouse event for scroll
 	function generateMouseMoveEvent(chart) {
-		var event = chart.lastMouseMoveEvent;
+		var event = chart.streaming.lastMouseEvent;
 		var newEvent;
 
 		if (event) {
@@ -57,8 +58,7 @@ export default function(Chart) {
 		'radius'
 	];
 
-	function removeOldData(scale, lower, dataset, datasetIndex) {
-		var ttl = scale.options.realtime.ttl;
+	function removeOldData(scale, lower, ttl, dataset, datasetIndex) {
 		var data = dataset.data;
 		var backlog = 2;
 		var i, ilen;
@@ -129,7 +129,8 @@ export default function(Chart) {
 	}
 
 	function onRefresh(chart) {
-		var streamingOpts = chart.options.plugins.streaming;
+		var streamingOpts = chart.options.plugins.streaming || {};
+		var ttl = streamingOpts.ttl;
 		var meta, scale, numToRemove;
 
 		if (streamingOpts.onRefresh) {
@@ -142,13 +143,13 @@ export default function(Chart) {
 			if (meta.xAxisID) {
 				scale = meta.controller.getScaleForId(meta.xAxisID);
 				if (scale instanceof realTimeScale) {
-					numToRemove = removeOldData(scale, scale.left, dataset, datasetIndex);
+					numToRemove = removeOldData(scale, scale.left, ttl, dataset, datasetIndex);
 				}
 			}
 			if (meta.yAxisID) {
 				scale = meta.controller.getScaleForId(meta.yAxisID);
 				if (scale instanceof realTimeScale) {
-					numToRemove = removeOldData(scale, scale.top, dataset, datasetIndex);
+					numToRemove = removeOldData(scale, scale.top, ttl, dataset, datasetIndex);
 				}
 			}
 		});
@@ -160,24 +161,30 @@ export default function(Chart) {
 	}
 
 	function clearRefreshTimer(chart) {
-		var refreshTimerID = chart.refreshTimerID;
+		var streaming = chart.streaming;
+		var refreshTimerID = streaming.refreshTimerID;
 
 		if (refreshTimerID) {
 			clearInterval(refreshTimerID);
-			delete chart.refreshTimerID;
-			delete chart.refresh;
+			delete streaming.refreshTimerID;
+			delete streaming.refresh;
 		}
 	}
 
 	function setRefreshTimer(chart, refresh) {
-		chart.refreshTimerID = setInterval(function() {
+		var streaming = chart.streaming;
+
+		streaming.refreshTimerID = setInterval(function() {
+			var streamingOpts = chart.options.plugins.streaming || {};
+			var newRefresh = streamingOpts.refresh;
+
 			onRefresh(chart);
-			if (chart.refresh !== chart.options.plugins.streaming.refresh) {
+			if (streaming.refresh !== newRefresh && !isNaN(newRefresh)) {
 				clearRefreshTimer(chart);
-				setRefreshTimer(chart, chart.options.plugins.streaming.refresh);
+				setRefreshTimer(chart, newRefresh);
 			}
 		}, refresh);
-		chart.refresh = refresh;
+		streaming.refresh = refresh;
 	}
 
 	return {
@@ -185,44 +192,29 @@ export default function(Chart) {
 
 		beforeInit: function(chart) {
 			var canvas = chart.canvas;
-			var listener = function(event) {
-				chart.lastMouseMoveEvent = event;
+			var streaming = chart.streaming = chart.streaming || {};
+			var mouseEventListener = function(event) {
+				streaming.lastMouseEvent = event;
 			};
 
-			canvas.addEventListener('mousedown', listener);
-			canvas.addEventListener('mouseup', listener);
-			chart.mouseButtonListener = listener;
+			canvas.addEventListener('mousedown', mouseEventListener);
+			canvas.addEventListener('mouseup', mouseEventListener);
+			streaming.mouseEventListener = mouseEventListener;
+			streaming.onDraw = generateMouseMoveEvent;
 		},
 
 		afterInit: function(chart, options) {
 			setRefreshTimer(chart, options.refresh);
 		},
 
-		beforeUpdate: function(chart, options) {
+		beforeUpdate: function(chart) {
 			var chartOpts = chart.options;
 			var scalesOpts = chartOpts.scales;
-			var realtimeOpts;
 
 			if (scalesOpts) {
 				scalesOpts.xAxes.concat(scalesOpts.yAxes).forEach(function(scaleOpts) {
 					if (scaleOpts.type === 'realtime' || scaleOpts.type === 'time') {
-						realtimeOpts = scaleOpts.realtime;
-
-						// For backwards compatibility
-						if (!realtimeOpts) {
-							realtimeOpts = scaleOpts.realtime = {};
-						}
-
-						// Copy plugin options to scale options
-						realtimeOpts.duration = options.duration;
-						realtimeOpts.ttl = options.ttl;
-						realtimeOpts.refresh = options.refresh;
-						realtimeOpts.delay = options.delay;
-						realtimeOpts.frameRate = options.frameRate;
-						realtimeOpts.pause = options.pause;
-						realtimeOpts.onDraw = generateMouseMoveEvent;
-
-						// Keep Bézier control inside the chart
+						// Allow Bézier control to be outside the chart
 						chartOpts.elements.line.capBezierPoints = false;
 					}
 				});
@@ -256,19 +248,21 @@ export default function(Chart) {
 		},
 
 		beforeEvent: function(chart, event) {
+			var streaming = chart.streaming;
+
 			if (event.type === 'mousemove') {
 				// Save mousemove event for reuse
-				chart.lastMouseMoveEvent = event.native;
+				streaming.lastMouseEvent = event.native;
 			} else if (event.type === 'mouseout') {
 				// Remove mousemove event
-				delete chart.lastMouseMoveEvent;
+				delete streaming.lastMouseEvent;
 			}
 			return true;
 		},
 
 		destroy: function(chart) {
 			var canvas = chart.canvas;
-			var listener = chart.mouseButtonListener;
+			var listener = chart.streaming.mouseButtonListener;
 
 			canvas.removeEventListener('mousedown', listener);
 			canvas.removeEventListener('mouseup', listener);
