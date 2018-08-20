@@ -41,7 +41,7 @@ export default function(Chart) {
 		var streamingOpts = scale.chart.options.plugins.streaming || {};
 		var duration = helpers.valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
 		var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
-		var newDuration = duration / zoom;
+		var newDuration = duration * (2 - zoom);
 		var maxPercent, limitedDuration;
 
 		if (scale.isHorizontal()) {
