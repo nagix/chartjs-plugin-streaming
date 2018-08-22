@@ -262,10 +262,10 @@ export default function(Chart) {
 
 		destroy: function(chart) {
 			var canvas = chart.canvas;
-			var listener = chart.streaming.mouseButtonListener;
+			var mouseEventListener = chart.streaming.mouseEventListener;
 
-			canvas.removeEventListener('mousedown', listener);
-			canvas.removeEventListener('mouseup', listener);
+			canvas.removeEventListener('mousedown', mouseEventListener);
+			canvas.removeEventListener('mouseup', mouseEventListener);
 
 			clearRefreshTimer(chart);
 			helpers.each(chart.scales, function(scale) {
