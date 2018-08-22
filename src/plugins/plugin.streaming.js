@@ -191,15 +191,14 @@ export default function(Chart) {
 		id: 'streaming',
 
 		beforeInit: function(chart) {
-			var canvas = chart.canvas;
 			var streaming = chart.streaming = chart.streaming || {};
-			var mouseEventListener = function(event) {
+			var canvas = streaming.canvas = chart.canvas;
+			var mouseEventListener = streaming.mouseEventListener = function(event) {
 				streaming.lastMouseEvent = event;
 			};
 
 			canvas.addEventListener('mousedown', mouseEventListener);
 			canvas.addEventListener('mouseup', mouseEventListener);
-			streaming.mouseEventListener = mouseEventListener;
 			streaming.onDraw = generateMouseMoveEvent;
 		},
 
@@ -261,8 +260,9 @@ export default function(Chart) {
 		},
 
 		destroy: function(chart) {
-			var canvas = chart.canvas;
-			var mouseEventListener = chart.streaming.mouseEventListener;
+			var streaming = chart.streaming;
+			var canvas = streaming.canvas;
+			var mouseEventListener = streaming.mouseEventListener;
 
 			canvas.removeEventListener('mousedown', mouseEventListener);
 			canvas.removeEventListener('mouseup', mouseEventListener);
