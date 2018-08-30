@@ -44,6 +44,7 @@ export default function(Chart, moment) {
 				year: 'YYYY' // 2015
 			},
 		},
+		realtime: {},
 		ticks: {
 			autoSkip: false,
 			source: 'auto',

@@ -37,7 +37,7 @@ export default function(Chart) {
 
 	function zoomRealTimeScale(scale, zoom, center, zoomOptions) {
 		var options = scale.options;
-		var realtimeOpts = options.realtime = options.realtime || {};
+		var realtimeOpts = options.realtime = options.realtime;
 		var streamingOpts = scale.chart.options.plugins.streaming || {};
 		var duration = helpers.valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
 		var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
@@ -60,7 +60,7 @@ export default function(Chart) {
 
 	function panRealTimeScale(scale, delta, panOptions) {
 		var options = scale.options;
-		var realtimeOpts = options.realtime = options.realtime || {};
+		var realtimeOpts = options.realtime = options.realtime;
 		var streamingOpts = scale.chart.options.plugins.streaming || {};
 		var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
 		var newDelay = delay + (scale.getValueForPixel(delta) - scale.getValueForPixel(0));
@@ -74,4 +74,33 @@ export default function(Chart) {
 
 	zoomNS.zoomFunctions.realtime = zoomRealTimeScale;
 	zoomNS.panFunctions.realtime = panRealTimeScale;
+
+	zoomNS.updateResetZoom = function(chart) {
+		chart.resetZoom = function() {
+			helpers.each(chart.scales, function(scale) {
+				var timeOptions = scale.options.time;
+				var realtimeOptions = scale.options.realtime;
+				var tickOptions = scale.options.ticks;
+
+				if (timeOptions) {
+					timeOptions.min = scale.originalOptions.time.min;
+					timeOptions.max = scale.originalOptions.time.max;
+				}
+
+				if (realtimeOptions) {
+					realtimeOptions.duration = scale.originalOptions.realtime.duration;
+					realtimeOptions.delay = scale.originalOptions.realtime.delay;
+				}
+
+				if (tickOptions) {
+					tickOptions.min = scale.originalOptions.ticks.min;
+					tickOptions.max = scale.originalOptions.ticks.max;
+				}
+			});
+
+			chart.update({
+				duration: 0
+			});
+		};
+	};
 }

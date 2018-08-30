@@ -34,6 +34,7 @@
 			<button id="addDataset">Add Dataset</button>
 			<button id="removeDataset">Remove Dataset</button>
 			<button id="addData">Add Data</button>
+			<button id="resetZoom">Reset Zoom</button>
 		</p>
 	</div>
 
@@ -179,6 +180,10 @@
 		document.getElementById('addData').addEventListener('click', function() {
 			onRefresh(window.myChart);
 			window.myChart.update();
+		});
+
+		document.getElementById('resetZoom').addEventListener('click', function() {
+			window.myChart.resetZoom();
 		});
 	</script>
 </body>

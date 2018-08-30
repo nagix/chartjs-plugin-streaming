@@ -203,6 +203,9 @@ export default function(Chart) {
 		},
 
 		afterInit: function(chart, options) {
+			if (chart.resetZoom) {
+				Chart.Zoom.updateResetZoom(chart);
+			}
 			setRefreshTimer(chart, options.refresh);
 		},
 

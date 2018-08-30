@@ -35,6 +35,7 @@
 			<button type="button" class="btn btn-outline-primary btn-sm" id="addDataset">Add Dataset</button>
 			<button type="button" class="btn btn-outline-primary btn-sm" id="removeDataset">Remove Dataset</button>
 			<button type="button" class="btn btn-outline-primary btn-sm" id="addData">Add Data</button>
+			<button type="button" class="btn btn-outline-primary btn-sm" id="resetZoom">Reset Zoom</button>
 		</p>
 	</div>
 	<div class="container mt-3">
@@ -189,6 +190,10 @@ document.getElementById('removeDataset').addEventListener('click', function() {
 document.getElementById('addData').addEventListener('click', function() {
 	onRefresh(window.myChart);
 	window.myChart.update();
+});
+
+document.getElementById('resetZoom').addEventListener('click', function() {
+	window.myChart.resetZoom();
 });</pre>
 			</div>
 			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
@@ -208,6 +213,7 @@ document.getElementById('addData').addEventListener('click', function() {
 		&lt;button id="addDataset"&gt;Add Dataset&lt;/button&gt;
 		&lt;button id="removeDataset"&gt;Remove Dataset&lt;/button&gt;
 		&lt;button id="addData"&gt;Add Data&lt;/button&gt;
+		&lt;button id="resetZoom"&gt;Reset Zoom&lt;/button&gt;
 	&lt;/p&gt;
 &lt;/body&gt;</pre>
 			</div>
@@ -356,6 +362,10 @@ document.getElementById('addData').addEventListener('click', function() {
 		document.getElementById('addData').addEventListener('click', function() {
 			onRefresh(window.myChart);
 			window.myChart.update();
+		});
+
+		document.getElementById('resetZoom').addEventListener('click', function() {
+			window.myChart.resetZoom();
 		});
 	</script>
 </body>
