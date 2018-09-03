@@ -4,14 +4,14 @@ export default function(Chart) {
 
 	var helpers = Chart.helpers;
 
-	// Ported from chartjs-plugin-zoom 0.6.3 9e7bc34
+	// Ported from chartjs-plugin-zoom 0.6.5 923a66d
 	var zoomNS = Chart.Zoom = Chart.Zoom || {};
 
-	// Ported from chartjs-plugin-zoom 0.6.3 9e7bc34
+	// Ported from chartjs-plugin-zoom 0.6.5 923a66d
 	zoomNS.zoomFunctions = zoomNS.zoomFunctions || {};
 	zoomNS.panFunctions = zoomNS.panFunctions || {};
 
-	// Ported from chartjs-plugin-zoom 0.6.3 9e7bc34
+	// Ported from chartjs-plugin-zoom 0.6.5 923a66d
 	function rangeMaxLimiter(zoomPanOptions, newMax) {
 		if (zoomPanOptions.scaleAxes && zoomPanOptions.rangeMax &&
 				!helpers.isNullOrUndef(zoomPanOptions.rangeMax[zoomPanOptions.scaleAxes])) {
@@ -23,7 +23,7 @@ export default function(Chart) {
 		return newMax;
 	}
 
-	// Ported from chartjs-plugin-zoom 0.6.3 9e7bc34
+	// Ported from chartjs-plugin-zoom 0.6.5 923a66d
 	function rangeMinLimiter(zoomPanOptions, newMin) {
 		if (zoomPanOptions.scaleAxes && zoomPanOptions.rangeMin &&
 				!helpers.isNullOrUndef(zoomPanOptions.rangeMin[zoomPanOptions.scaleAxes])) {

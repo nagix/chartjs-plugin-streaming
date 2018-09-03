@@ -53,7 +53,7 @@ To configure this plugin, you can simply add the following entries to your chart
 
 For example:
 
-```
+```javascript
 {
     type: 'line',               // 'line', 'bar', 'bubble' and 'scatter' types are supported
     data: {
@@ -102,7 +102,7 @@ Note that the following options are ignored for the 'realtime' scale.
 
 By using together with [chartjs-plugin-zoom](https://github.com/chartjs/chartjs-plugin-zoom), zooming and panning of a streaming chart can be done via the mouse or finger gestures. Unlike other scale types, the `rangeMin` and `rangeMax` options don't specify time values. Instead, `pan.rangeMin` and `pan.rangeMax` limit the range of the `delay` option value while `zoom.rangeMin` and `zoom.rangeMax` limit the range of the `duration` option value.
 
-```
+```javascript
     options: {
         // Assume x axis is the realtime scale
         pan: {
@@ -128,11 +128,13 @@ By using together with [chartjs-plugin-zoom](https://github.com/chartjs/chartjs-
     }
 ```
 
+Note that `chartjs-plugin-zoom.js` needs to be included before `chartjs-plugin-streaming.js`.
+
 ## Lowering CPU Usage
 
 If you are using this plugin on resource constrained devices or drawing multiple charts on a large screen, it might be a good idea to decrease the frame rate to lower CPU usage. The following settings also reduce CPU usage by disabling animation, and improve general page performance.
 
-```
+```javascript
     options: {
         animation: {
             duration: 0                    // general animation time
