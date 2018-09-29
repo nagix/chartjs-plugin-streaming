@@ -296,16 +296,113 @@ export default function(Chart, moment) {
 		return 'MMM D, YYYY';
 	}
 
-	var hidden, visibilityChange;
-	if (typeof document.hidden !== 'undefined') { // Opera 12.10 and Firefox 18 and later support
-		hidden = 'hidden';
-		visibilityChange = 'visibilitychange';
-	} else if (typeof document.msHidden !== 'undefined') {
-		hidden = 'msHidden';
-		visibilityChange = 'msvisibilitychange';
-	} else if (typeof document.webkitHidden !== 'undefined') {
-		hidden = 'webkitHidden';
-		visibilityChange = 'webkitvisibilitychange';
+	function resolveOption(scale, key) {
+		var realtimeOpts = scale.options.realtime;
+		var streamingOpts = scale.chart.options.plugins.streaming || {};
+		return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
+	}
+
+	var datasetPropertyKeys = [
+		'pointBackgroundColor',
+		'pointBorderColor',
+		'pointBorderWidth',
+		'pointRadius',
+		'pointStyle',
+		'pointHitRadius',
+		'pointHoverBackgroundColor',
+		'pointHoverBorderColor',
+		'pointHoverBorderWidth',
+		'pointHoverRadius',
+		'backgroundColor',
+		'borderColor',
+		'borderWidth',
+		'hoverBackgroundColor',
+		'hoverBorderColor',
+		'hoverBorderWidth',
+		'hoverRadius',
+		'hitRadius',
+		'radius'
+	];
+
+	function removeOldData(scale, lower, ttl, dataset, datasetIndex) {
+		var data = dataset.data;
+		var backlog = 2;
+		var i, ilen;
+
+		if (!isNaN(ttl)) {
+			lower = scale.getPixelForValue(Date.now() - ttl);
+			backlog = 0;
+		}
+
+		for (i = backlog, ilen = data.length; i < ilen; ++i) {
+			if (!(scale.getPixelForValue(null, i, datasetIndex) <= lower)) {
+				break;
+			}
+		}
+		// Keep the last two data points outside the range not to affect the existing bezier curve
+		data.splice(0, i - backlog);
+		datasetPropertyKeys.forEach(function(key) {
+			if (dataset.hasOwnProperty(key) && helpers.isArray(dataset[key])) {
+				dataset[key].splice(0, i - backlog);
+			}
+		});
+		if (typeof data[0] !== 'object') {
+			return i - backlog;
+		}
+	}
+
+	function refreshData(scale) {
+		var chart = scale.chart;
+		var onRefresh = resolveOption(scale, 'onRefresh');
+		var ttl = resolveOption(scale, 'ttl');
+		var meta, numToRemove;
+
+		if (onRefresh) {
+			onRefresh(chart);
+		}
+
+		// Remove old data
+		chart.data.datasets.forEach(function(dataset, datasetIndex) {
+			meta = chart.getDatasetMeta(datasetIndex);
+			if (meta.xAxisID === scale.id) {
+				numToRemove = removeOldData(scale, scale.left, ttl, dataset, datasetIndex);
+			}
+			if (meta.yAxisID === scale.id) {
+				numToRemove = removeOldData(scale, scale.top, ttl, dataset, datasetIndex);
+			}
+		});
+		if (numToRemove) {
+			chart.data.labels.splice(0, numToRemove);
+		}
+
+		chart.streaming.afterRefresh(chart);
+	}
+
+	function stopDataRefreshTimer(scale) {
+		var realtime = scale.realtime;
+		var refreshTimerID = realtime.refreshTimerID;
+
+		if (refreshTimerID) {
+			clearInterval(refreshTimerID);
+			delete realtime.refreshTimerID;
+			delete realtime.refreshInterval;
+		}
+	}
+
+	function startDataRefreshTimer(scale) {
+		var realtime = scale.realtime;
+		var interval = resolveOption(scale, 'refresh');
+
+		realtime.refreshTimerID = setInterval(function() {
+			var newInterval = resolveOption(scale, 'refresh');
+
+			refreshData(scale);
+			if (realtime.refreshInterval !== newInterval && !isNaN(newInterval)) {
+				stopDataRefreshTimer(scale);
+				startDataRefreshTimer(scale);
+			}
+		}, interval);
+		realtime.refreshInterval = interval;
 	}
 
 	var transitionKeys = {
@@ -341,6 +438,77 @@ export default function(Chart, moment) {
 		}
 	}
 
+	function scroll(scale) {
+		var chart = scale.chart;
+		var realtime = scale.realtime;
+		var duration = resolveOption(scale, 'duration');
+		var delay = resolveOption(scale, 'delay');
+		var id = scale.id;
+		var tooltip = chart.tooltip;
+		var activeTooltip = tooltip._active;
+		var now = Date.now();
+		var length, keys, offset, meta, elements, i, ilen;
+
+		if (scale.isHorizontal()) {
+			length = scale.width;
+			keys = transitionKeys.x;
+		} else {
+			length = scale.height;
+			keys = transitionKeys.y;
+		}
+		offset = length * (now - realtime.head) / duration;
+
+		// Shift all the elements leftward or upward
+		helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
+			meta = chart.getDatasetMeta(datasetIndex);
+			if (id === meta.xAxisID || id === meta.yAxisID) {
+				elements = meta.data || [];
+
+				for (i = 0, ilen = elements.length; i < ilen; ++i) {
+					transition(elements[i], keys.data, offset);
+				}
+
+				if (meta.dataset) {
+					transition(meta.dataset, keys.dataset, offset);
+				}
+			}
+		});
+
+		// Shift tooltip leftward or upward
+		if (activeTooltip && activeTooltip[0]) {
+			meta = chart.getDatasetMeta(activeTooltip[0]._datasetIndex);
+			if (id === meta.xAxisID || id === meta.yAxisID) {
+				transition(tooltip, keys.tooltip, offset);
+			}
+		}
+
+		scale.max = scale._table[1].time = now - delay;
+		scale.min = scale._table[0].time = scale.max - duration;
+
+		realtime.head = now;
+	}
+
+	function startFrameRefreshTimer(scale) {
+		var realtime = scale.realtime;
+		var frameRefresh = function() {
+			scroll(scale);
+			realtime.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+		};
+
+		realtime.head = Date.now();
+		realtime.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+	}
+
+	function stopFrameRefreshTimer(scale) {
+		var realtime = scale.realtime;
+		var frameRequestID = realtime.frameRequestID;
+
+		if (frameRequestID) {
+			helpers.cancelAnimFrame.call(window, frameRequestID);
+			delete realtime.frameRequestID;
+		}
+	}
+
 	var TimeScale = Chart.scaleService.getScaleConstructor('time');
 
 	Chart.scaleService.getScaleConstructor = function(type) {
@@ -363,90 +531,10 @@ export default function(Chart, moment) {
 				return;
 			}
 
-			var requestAnimFrame = helpers.requestAnimFrame;
-			var realtime = me.realtime = me.realtime || {};
-			var lastDrawn = 0;
-			var visibilityChangeListener = function() {
-				if (!document[hidden]) {
-					realtime.head = Date.now();
-					chart.update({
-						duration: 0
-					});
-				}
-			};
-			document.addEventListener(visibilityChange, visibilityChangeListener, false);
-			realtime.visibilityChangeListener = visibilityChangeListener;
+			me.realtime = me.realtime || {};
 
-			var frameRefresh = function() {
-				var valueOrDefault = helpers.valueOrDefault;
-				var realtimeOpts = me.options.realtime || {};
-				var streamingOpts = chart.options.plugins.streaming || {};
-				var duration = valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
-				var delay = valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
-				var frameRate = valueOrDefault(realtimeOpts.frameRate, streamingOpts.frameRate);
-				var id = me.id;
-				var tooltip = chart.tooltip;
-				var activeTooltip = tooltip._active;
-				var frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
-				var keys, length, meta;
-
-				if (me.isHorizontal()) {
-					length = me.width;
-					keys = transitionKeys.x;
-				} else {
-					length = me.height;
-					keys = transitionKeys.y;
-				}
-
-				var now = Date.now();
-				var offset = length * (now - realtime.head) / duration;
-
-				// Shift all the elements leftward or upward
-				helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
-					meta = chart.getDatasetMeta(datasetIndex);
-					if (id === meta.xAxisID || id === meta.yAxisID) {
-						var elements = meta.data || [];
-						var i, ilen;
-
-						for (i = 0, ilen = elements.length; i < ilen; ++i) {
-							transition(elements[i], keys.data, offset);
-						}
-
-						if (meta.dataset) {
-							transition(meta.dataset, keys.dataset, offset);
-						}
-					}
-				});
-
-				// Shift tooltip leftward or upward
-				if (activeTooltip && activeTooltip[0]) {
-					meta = chart.getDatasetMeta(activeTooltip[0]._datasetIndex);
-					if (id === meta.xAxisID || id === meta.yAxisID) {
-						transition(tooltip, keys.tooltip, offset);
-					}
-				}
-
-				me.max = me._table[1].time = now - delay;
-				me.min = me._table[0].time = me.max - duration;
-
-				if (lastDrawn + frameDuration <= now) {
-					// Draw only when animation is inactive
-					if (!chart.animating && !tooltip._start) {
-						chart.draw();
-					}
-					chart.streaming.onDraw(chart);
-					lastDrawn += frameDuration;
-					if (lastDrawn + frameDuration <= now) {
-						lastDrawn = now;
-					}
-				}
-
-				realtime.head = now;
-				realtime.frameRequestID = requestAnimFrame.call(window, frameRefresh);
-			};
-
-			realtime.head = Date.now();
-			realtime.frameRequestID = requestAnimFrame.call(window, frameRefresh);
+			startFrameRefreshTimer(me);
+			startDataRefreshTimer(me);
 		},
 
 		update: function() {
@@ -460,13 +548,15 @@ export default function(Chart, moment) {
 			}
 
 			var frameRequestID = me.realtime.frameRequestID;
-			var streamingOpts = chart.options.plugins.streaming || {};
-			var pause = streamingOpts.pause;
+			var pause = resolveOption(me, 'pause');
 
 			if (!frameRequestID && !pause) {
-				me.initialize();
+				startFrameRefreshTimer(me);
 			} else if (frameRequestID && pause) {
-				me.destroy();
+				stopFrameRefreshTimer(me);
+			}
+			if (!pause) {
+				me.realtime.head = Date.now();
 			}
 
 			return TimeScale.prototype.update.apply(me, arguments);
@@ -482,13 +572,10 @@ export default function(Chart, moment) {
 				return TimeScale.prototype.buildTicks.apply(me, arguments);
 			}
 
-			var valueOrDefault = helpers.valueOrDefault;
 			var timeOpts = options.time;
-			var realtimeOpts = options.realtime || {};
-			var streamingOpts = chart.options.plugins.streaming || {};
-			var duration = valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
-			var delay = valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
-			var refresh = valueOrDefault(streamingOpts.refresh, 0);
+			var duration = resolveOption(me, 'duration');
+			var delay = resolveOption(me, 'delay');
+			var refresh = resolveOption(me, 'refresh');
 			var max = me.realtime.head - delay;
 			var min = max - duration;
 			var timestamps = [];
@@ -569,18 +656,15 @@ export default function(Chart, moment) {
 		},
 
 		destroy: function() {
-			var realtime = this.realtime;
-			var visibilityChangeListener = realtime.visibilityChangeListener;
-			var frameRequestID = realtime.frameRequestID;
+			var me = this;
 
-			if (visibilityChangeListener) {
-				document.removeEventListener(visibilityChange, visibilityChangeListener, false);
-				delete realtime.visibilityChangeListener;
+			// For backwards compatibility
+			if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
+				return;
 			}
-			if (frameRequestID) {
-				helpers.cancelAnimFrame.call(window, frameRequestID);
-				delete realtime.frameRequestID;
-			}
+
+			stopFrameRefreshTimer(me);
+			stopDataRefreshTimer(me);
 		}
 	});
 

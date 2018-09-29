@@ -36,55 +36,6 @@ export default function(Chart) {
 		}
 	}
 
-	var datasetPropertyKeys = [
-		'pointBackgroundColor',
-		'pointBorderColor',
-		'pointBorderWidth',
-		'pointRadius',
-		'pointStyle',
-		'pointHitRadius',
-		'pointHoverBackgroundColor',
-		'pointHoverBorderColor',
-		'pointHoverBorderWidth',
-		'pointHoverRadius',
-		'backgroundColor',
-		'borderColor',
-		'borderWidth',
-		'hoverBackgroundColor',
-		'hoverBorderColor',
-		'hoverBorderWidth',
-		'hoverRadius',
-		'hitRadius',
-		'radius'
-	];
-
-	function removeOldData(scale, lower, ttl, dataset, datasetIndex) {
-		var data = dataset.data;
-		var backlog = 2;
-		var i, ilen;
-
-		if (!isNaN(ttl)) {
-			lower = scale.getPixelForValue(Date.now() - ttl);
-			backlog = 0;
-		}
-
-		for (i = backlog, ilen = data.length; i < ilen; ++i) {
-			if (!(scale.getPixelForValue(null, i, datasetIndex) <= lower)) {
-				break;
-			}
-		}
-		// Keep the last two data points outside the range not to affect the existing bezier curve
-		data.splice(0, i - backlog);
-		datasetPropertyKeys.forEach(function(key) {
-			if (dataset.hasOwnProperty(key) && helpers.isArray(dataset[key])) {
-				dataset[key].splice(0, i - backlog);
-			}
-		});
-		if (typeof data[0] !== 'object') {
-			return i - backlog;
-		}
-	}
-
 	/**
 	 * Update the chart data keeping the current animation but suppressing a new one
 	 * @param chart {Chart} chart to update
@@ -128,63 +79,39 @@ export default function(Chart) {
 		generateMouseMoveEvent(chart);
 	}
 
-	function onRefresh(chart) {
-		var streamingOpts = chart.options.plugins.streaming || {};
-		var ttl = streamingOpts.ttl;
-		var meta, scale, numToRemove;
+	function startFrameRefreshTimer(chart) {
+		var streaming = chart.streaming;
+		var lastDrawn = 0;
+		var frameRefresh = function() {
+			var frameRate = chart.options.plugins.streaming.frameRate;
+			var frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
+			var now = Date.now();
 
-		if (streamingOpts.onRefresh) {
-			streamingOpts.onRefresh(chart);
-		}
-
-		// Remove old data
-		chart.data.datasets.forEach(function(dataset, datasetIndex) {
-			meta = chart.getDatasetMeta(datasetIndex);
-			if (meta.xAxisID) {
-				scale = meta.controller.getScaleForId(meta.xAxisID);
-				if (scale instanceof realTimeScale) {
-					numToRemove = removeOldData(scale, scale.left, ttl, dataset, datasetIndex);
+			if (lastDrawn + frameDuration <= now) {
+				// Draw only when animation is inactive
+				if (!chart.animating && !chart.tooltip._start) {
+					chart.draw();
+				}
+				generateMouseMoveEvent(chart);
+				lastDrawn += frameDuration;
+				if (lastDrawn + frameDuration <= now) {
+					lastDrawn = now;
 				}
 			}
-			if (meta.yAxisID) {
-				scale = meta.controller.getScaleForId(meta.yAxisID);
-				if (scale instanceof realTimeScale) {
-					numToRemove = removeOldData(scale, scale.top, ttl, dataset, datasetIndex);
-				}
-			}
-		});
-		if (numToRemove) {
-			chart.data.labels.splice(0, numToRemove);
-		}
+			streaming.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+		};
 
-		updateChartData(chart);
+		streaming.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
 	}
 
-	function clearRefreshTimer(chart) {
+	function stopFrameRefreshTimer(chart) {
 		var streaming = chart.streaming;
-		var refreshTimerID = streaming.refreshTimerID;
+		var frameRequestID = streaming.frameRequestID;
 
-		if (refreshTimerID) {
-			clearInterval(refreshTimerID);
-			delete streaming.refreshTimerID;
-			delete streaming.refresh;
+		if (frameRequestID) {
+			helpers.cancelAnimFrame.call(window, frameRequestID);
+			delete streaming.frameRequestID;
 		}
-	}
-
-	function setRefreshTimer(chart, refresh) {
-		var streaming = chart.streaming;
-
-		streaming.refreshTimerID = setInterval(function() {
-			var streamingOpts = chart.options.plugins.streaming || {};
-			var newRefresh = streamingOpts.refresh;
-
-			onRefresh(chart);
-			if (streaming.refresh !== newRefresh && !isNaN(newRefresh)) {
-				clearRefreshTimer(chart);
-				setRefreshTimer(chart, newRefresh);
-			}
-		}, refresh);
-		streaming.refresh = refresh;
 	}
 
 	return {
@@ -199,14 +126,14 @@ export default function(Chart) {
 
 			canvas.addEventListener('mousedown', mouseEventListener);
 			canvas.addEventListener('mouseup', mouseEventListener);
-			streaming.onDraw = generateMouseMoveEvent;
+			streaming.afterRefresh = updateChartData;
 		},
 
-		afterInit: function(chart, options) {
+		afterInit: function(chart) {
 			if (chart.resetZoom) {
 				Chart.Zoom.updateResetZoom(chart);
 			}
-			setRefreshTimer(chart, options.refresh);
+			startFrameRefreshTimer(chart);
 		},
 
 		beforeUpdate: function(chart) {
@@ -267,10 +194,11 @@ export default function(Chart) {
 			var canvas = streaming.canvas;
 			var mouseEventListener = streaming.mouseEventListener;
 
+			stopFrameRefreshTimer(chart);
+
 			canvas.removeEventListener('mousedown', mouseEventListener);
 			canvas.removeEventListener('mouseup', mouseEventListener);
 
-			clearRefreshTimer(chart);
 			helpers.each(chart.scales, function(scale) {
 				if (scale instanceof realTimeScale) {
 					scale.destroy();
