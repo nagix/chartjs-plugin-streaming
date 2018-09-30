@@ -324,38 +324,17 @@ export default function(Chart, moment) {
 		'radius'
 	];
 
-	function removeOldData(scale, lower, ttl, dataset, datasetIndex) {
-		var data = dataset.data;
-		var backlog = 2;
-		var i, ilen;
-
-		if (!isNaN(ttl)) {
-			lower = scale.getPixelForValue(Date.now() - ttl);
-			backlog = 0;
-		}
-
-		for (i = backlog, ilen = data.length; i < ilen; ++i) {
-			if (!(scale.getPixelForValue(null, i, datasetIndex) <= lower)) {
-				break;
-			}
-		}
-		// Keep the last two data points outside the range not to affect the existing bezier curve
-		data.splice(0, i - backlog);
-		datasetPropertyKeys.forEach(function(key) {
-			if (dataset.hasOwnProperty(key) && helpers.isArray(dataset[key])) {
-				dataset[key].splice(0, i - backlog);
-			}
-		});
-		if (typeof data[0] !== 'object') {
-			return i - backlog;
-		}
-	}
-
 	function refreshData(scale) {
 		var chart = scale.chart;
-		var onRefresh = resolveOption(scale, 'onRefresh');
+		var id = scale.id;
+		var duration = resolveOption(scale, 'duration');
+		var delay = resolveOption(scale, 'delay');
 		var ttl = resolveOption(scale, 'ttl');
-		var meta, numToRemove;
+		var pause = resolveOption(scale, 'pause');
+		var onRefresh = resolveOption(scale, 'onRefresh');
+		var lower = scale.getPixelForValue(scale.max);
+		var upper = scale.getPixelForValue(Date.now() - (isNaN(ttl) ? duration + delay : ttl));
+		var meta, data, length, i, start, count, removalRange;
 
 		if (onRefresh) {
 			onRefresh(chart);
@@ -364,15 +343,49 @@ export default function(Chart, moment) {
 		// Remove old data
 		chart.data.datasets.forEach(function(dataset, datasetIndex) {
 			meta = chart.getDatasetMeta(datasetIndex);
-			if (meta.xAxisID === scale.id) {
-				numToRemove = removeOldData(scale, scale.left, ttl, dataset, datasetIndex);
-			}
-			if (meta.yAxisID === scale.id) {
-				numToRemove = removeOldData(scale, scale.top, ttl, dataset, datasetIndex);
+			if (id === meta.xAxisID || id === meta.yAxisID) {
+				data = dataset.data;
+				length = data.length;
+
+				if (pause) {
+					// If the scale is paused, preserve the visible data points
+					for (i = 0; i < length; ++i) {
+						if (!(scale.getPixelForValue(null, i, datasetIndex) < lower)) {
+							break;
+						}
+					}
+					start = i + 2;
+				} else {
+					start = 0;
+				}
+
+				for (i = start; i < length; ++i) {
+					if (!(scale.getPixelForValue(null, i, datasetIndex) <= upper)) {
+						break;
+					}
+				}
+				count = i - start;
+				if (isNaN(ttl)) {
+					// Keep the last two data points outside the range not to affect the existing bezier curve
+					count = Math.max(count - 2, 0);
+				}
+
+				data.splice(start, count);
+				datasetPropertyKeys.forEach(function(key) {
+					if (dataset.hasOwnProperty(key) && helpers.isArray(dataset[key])) {
+						dataset[key].splice(start, count);
+					}
+				});
+				if (typeof data[0] !== 'object') {
+					removalRange = {
+						start: start,
+						count: count
+					};
+				}
 			}
 		});
-		if (numToRemove) {
-			chart.data.labels.splice(0, numToRemove);
+		if (removalRange) {
+			chart.data.labels.splice(removalRange.start, removalRange.count);
 		}
 
 		chart.streaming.afterRefresh(chart);
