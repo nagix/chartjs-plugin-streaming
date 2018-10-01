@@ -79,6 +79,16 @@ export default function(Chart) {
 		generateMouseMoveEvent(chart);
 	}
 
+	var update = Chart.prototype.update;
+
+	Chart.prototype.update = function(config) {
+		if (config && config.preservation) {
+			updateChartData(this);
+		} else {
+			update.apply(this, arguments);
+		}
+	};
+
 	function startFrameRefreshTimer(chart) {
 		var streaming = chart.streaming;
 		var lastDrawn = 0;
@@ -126,7 +136,6 @@ export default function(Chart) {
 
 			canvas.addEventListener('mousedown', mouseEventListener);
 			canvas.addEventListener('mouseup', mouseEventListener);
-			streaming.afterRefresh = updateChartData;
 		},
 
 		afterInit: function(chart) {

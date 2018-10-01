@@ -388,7 +388,9 @@ export default function(Chart, moment) {
 			chart.data.labels.splice(removalRange.start, removalRange.count);
 		}
 
-		chart.streaming.afterRefresh(chart);
+		chart.update({
+			preservation: true
+		});
 	}
 
 	function stopDataRefreshTimer(scale) {
