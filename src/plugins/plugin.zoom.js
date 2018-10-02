@@ -36,9 +36,8 @@ export default function(Chart) {
 	}
 
 	function zoomRealTimeScale(scale, zoom, center, zoomOptions) {
-		var options = scale.options;
-		var realtimeOpts = options.realtime = options.realtime;
-		var streamingOpts = scale.chart.options.plugins.streaming || {};
+		var realtimeOpts = scale.options.realtime;
+		var streamingOpts = scale.chart.options.plugins.streaming;
 		var duration = helpers.valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
 		var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
 		var newDuration = duration * (2 - zoom);
@@ -59,9 +58,8 @@ export default function(Chart) {
 	}
 
 	function panRealTimeScale(scale, delta, panOptions) {
-		var options = scale.options;
-		var realtimeOpts = options.realtime = options.realtime;
-		var streamingOpts = scale.chart.options.plugins.streaming || {};
+		var realtimeOpts = scale.options.realtime;
+		var streamingOpts = scale.chart.options.plugins.streaming;
 		var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
 		var newDelay = delay + (scale.getValueForPixel(delta) - scale.getValueForPixel(0));
 

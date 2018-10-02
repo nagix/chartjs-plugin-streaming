@@ -298,7 +298,7 @@ export default function(Chart, moment) {
 
 	function resolveOption(scale, key) {
 		var realtimeOpts = scale.options.realtime;
-		var streamingOpts = scale.chart.options.plugins.streaming || {};
+		var streamingOpts = scale.chart.options.plugins.streaming;
 		return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
 	}
 
@@ -505,13 +505,16 @@ export default function(Chart, moment) {
 
 	function startFrameRefreshTimer(scale) {
 		var realtime = scale.realtime;
-		var frameRefresh = function() {
-			scroll(scale);
-			realtime.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
-		};
 
-		realtime.head = Date.now();
-		realtime.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+		if (!realtime.frameRequestID) {
+			var frameRefresh = function() {
+				scroll(scale);
+				realtime.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+			};
+
+			realtime.head = Date.now();
+			realtime.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+		}
 	}
 
 	function stopFrameRefreshTimer(scale) {
@@ -537,12 +540,11 @@ export default function(Chart, moment) {
 	var RealTimeScale = TimeScale.extend({
 		initialize: function() {
 			var me = this;
-			var chart = me.chart;
 
 			TimeScale.prototype.initialize.apply(me, arguments);
 
 			// For backwards compatibility
-			if (me.options.type === 'time' && !chart.options.plugins.streaming) {
+			if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
 				return;
 			}
 
@@ -554,23 +556,16 @@ export default function(Chart, moment) {
 
 		update: function() {
 			var me = this;
-			var options = me.options;
-			var chart = me.chart;
 
 			// For backwards compatibility
-			if (options.type === 'time' && !chart.options.plugins.streaming) {
+			if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
 				return TimeScale.prototype.update.apply(me, arguments);
 			}
 
-			var frameRequestID = me.realtime.frameRequestID;
-			var pause = resolveOption(me, 'pause');
-
-			if (!frameRequestID && !pause) {
-				startFrameRefreshTimer(me);
-			} else if (frameRequestID && pause) {
+			if (resolveOption(me, 'pause')) {
 				stopFrameRefreshTimer(me);
-			}
-			if (!pause) {
+			} else {
+				startFrameRefreshTimer(me);
 				me.realtime.head = Date.now();
 			}
 
@@ -580,10 +575,9 @@ export default function(Chart, moment) {
 		buildTicks: function() {
 			var me = this;
 			var options = me.options;
-			var chart = me.chart;
 
 			// For backwards compatibility
-			if (options.type === 'time' && !chart.options.plugins.streaming) {
+			if (options.type === 'time' && !me.chart.options.plugins.streaming) {
 				return TimeScale.prototype.buildTicks.apply(me, arguments);
 			}
 

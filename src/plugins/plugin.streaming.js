@@ -91,27 +91,30 @@ export default function(Chart) {
 
 	function startFrameRefreshTimer(chart) {
 		var streaming = chart.streaming;
-		var lastDrawn = 0;
-		var frameRefresh = function() {
-			var frameRate = chart.options.plugins.streaming.frameRate;
-			var frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
-			var now = Date.now();
 
-			if (lastDrawn + frameDuration <= now) {
-				// Draw only when animation is inactive
-				if (!chart.animating && !chart.tooltip._start) {
-					chart.draw();
-				}
-				generateMouseMoveEvent(chart);
-				lastDrawn += frameDuration;
+		if (!streaming.frameRequestID) {
+			var lastDrawn = 0;
+			var frameRefresh = function() {
+				var frameRate = chart.options.plugins.streaming.frameRate;
+				var frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
+				var now = Date.now();
+
 				if (lastDrawn + frameDuration <= now) {
-					lastDrawn = now;
+					// Draw only when animation is inactive
+					if (!chart.animating && !chart.tooltip._start) {
+						chart.draw();
+					}
+					generateMouseMoveEvent(chart);
+					lastDrawn += frameDuration;
+					if (lastDrawn + frameDuration <= now) {
+						lastDrawn = now;
+					}
 				}
-			}
-			streaming.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
-		};
+				streaming.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+			};
 
-		streaming.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+			streaming.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
+		}
 	}
 
 	function stopFrameRefreshTimer(chart) {
@@ -158,6 +161,22 @@ export default function(Chart) {
 				});
 			}
 			return true;
+		},
+
+		afterUpdate: function(chart, options) {
+			var pause = true;
+
+			// if all scales are paused, stop refreshing frames
+			helpers.each(chart.scales, function(scale) {
+				if (scale instanceof realTimeScale) {
+					pause &= helpers.valueOrDefault(scale.options.realtime.pause, options.pause);
+				}
+			});
+			if (pause) {
+				stopFrameRefreshTimer(chart);
+			} else {
+				startFrameRefreshTimer(chart);
+			}
 		},
 
 		beforeDatasetDraw: function(chart, args) {
