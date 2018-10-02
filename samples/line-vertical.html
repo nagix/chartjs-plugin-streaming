@@ -99,7 +99,20 @@
 				},
 				tooltips: {
 					mode: 'nearest',
-					intersect: false
+					intersect: false,
+					callbacks: {
+						title: function(tooltipItems) {
+							return tooltipItems[0].yLabel;
+						},
+						label: function(tooltipItem, data) {
+							var label = data.datasets[tooltipItem.datasetIndex].label || '';
+							if (label) {
+								label += ': ';
+							}
+							label += tooltipItem.xLabel;
+							return label;
+						}
+					}
 				},
 				hover: {
 					mode: 'nearest',

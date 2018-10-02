@@ -78,7 +78,7 @@ var config = {
 	data: {
 		datasets: [{
 			label: 'Dataset 1 (linear interpolation)',
-			backgroundColor: chartColors.red,
+			backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
 			borderColor: chartColors.red,
 			fill: false,
 			lineTension: 0,
@@ -86,7 +86,7 @@ var config = {
 			data: []
 		}, {
 			label: 'Dataset 2 (cubic interpolation)',
-			backgroundColor: chartColors.blue,
+			backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
 			borderColor: chartColors.blue,
 			fill: false,
 			cubicInterpolationMode: 'monotone',
@@ -171,7 +171,7 @@ document.getElementById('addDataset').addEventListener('click', function() {
 	var newColor = chartColors[colorName];
 	var newDataset = {
 		label: 'Dataset ' + (config.data.datasets.length + 1),
-		backgroundColor: newColor,
+		backgroundColor: color(newColor).alpha(0.5).rgbString(),
 		borderColor: newColor,
 		fill: false,
 		lineTension: 0,
@@ -250,7 +250,7 @@ document.getElementById('resetZoom').addEventListener('click', function() {
 			data: {
 				datasets: [{
 					label: 'Dataset 1 (linear interpolation)',
-					backgroundColor: chartColors.red,
+					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
 					borderColor: chartColors.red,
 					fill: false,
 					lineTension: 0,
@@ -258,7 +258,7 @@ document.getElementById('resetZoom').addEventListener('click', function() {
 					data: []
 				}, {
 					label: 'Dataset 2 (cubic interpolation)',
-					backgroundColor: chartColors.blue,
+					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
 					borderColor: chartColors.blue,
 					fill: false,
 					cubicInterpolationMode: 'monotone',
@@ -343,7 +343,7 @@ document.getElementById('resetZoom').addEventListener('click', function() {
 			var newColor = chartColors[colorName];
 			var newDataset = {
 				label: 'Dataset ' + (config.data.datasets.length + 1),
-				backgroundColor: newColor,
+				backgroundColor: color(newColor).alpha(0.5).rgbString(),
 				borderColor: newColor,
 				fill: false,
 				lineTension: 0,
