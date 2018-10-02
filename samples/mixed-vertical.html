@@ -91,7 +91,13 @@
 						}
 					}],
 					yAxes: [{
-						type: 'realtime'
+						type: 'realtime',
+						realtime: {
+							duration: 20000,
+							refresh: 1000,
+							delay: 2000,
+							onRefresh: onRefresh
+						}
 					}]
 				},
 				tooltips: {
@@ -101,14 +107,6 @@
 				hover: {
 					mode: 'nearest',
 					intersect: false
-				},
-				plugins: {
-					streaming: {
-						duration: 20000,
-						refresh: 1000,
-						delay: 2000,
-						onRefresh: onRefresh
-					}
 				}
 			}
 		};

@@ -88,7 +88,13 @@
 				},
 				scales: {
 					xAxes: [{
-						type: 'realtime'
+						type: 'realtime',
+						realtime: {
+							duration: 20000,
+							refresh: 1000,
+							delay: 2000,
+							onRefresh: onRefresh
+						}
 					}],
 					yAxes: [{
 						scaleLabel: {
@@ -140,14 +146,6 @@
 							}
 						}
 					]
-				},
-				plugins: {
-					streaming: {
-						duration: 20000,
-						refresh: 1000,
-						delay: 2000,
-						onRefresh: onRefresh
-					}
 				}
 			}
 		};

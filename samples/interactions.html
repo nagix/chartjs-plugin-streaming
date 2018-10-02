@@ -134,7 +134,15 @@
 				},
 				scales: {
 					xAxes: [{
-						type: 'realtime'
+						type: 'realtime',
+						realtime: {
+							duration: 20000,
+							ttl: 60000,
+							refresh: 1000,
+							delay: 2000,
+							pause: false,
+							onRefresh: onRefresh
+						}
 					}],
 					yAxes: [{
 						type: 'linear',
@@ -155,13 +163,7 @@
 				},
 				plugins: {
 					streaming: {
-						duration: 20000,
-						ttl: 60000,
-						refresh: 1000,
-						delay: 2000,
-						frameRate: 30,
-						pause: false,
-						onRefresh: onRefresh
+						frameRate: 30
 					}
 				}
 			}
@@ -210,25 +212,25 @@
 		});
 
 		document.getElementById('duration').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.plugins.streaming.duration = +this.value;
+			config.options.scales.xAxes[0].realtime.duration = +this.value;
 			window.myChart.update({duration: 0});
 			document.getElementById('durationValue').innerHTML = this.value;
 		});
 
 		document.getElementById('ttl').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.plugins.streaming.ttl = +this.value;
+			config.options.scales.xAxes[0].realtime.ttl = +this.value;
 			window.myChart.update({duration: 0});
 			document.getElementById('ttlValue').innerHTML = this.value;
 		});
 
 		document.getElementById('refresh').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.plugins.streaming.refresh = +this.value;
+			config.options.scales.xAxes[0].realtime.refresh = +this.value;
 			window.myChart.update({duration: 0});
 			document.getElementById('refreshValue').innerHTML = this.value;
 		});
 
 		document.getElementById('delay').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.plugins.streaming.delay = +this.value;
+			config.options.scales.xAxes[0].realtime.delay = +this.value;
 			window.myChart.update({duration: 0});
 			document.getElementById('delayValue').innerHTML = this.value;
 		});
@@ -240,7 +242,7 @@
 		});
 
 		document.getElementById('pause').addEventListener('change', function() {
-			config.options.plugins.streaming.pause = this.checked;
+			config.options.scales.xAxes[0].realtime.pause = this.checked;
 			window.myChart.update({duration: 0});
 			document.getElementById('pauseValue').innerHTML = this.checked;
 		});

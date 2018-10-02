@@ -58,19 +58,17 @@
 				},
 				scales: {
 					xAxes: [{
-						type: 'realtime'
+						type: 'realtime',
+						realtime: {
+							duration: 120000,
+							refresh: 500,
+							delay: 0,
+							onRefresh: onRefresh
+						}
 					}]
 				},
 				tooltips: {
 					enabled: false
-				},
-				plugins: {
-					streaming: {
-						duration: 120000,
-						refresh: 500,
-						delay: 0,
-						onRefresh: onRefresh
-					}
 				}
 			}
 		};
