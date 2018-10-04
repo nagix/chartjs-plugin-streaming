@@ -60,6 +60,24 @@
 			});
 		}
 
+		var timeoutIDs = [];
+
+		function startFeed(index) {
+			var receive = function() {
+				onReceive({
+					index: index,
+					timestamp: Date.now(),
+					value: randomScalingFactor()
+				});
+				timeoutIDs[index] = setTimeout(receive, Math.random() * 1000 + 500);
+			}
+			timeoutIDs[index] = setTimeout(receive, Math.random() * 1000 + 500);
+		}
+
+		function stopFeed(index) {
+			clearTimeout(timeoutIDs[index]);
+		}
+
 		var color = Chart.helpers.color;
 		var config = {
 			type: 'line',
@@ -115,6 +133,8 @@
 		window.onload = function() {
 			var ctx = document.getElementById('myChart').getContext('2d');
 			window.myChart = new Chart(ctx, config);
+			startFeed(0);
+			startFeed(1);
 		};
 
 		document.getElementById('randomizeData').addEventListener('click', function() {
@@ -141,30 +161,24 @@
 
 			config.data.datasets.push(newDataset);
 			window.myChart.update();
+			startFeed(config.data.datasets.length - 1);
 		});
 
 		document.getElementById('removeDataset').addEventListener('click', function() {
+			stopFeed(config.data.datasets.length - 1);
 			config.data.datasets.pop();
 			window.myChart.update();
 		});
 
 		document.getElementById('addData').addEventListener('click', function() {
-			onRefresh(window.myChart);
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data.push({
+					x: Date.now(),
+					y: randomScalingFactor()
+				});
+			});
 			window.myChart.update();
 		});
-
-		[0, 1].forEach(function(index) {
-			var receive = function() {
-				onReceive({
-					index: index,
-					timestamp: Date.now(),
-					value: randomScalingFactor()
-				});
-				setTimeout(receive, Math.random() * 1000 + 500);
-			}
-			setTimeout(receive, Math.random() * 1000 + 500);
-		});
-
 	</script>
 </body>
 

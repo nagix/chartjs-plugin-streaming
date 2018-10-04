@@ -20,19 +20,6 @@
 			margin: auto;
 			width: 75%;
 		}
-		.label {
-			display: inline-block;
-			text-align: right;
-			width: 100px;
-		}
-		.value {
-			display: inline-block;
-			text-align: left;
-			width: 65px;
-		}
-		.control {
-			width: 250px;
-		}
 	</style>
 </head>
 
@@ -49,38 +36,6 @@
 		</p>
 	</div>
 	<div class="container mt-3">
-		<div class="text-center">
-			<span class="label">duration:</span>
-			<span id="durationValue" class="value">20000</span>
-			<span><input type="range" min="1000" max="60000" step="100" value="20000" id="duration" class="control"></span>
-		</div>
-		<div class="text-center">
-			<span class="label">ttl:</span>
-			<span id="ttlValue" class="value">60000</span>
-			<span><input type="range" min="1000" max="60000" step="100" value="60000" id="ttl" class="control"></span>
-		</div>
-		<div class="text-center">
-			<span class="label">refresh:</span>
-			<span id="refreshValue" class="value">1000</span>
-			<span><input type="range" min="50" max="3000" step="50" value="1000" id="refresh" class="control"></span>
-		</div>
-		<div class="text-center">
-			<span class="label">delay:</span>
-			<span id="delayValue" class="value">2000</span>
-			<span><input type="range" min="0" max="5000" step="100" value="2000" id="delay" class="control"></span>
-		</div>
-		<div class="text-center">
-			<span class="label">frameRate:</span>
-			<span id="frameRateValue" class="value">30</span>
-			<span><input type="range" min="1" max="60" step="1" value="30" id="frameRate" class="control"></span>
-		</div>
-		<div class="text-center">
-			<span class="label">pause:</span>
-			<span id="pauseValue" class="value">false</span>
-			<span><input type="checkbox" id="pause" class="control"></span>
-		</div>
-	</div>
-	<div class="container mt-3">
 		<ul class="nav nav-tabs mb-2" id="myTab" role="tablist">
 			<li class="nav-item">
 				<a class="nav-link active" id="js-tab" data-toggle="tab" href="#js" role="tab" aria-controls="js" aria-selected="true">JavaScript</a>
@@ -91,9 +46,7 @@
 		</ul>
 		<div class="tab-content" id="myTabContent">
 			<div class="tab-pane fade show active" id="js" role="tabpanel" aria-labelledby="js-tab">
-		<pre class="prettyprint lang-js p-3 bg-light">var isIE = navigator.userAgent.indexOf('MSIE') !== -1 || navigator.userAgent.indexOf('Trident') !== -1;
-
-var chartColors = {
+				<pre class="prettyprint lang-js p-3 bg-light">var chartColors = {
 	red: 'rgb(255, 99, 132)',
 	orange: 'rgb(255, 159, 64)',
 	yellow: 'rgb(255, 205, 86)',
@@ -107,13 +60,32 @@ function randomScalingFactor() {
 	return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
 }
 
-function onRefresh(chart) {
-	chart.config.data.datasets.forEach(function(dataset) {
-		dataset.data.push({
-			x: Date.now(),
-			y: randomScalingFactor()
-		});
+function onReceive(event) {
+	window.myChart.config.data.datasets[event.index].data.push({
+		x: event.timestamp,
+		y: event.value
 	});
+	window.myChart.update({
+		preservation: true
+	});
+}
+
+var timeoutIDs = [];
+
+function startFeed(index) {
+	var receive = function() {
+		onReceive({
+			index: index,
+			timestamp: Date.now(),
+			value: randomScalingFactor()
+		});
+		timeoutIDs[index] = setTimeout(receive, Math.random() * 1000 + 500);
+	}
+	timeoutIDs[index] = setTimeout(receive, Math.random() * 1000 + 500);
+}
+
+function stopFeed(index) {
+	clearTimeout(timeoutIDs[index]);
 }
 
 var color = Chart.helpers.color;
@@ -140,23 +112,17 @@ var config = {
 	options: {
 		title: {
 			display: true,
-			text: 'Interactions sample'
+			text: 'Push data feed sample'
 		},
 		scales: {
 			xAxes: [{
 				type: 'realtime',
 				realtime: {
 					duration: 20000,
-					ttl: 60000,
-					refresh: 1000,
 					delay: 2000,
-					pause: false,
-					onRefresh: onRefresh
 				}
 			}],
 			yAxes: [{
-				type: 'linear',
-				display: true,
 				scaleLabel: {
 					display: true,
 					labelString: 'value'
@@ -170,11 +136,6 @@ var config = {
 		hover: {
 			mode: 'nearest',
 			intersect: false
-		},
-		plugins: {
-			streaming: {
-				frameRate: 30
-			}
 		}
 	}
 };
@@ -182,6 +143,8 @@ var config = {
 window.onload = function() {
 	var ctx = document.getElementById('myChart').getContext('2d');
 	window.myChart = new Chart(ctx, config);
+	startFeed(0);
+	startFeed(1);
 };
 
 document.getElementById('randomizeData').addEventListener('click', function() {
@@ -190,7 +153,6 @@ document.getElementById('randomizeData').addEventListener('click', function() {
 			dataObj.y = randomScalingFactor();
 		});
 	});
-
 	window.myChart.update();
 });
 
@@ -209,52 +171,23 @@ document.getElementById('addDataset').addEventListener('click', function() {
 
 	config.data.datasets.push(newDataset);
 	window.myChart.update();
+	startFeed(config.data.datasets.length - 1);
 });
 
 document.getElementById('removeDataset').addEventListener('click', function() {
+	stopFeed(config.data.datasets.length - 1);
 	config.data.datasets.pop();
 	window.myChart.update();
 });
 
 document.getElementById('addData').addEventListener('click', function() {
-	onRefresh(window.myChart);
+	config.data.datasets.forEach(function(dataset) {
+		dataset.data.push({
+			x: Date.now(),
+			y: randomScalingFactor()
+		});
+	});
 	window.myChart.update();
-});
-
-document.getElementById('duration').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.scales.xAxes[0].realtime.duration = +this.value;
-	window.myChart.update({duration: 0});
-	document.getElementById('durationValue').innerHTML = this.value;
-});
-
-document.getElementById('ttl').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.scales.xAxes[0].realtime.ttl = +this.value;
-	window.myChart.update({duration: 0});
-	document.getElementById('ttlValue').innerHTML = this.value;
-});
-
-document.getElementById('refresh').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.scales.xAxes[0].realtime.refresh = +this.value;
-	window.myChart.update({duration: 0});
-	document.getElementById('refreshValue').innerHTML = this.value;
-});
-
-document.getElementById('delay').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.scales.xAxes[0].realtime.delay = +this.value;
-	window.myChart.update({duration: 0});
-	document.getElementById('delayValue').innerHTML = this.value;
-});
-
-document.getElementById('frameRate').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.plugins.streaming.frameRate = +this.value;
-	window.myChart.update({duration: 0});
-	document.getElementById('frameRateValue').innerHTML = this.value;
-});
-
-document.getElementById('pause').addEventListener('change', function() {
-	config.options.scales.xAxes[0].realtime.pause = this.checked;
-	window.myChart.update({duration: 0});
-	document.getElementById('pauseValue').innerHTML = this.checked;
 });</pre>
 			</div>
 			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
@@ -262,21 +195,6 @@ document.getElementById('pause').addEventListener('change', function() {
 	&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"&gt;&lt;/script&gt;
 	&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"&gt;&lt;/script&gt;
 	&lt;script src="https://github.com/nagix/chartjs-plugin-streaming/releases/download/v1.7.0/chartjs-plugin-streaming.min.js"&gt;&lt;/script&gt;
-	&lt;style&gt;
-		.label {
-			display: inline-block;
-			text-align: right;
-			width: 90px;
-		}
-		.value {
-			display: inline-block;
-			text-align: left;
-			width: 60px;
-		}
-		.control {
-			width: 200px;
-		}
-	&lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
 	&lt;div&gt;
@@ -288,44 +206,12 @@ document.getElementById('pause').addEventListener('change', function() {
 		&lt;button id="removeDataset"&gt;Remove Dataset&lt;/button&gt;
 		&lt;button id="addData"&gt;Add Data&lt;/button&gt;
 	&lt;/p&gt;
-	&lt;div&gt;
-		&lt;span class="label"&gt;duration:&lt;/span&gt;
-		&lt;span id="durationValue" class="value"&gt;20000&lt;/span&gt;
-		&lt;span&gt;&lt;input type="range" min="1000" max="60000" step="100" value="20000" id="duration" class="control"&gt;&lt;/span&gt;
-	&lt;/div&gt;
-	&lt;div&gt;
-		&lt;span class="label"&gt;ttl:&lt;/span&gt;
-		&lt;span id="ttlValue" class="value"&gt;60000&lt;/span&gt;
-		&lt;span&gt;&lt;input type="range" min="1000" max="60000" step="100" value="60000" id="ttl" class="control"&gt;&lt;/span&gt;
-	&lt;/div&gt;
-	&lt;div&gt;
-		&lt;span class="label"&gt;refresh:&lt;/span&gt;
-		&lt;span id="refreshValue" class="value"&gt;1000&lt;/span&gt;
-		&lt;span&gt;&lt;input type="range" min="50" max="3000" step="50" value="1000" id="refresh" class="control"&gt;&lt;/span&gt;
-	&lt;/div&gt;
-	&lt;div&gt;
-		&lt;span class="label"&gt;delay:&lt;/span&gt;
-		&lt;span id="delayValue" class="value"&gt;2000&lt;/span&gt;
-		&lt;span&gt;&lt;input type="range" min="0" max="5000" step="100" value="2000" id="delay" class="control"&gt;&lt;/span&gt;
-	&lt;/div&gt;
-	&lt;div&gt;
-		&lt;span class="label"&gt;frameRate:&lt;/span&gt;
-		&lt;span id="frameRateValue" class="value"&gt;30&lt;/span&gt;
-		&lt;span&gt;&lt;input type="range" min="1" max="60" step="1" value="30" id="frameRate" class="control"&gt;&lt;/span&gt;
-	&lt;/div&gt;
-	&lt;div&gt;
-		&lt;span class="label"&gt;pause:&lt;/span&gt;
-		&lt;span id="pauseValue" class="value"&gt;false&lt;/span&gt;
-		&lt;span&gt;&lt;input type="checkbox" id="pause" class="control"&gt;&lt;/span&gt;
-	&lt;/div&gt;
 &lt;/body&gt;</pre>
 			</div>
 		</div>
 	</div>
 
 	<script>
-		var isIE = navigator.userAgent.indexOf('MSIE') !== -1 || navigator.userAgent.indexOf('Trident') !== -1;
-
 		var chartColors = {
 			red: 'rgb(255, 99, 132)',
 			orange: 'rgb(255, 159, 64)',
@@ -340,13 +226,32 @@ document.getElementById('pause').addEventListener('change', function() {
 			return (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100);
 		}
 
-		function onRefresh(chart) {
-			chart.config.data.datasets.forEach(function(dataset) {
-				dataset.data.push({
-					x: Date.now(),
-					y: randomScalingFactor()
-				});
+		function onReceive(event) {
+			window.myChart.config.data.datasets[event.index].data.push({
+				x: event.timestamp,
+				y: event.value
 			});
+			window.myChart.update({
+				preservation: true
+			});
+		}
+
+		var timeoutIDs = [];
+
+		function startFeed(index) {
+			var receive = function() {
+				onReceive({
+					index: index,
+					timestamp: Date.now(),
+					value: randomScalingFactor()
+				});
+				timeoutIDs[index] = setTimeout(receive, Math.random() * 1000 + 500);
+			}
+			timeoutIDs[index] = setTimeout(receive, Math.random() * 1000 + 500);
+		}
+
+		function stopFeed(index) {
+			clearTimeout(timeoutIDs[index]);
 		}
 
 		var color = Chart.helpers.color;
@@ -373,23 +278,17 @@ document.getElementById('pause').addEventListener('change', function() {
 			options: {
 				title: {
 					display: true,
-					text: 'Interactions sample'
+					text: 'Push data feed sample'
 				},
 				scales: {
 					xAxes: [{
 						type: 'realtime',
 						realtime: {
 							duration: 20000,
-							ttl: 60000,
-							refresh: 1000,
 							delay: 2000,
-							pause: false,
-							onRefresh: onRefresh
 						}
 					}],
 					yAxes: [{
-						type: 'linear',
-						display: true,
 						scaleLabel: {
 							display: true,
 							labelString: 'value'
@@ -403,11 +302,6 @@ document.getElementById('pause').addEventListener('change', function() {
 				hover: {
 					mode: 'nearest',
 					intersect: false
-				},
-				plugins: {
-					streaming: {
-						frameRate: 30
-					}
 				}
 			}
 		};
@@ -415,6 +309,8 @@ document.getElementById('pause').addEventListener('change', function() {
 		window.onload = function() {
 			var ctx = document.getElementById('myChart').getContext('2d');
 			window.myChart = new Chart(ctx, config);
+			startFeed(0);
+			startFeed(1);
 		};
 
 		document.getElementById('randomizeData').addEventListener('click', function() {
@@ -423,7 +319,6 @@ document.getElementById('pause').addEventListener('change', function() {
 					dataObj.y = randomScalingFactor();
 				});
 			});
-
 			window.myChart.update();
 		});
 
@@ -442,52 +337,23 @@ document.getElementById('pause').addEventListener('change', function() {
 
 			config.data.datasets.push(newDataset);
 			window.myChart.update();
+			startFeed(config.data.datasets.length - 1);
 		});
 
 		document.getElementById('removeDataset').addEventListener('click', function() {
+			stopFeed(config.data.datasets.length - 1);
 			config.data.datasets.pop();
 			window.myChart.update();
 		});
 
 		document.getElementById('addData').addEventListener('click', function() {
-			onRefresh(window.myChart);
+			config.data.datasets.forEach(function(dataset) {
+				dataset.data.push({
+					x: Date.now(),
+					y: randomScalingFactor()
+				});
+			});
 			window.myChart.update();
-		});
-
-		document.getElementById('duration').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.scales.xAxes[0].realtime.duration = +this.value;
-			window.myChart.update({duration: 0});
-			document.getElementById('durationValue').innerHTML = this.value;
-		});
-
-		document.getElementById('ttl').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.scales.xAxes[0].realtime.ttl = +this.value;
-			window.myChart.update({duration: 0});
-			document.getElementById('ttlValue').innerHTML = this.value;
-		});
-
-		document.getElementById('refresh').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.scales.xAxes[0].realtime.refresh = +this.value;
-			window.myChart.update({duration: 0});
-			document.getElementById('refreshValue').innerHTML = this.value;
-		});
-
-		document.getElementById('delay').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.scales.xAxes[0].realtime.delay = +this.value;
-			window.myChart.update({duration: 0});
-			document.getElementById('delayValue').innerHTML = this.value;
-		});
-
-		document.getElementById('frameRate').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.plugins.streaming.frameRate = +this.value;
-			window.myChart.update({duration: 0});
-			document.getElementById('frameRateValue').innerHTML = this.value;
-		});
-
-		document.getElementById('pause').addEventListener('change', function() {
-			config.options.scales.xAxes[0].realtime.pause = this.checked;
-			window.myChart.update({duration: 0});
-			document.getElementById('pauseValue').innerHTML = this.checked;
 		});
 	</script>
 </body>

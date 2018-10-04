@@ -1,6 +1,6 @@
 {
   "name": "chartjs-plugin-streaming",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "Chart.js plugin for live streaming data",
   "main": "dist/chartjs-plugin-streaming.js",
   "directories": {

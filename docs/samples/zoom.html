@@ -11,7 +11,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.5/chartjs-plugin-zoom.min.js"></script>
-	<script src="https://github.com/nagix/chartjs-plugin-streaming/releases/download/v1.6.1/chartjs-plugin-streaming.min.js"></script>
+	<script src="https://github.com/nagix/chartjs-plugin-streaming/releases/download/v1.7.0/chartjs-plugin-streaming.min.js"></script>
 	<style>
 		canvas {
 			-moz-user-select: none;
@@ -100,7 +100,13 @@ var config = {
 		},
 		scales: {
 			xAxes: [{
-				type: 'realtime'
+				type: 'realtime',
+				realtime: {
+					duration: 20000,
+					refresh: 1000,
+					delay: 2000,
+					onRefresh: onRefresh
+				}
 			}],
 			yAxes: [{
 				type: 'linear',
@@ -137,14 +143,6 @@ var config = {
 			},
 			rangeMin: {
 				x: 1000
-			}
-		},
-		plugins: {
-			streaming: {
-				duration: 20000,
-				refresh: 1000,
-				delay: 2000,
-				onRefresh: onRefresh
 			}
 		}
 	}
@@ -202,7 +200,7 @@ document.getElementById('resetZoom').addEventListener('click', function() {
 	&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"&gt;&lt;/script&gt;
 	&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"&gt;&lt;/script&gt;
 	&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.5/chartjs-plugin-zoom.min.js"&gt;&lt;/script&gt;
-	&lt;script src="https://github.com/nagix/chartjs-plugin-streaming/releases/download/v1.6.1/chartjs-plugin-streaming.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://github.com/nagix/chartjs-plugin-streaming/releases/download/v1.7.0/chartjs-plugin-streaming.min.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 	&lt;div&gt;
@@ -272,7 +270,13 @@ document.getElementById('resetZoom').addEventListener('click', function() {
 				},
 				scales: {
 					xAxes: [{
-						type: 'realtime'
+						type: 'realtime',
+						realtime: {
+							duration: 20000,
+							refresh: 1000,
+							delay: 2000,
+							onRefresh: onRefresh
+						}
 					}],
 					yAxes: [{
 						type: 'linear',
@@ -309,14 +313,6 @@ document.getElementById('resetZoom').addEventListener('click', function() {
 					},
 					rangeMin: {
 						x: 1000
-					}
-				},
-				plugins: {
-					streaming: {
-						duration: 20000,
-						refresh: 1000,
-						delay: 2000,
-						onRefresh: onRefresh
 					}
 				}
 			}
