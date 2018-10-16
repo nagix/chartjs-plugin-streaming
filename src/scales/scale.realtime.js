@@ -54,10 +54,10 @@ export default function(Chart, moment) {
 		}
 	};
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	var MAX_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	var INTERVALS = {
 		millisecond: {
 			common: true,
@@ -67,12 +67,12 @@ export default function(Chart, moment) {
 		second: {
 			common: true,
 			size: 1000,
-			steps: [1, 2, 5, 10, 30]
+			steps: [1, 2, 5, 10, 15, 30]
 		},
 		minute: {
 			common: true,
 			size: 60000,
-			steps: [1, 2, 5, 10, 30]
+			steps: [1, 2, 5, 10, 15, 30]
 		},
 		hour: {
 			common: true,
@@ -105,10 +105,10 @@ export default function(Chart, moment) {
 		}
 	};
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	var UNITS = Object.keys(INTERVALS);
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	function momentify(value, options) {
 		var parser = options.parser;
 		var format = options.parser || options.format;
@@ -138,7 +138,7 @@ export default function(Chart, moment) {
 		return value;
 	}
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	function determineStepSize(min, max, unit, capacity) {
 		var range = max - min;
 		var interval = INTERVALS[unit];
@@ -160,7 +160,7 @@ export default function(Chart, moment) {
 		return factor;
 	}
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	function determineUnitForAutoTicks(minUnit, min, max, capacity) {
 		var ilen = UNITS.length;
 		var i, interval, factor;
@@ -177,7 +177,7 @@ export default function(Chart, moment) {
 		return UNITS[ilen - 1];
 	}
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	function determineUnitForFormatting(ticks, minUnit, min, max) {
 		var duration = moment.duration(moment(max).diff(moment(min)));
 		var ilen = UNITS.length;
@@ -193,7 +193,7 @@ export default function(Chart, moment) {
 		return UNITS[minUnit ? UNITS.indexOf(minUnit) : 0];
 	}
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	function determineMajorUnit(unit) {
 		for (var i = UNITS.indexOf(unit) + 1, ilen = UNITS.length; i < ilen; ++i) {
 			if (INTERVALS[UNITS[i]].common) {
@@ -202,7 +202,7 @@ export default function(Chart, moment) {
 		}
 	}
 
-	// Ported from Chart.js 2.7.2 37ec838. Modified for realtime scale.
+	// Ported from Chart.js 2.7.3 1cd0469. Modified for realtime scale.
 	function generate(min, max, capacity, options, refresh) {
 		var timeOpts = options.time;
 		var minor = timeOpts.unit || determineUnitForAutoTicks(timeOpts.minUnit, min, max, capacity);
@@ -256,7 +256,7 @@ export default function(Chart, moment) {
 		return ticks;
 	}
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	function ticksFromTimestamps(values, majorUnit) {
 		var ticks = [];
 		var i, ilen, value, major;
@@ -274,7 +274,7 @@ export default function(Chart, moment) {
 		return ticks;
 	}
 
-	// Ported from Chart.js 2.7.2 37ec838.
+	// Ported from Chart.js 2.7.3 1cd0469.
 	function determineLabelFormat(data, timeOpts) {
 		var i, momentDate, hasTime;
 		var ilen = data.length;
