@@ -464,30 +464,6 @@ function scroll(scale) {
 	realtime.head = now;
 }
 
-function startFrameRefreshTimer(scale) {
-	var realtime = scale.realtime;
-
-	if (!realtime.frameRequestID) {
-		var frameRefresh = function() {
-			scroll(scale);
-			realtime.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
-		};
-
-		realtime.head = Date.now();
-		realtime.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
-	}
-}
-
-function stopFrameRefreshTimer(scale) {
-	var realtime = scale.realtime;
-	var frameRequestID = realtime.frameRequestID;
-
-	if (frameRequestID) {
-		helpers.cancelAnimFrame.call(window, frameRequestID);
-		delete realtime.frameRequestID;
-	}
-}
-
 var defaultConfig = {
 	position: 'bottom',
 	distribution: 'linear',
@@ -538,12 +514,12 @@ var RealTimeScale = TimeScale.extend({
 
 		me.realtime = me.realtime || {};
 
-		startFrameRefreshTimer(me);
 		startDataRefreshTimer(me);
 	},
 
 	update: function() {
 		var me = this;
+		var realtime = me.realtime;
 
 		// For backwards compatibility
 		if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
@@ -551,10 +527,12 @@ var RealTimeScale = TimeScale.extend({
 		}
 
 		if (resolveOption(me, 'pause')) {
-			stopFrameRefreshTimer(me);
+			helpers.stopFrameRefreshTimer(realtime);
 		} else {
-			startFrameRefreshTimer(me);
-			me.realtime.head = Date.now();
+			helpers.startFrameRefreshTimer(realtime, function() {
+				scroll(me);
+			});
+			realtime.head = Date.now();
 		}
 
 		return TimeScale.prototype.update.apply(me, arguments);
@@ -660,7 +638,7 @@ var RealTimeScale = TimeScale.extend({
 			return;
 		}
 
-		stopFrameRefreshTimer(me);
+		helpers.stopFrameRefreshTimer(me.realtime);
 		stopDataRefreshTimer(me);
 	}
 });

@@ -87,41 +87,21 @@ Chart.prototype.update = function(config) {
 	}
 };
 
-function startFrameRefreshTimer(chart) {
+// Draw chart at frameRate
+function drawChart(chart) {
 	var streaming = chart.streaming;
+	var frameRate = chart.options.plugins.streaming.frameRate;
+	var frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
+	var next = streaming.lastDrawn + frameDuration || 0;
+	var now = Date.now();
 
-	if (!streaming.frameRequestID) {
-		var lastDrawn = 0;
-		var frameRefresh = function() {
-			var frameRate = chart.options.plugins.streaming.frameRate;
-			var frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
-			var now = Date.now();
-
-			if (lastDrawn + frameDuration <= now) {
-				// Draw only when animation is inactive
-				if (!chart.animating && !chart.tooltip._start) {
-					chart.draw();
-				}
-				generateMouseMoveEvent(chart);
-				lastDrawn += frameDuration;
-				if (lastDrawn + frameDuration <= now) {
-					lastDrawn = now;
-				}
-			}
-			streaming.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
-		};
-
-		streaming.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
-	}
-}
-
-function stopFrameRefreshTimer(chart) {
-	var streaming = chart.streaming;
-	var frameRequestID = streaming.frameRequestID;
-
-	if (frameRequestID) {
-		helpers.cancelAnimFrame.call(window, frameRequestID);
-		delete streaming.frameRequestID;
+	if (next <= now) {
+		// Draw only when animation is inactive
+		if (!chart.animating && !chart.tooltip._start) {
+			chart.draw();
+		}
+		generateMouseMoveEvent(chart);
+		streaming.lastDrawn = (next + frameDuration > now) ? next : now;
 	}
 }
 
@@ -143,7 +123,6 @@ export default {
 		if (chart.resetZoom) {
 			Chart.Zoom.updateResetZoom(chart);
 		}
-		startFrameRefreshTimer(chart);
 	},
 
 	beforeUpdate: function(chart) {
@@ -162,6 +141,7 @@ export default {
 	},
 
 	afterUpdate: function(chart, options) {
+		var streaming = chart.streaming;
 		var pause = true;
 
 		// if all scales are paused, stop refreshing frames
@@ -171,9 +151,11 @@ export default {
 			}
 		});
 		if (pause) {
-			stopFrameRefreshTimer(chart);
+			helpers.stopFrameRefreshTimer(streaming);
 		} else {
-			startFrameRefreshTimer(chart);
+			helpers.startFrameRefreshTimer(streaming, function() {
+				drawChart(chart);
+			});
 		}
 	},
 
@@ -220,7 +202,7 @@ export default {
 		var canvas = streaming.canvas;
 		var mouseEventListener = streaming.mouseEventListener;
 
-		stopFrameRefreshTimer(chart);
+		helpers.stopFrameRefreshTimer(streaming);
 
 		canvas.removeEventListener('mousedown', mouseEventListener);
 		canvas.removeEventListener('mouseup', mouseEventListener);
