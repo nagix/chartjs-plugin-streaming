@@ -8,7 +8,8 @@ var replace = require('gulp-replace');
 var streamify = require('gulp-streamify');
 var uglify = require('gulp-uglify');
 var zip = require('gulp-zip');
-var merge = require('merge-stream');
+var merge = require('merge2');
+var path = require('path');
 var rollup = require('rollup-stream');
 var source = require('vinyl-source-stream');
 var pkg = require('./package.json');
@@ -16,8 +17,6 @@ var pkg = require('./package.json');
 var srcDir = './src/';
 var outDir = './dist/';
 var samplesDir = './samples/';
-
-gulp.task('default', ['build']);
 
 /**
  * Generates the bower.json manifest file which will be pushed along release tags.
@@ -56,11 +55,11 @@ gulp.task('build', function() {
 gulp.task('package', function() {
 	return merge(
 		// gather "regular" files landing in the package root
-		gulp.src([outDir + '*.js', 'LICENSE.md']),
+		gulp.src([path.join(outDir, '*.js'), 'LICENSE.md']),
 
 		// since we moved the dist files one folder up (package root), we need to rewrite
 		// samples src="../dist/ to src="../ and then copy them in the /samples directory.
-		gulp.src(samplesDir + '**/*', {base: '.'})
+		gulp.src(path.join(samplesDir, '**/*'), {base: '.'})
 			.pipe(streamify(replace(/src="((?:\.\.\/)+)dist\//g, 'src="$1')))
 	)
 		// finally, create the zip archive
@@ -69,7 +68,7 @@ gulp.task('package', function() {
 });
 
 gulp.task('watch', function() {
-	return gulp.watch('./src/**', ['build']);
+	return gulp.watch('./src/**', gulp.parallel('build'));
 });
 
 gulp.task('lint', function() {
@@ -90,3 +89,5 @@ gulp.task('lint', function() {
 		.pipe(eslint.format())
 		.pipe(eslint.failAfterError());
 });
+
+gulp.task('default', gulp.parallel('build'));

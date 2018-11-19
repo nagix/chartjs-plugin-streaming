@@ -13,17 +13,17 @@
   },
   "devDependencies": {
     "eslint-config-chartjs": "^0.1.0",
-    "gulp": "3.9.x",
-    "gulp-eslint": "^4.0.0",
-    "gulp-file": "^0.3.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-replace": "^0.6.1",
+    "gulp": "^4.0.0",
+    "gulp-eslint": "^5.0.0",
+    "gulp-file": "^0.4.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-replace": "^1.0.0",
     "gulp-streamify": "^1.0.2",
-    "gulp-uglify": "~3.0.x",
-    "gulp-zip": "~4.0.0",
-    "merge-stream": "^1.0.1",
+    "gulp-uglify": "^3.0.0",
+    "gulp-zip": "^4.2.0",
+    "merge2": "^1.2.3",
     "rollup-stream": "^1.24.1",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^2.0.0"
   },
   "repository": {
     "type": "git",
