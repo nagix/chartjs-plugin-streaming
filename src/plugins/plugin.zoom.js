@@ -3,14 +3,14 @@
 import Chart from 'chart.js';
 import helpers from '../core/core.helpers';
 
-// Ported from chartjs-plugin-zoom 0.6.5 923a66d
+// Ported from chartjs-plugin-zoom 0.6.6 b0c3b20
 var zoomNS = Chart.Zoom = Chart.Zoom || {};
 
-// Ported from chartjs-plugin-zoom 0.6.5 923a66d
+// Ported from chartjs-plugin-zoom 0.6.6 b0c3b20
 zoomNS.zoomFunctions = zoomNS.zoomFunctions || {};
 zoomNS.panFunctions = zoomNS.panFunctions || {};
 
-// Ported from chartjs-plugin-zoom 0.6.5 923a66d
+// Ported from chartjs-plugin-zoom 0.6.6 b0c3b20
 function rangeMaxLimiter(zoomPanOptions, newMax) {
 	if (zoomPanOptions.scaleAxes && zoomPanOptions.rangeMax &&
 			!helpers.isNullOrUndef(zoomPanOptions.rangeMax[zoomPanOptions.scaleAxes])) {
@@ -22,7 +22,7 @@ function rangeMaxLimiter(zoomPanOptions, newMax) {
 	return newMax;
 }
 
-// Ported from chartjs-plugin-zoom 0.6.5 923a66d
+// Ported from chartjs-plugin-zoom 0.6.6 b0c3b20
 function rangeMinLimiter(zoomPanOptions, newMin) {
 	if (zoomPanOptions.scaleAxes && zoomPanOptions.rangeMin &&
 			!helpers.isNullOrUndef(zoomPanOptions.rangeMin[zoomPanOptions.scaleAxes])) {
