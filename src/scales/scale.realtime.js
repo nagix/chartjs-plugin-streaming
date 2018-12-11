@@ -100,6 +100,25 @@ function momentify(value, options) {
 }
 
 // Ported from Chart.js 2.7.3 1cd0469.
+function parse(input, scale) {
+	if (helpers.isNullOrUndef(input)) {
+		return null;
+	}
+
+	var options = scale.options.time;
+	var value = momentify(scale.getRightValue(input), options);
+	if (!value.isValid()) {
+		return null;
+	}
+
+	if (options.round) {
+		value.startOf(options.round);
+	}
+
+	return value.valueOf();
+}
+
+// Ported from Chart.js 2.7.3 1cd0469.
 function determineStepSize(min, max, unit, capacity) {
 	var range = max - min;
 	var interval = INTERVALS[unit];
@@ -293,8 +312,8 @@ function refreshData(scale) {
 	var ttl = resolveOption(scale, 'ttl');
 	var pause = resolveOption(scale, 'pause');
 	var onRefresh = resolveOption(scale, 'onRefresh');
-	var lower = scale.getPixelForValue(scale.max);
-	var upper = scale.getPixelForValue(Date.now() - (isNaN(ttl) ? duration + delay : ttl));
+	var max = scale.max;
+	var min = Date.now() - (isNaN(ttl) ? duration + delay : ttl);
 	var meta, data, length, i, start, count, removalRange;
 
 	if (onRefresh) {
@@ -311,7 +330,7 @@ function refreshData(scale) {
 			if (pause) {
 				// If the scale is paused, preserve the visible data points
 				for (i = 0; i < length; ++i) {
-					if (!(scale.getPixelForValue(null, i, datasetIndex) < lower)) {
+					if (!(scale._getTimeForIndex(i, datasetIndex) < max)) {
 						break;
 					}
 				}
@@ -321,7 +340,7 @@ function refreshData(scale) {
 			}
 
 			for (i = start; i < length; ++i) {
-				if (!(scale.getPixelForValue(null, i, datasetIndex) <= upper)) {
+				if (!(scale._getTimeForIndex(i, datasetIndex) <= min)) {
 					break;
 				}
 			}
@@ -640,6 +659,27 @@ var RealTimeScale = TimeScale.extend({
 
 		helpers.stopFrameRefreshTimer(me.realtime);
 		stopDataRefreshTimer(me);
+	},
+
+	/*
+	 * @private
+	 */
+	_getTimeForIndex: function(index, datasetIndex) {
+		var me = this;
+		var timestamps = me._timestamps;
+		var time = timestamps.datasets[datasetIndex][index];
+		var value;
+
+		if (helpers.isNullOrUndef(time)) {
+			value = me.chart.data.datasets[datasetIndex].data[index];
+			if (helpers.isObject(value)) {
+				time = parse(me.getRightValue(value), me);
+			} else {
+				time = parse(timestamps.labels[index], me);
+			}
+		}
+
+		return time;
 	}
 });
 
