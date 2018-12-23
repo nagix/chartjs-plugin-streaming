@@ -453,6 +453,10 @@ function scroll(scale) {
 	}
 	offset = length * (now - realtime.head) / duration;
 
+	if (scale.options.ticks.reverse) {
+		offset = -offset;
+	}
+
 	// Shift all the elements leftward or upward
 	helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
 		meta = chart.getDatasetMeta(datasetIndex);
@@ -567,6 +571,7 @@ var RealTimeScale = TimeScale.extend({
 		}
 
 		var timeOpts = options.time;
+		var ticksOpts = options.ticks;
 		var duration = resolveOption(me, 'duration');
 		var delay = resolveOption(me, 'delay');
 		var refresh = resolveOption(me, 'refresh');
@@ -574,7 +579,7 @@ var RealTimeScale = TimeScale.extend({
 		var min = max - duration;
 		var timestamps = [];
 
-		switch (options.ticks.source) {
+		switch (ticksOpts.source) {
 		case 'data':
 			timestamps = me._timestamps.data;
 			break;
@@ -595,8 +600,12 @@ var RealTimeScale = TimeScale.extend({
 		// realtime scale only supports linear distribution.
 		me._table = [{time: min, pos: 0}, {time: max, pos: 1}];
 		// offset is always disabled.
-		me._offsets = {left: 0, right: 0};
+		me._offsets = {left: 0, right: 0, start: 0, end: 0};
 		me._labelFormat = determineLabelFormat(me._timestamps.data, timeOpts);
+
+		if (ticksOpts.reverse) {
+			timestamps.reverse();
+		}
 
 		return ticksFromTimestamps(timestamps, me._majorUnit);
 	},
