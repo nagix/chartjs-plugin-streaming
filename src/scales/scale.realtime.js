@@ -7,6 +7,8 @@ import helpers from '../core/core.helpers';
 var scaleService = Chart.scaleService;
 var TimeScale = scaleService.getScaleConstructor('time');
 
+var valueOrDefault = helpers.valueOrDefault;
+
 scaleService.getScaleConstructor = function(type) {
 	// For backwards compatibility
 	if (type === 'time') {
@@ -187,7 +189,7 @@ function generate(min, max, capacity, options, refresh) {
 	var timeOpts = options.time;
 	var minor = timeOpts.unit || determineUnitForAutoTicks(timeOpts.minUnit, min, max, capacity);
 	var major = determineMajorUnit(minor);
-	var stepSize = helpers.valueOrDefault(timeOpts.stepSize, timeOpts.unitStepSize);
+	var stepSize = valueOrDefault(timeOpts.stepSize, timeOpts.unitStepSize);
 	var weekday = minor === 'week' ? timeOpts.isoWeekday : false;
 	// For realtime scale: Major ticks are always enabled.
 	var majorTicksEnabled = true;
@@ -279,7 +281,7 @@ function determineLabelFormat(data, timeOpts) {
 function resolveOption(scale, key) {
 	var realtimeOpts = scale.options.realtime;
 	var streamingOpts = scale.chart.options.plugins.streaming;
-	return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
+	return valueOrDefault(realtimeOpts[key], streamingOpts[key]);
 }
 
 var datasetPropertyKeys = [
