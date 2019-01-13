@@ -14,26 +14,6 @@ Chart.defaults.global.plugins.streaming = {
 	ttl: undefined
 };
 
-// Dispach mouse event for scroll
-function generateMouseMoveEvent(chart) {
-	var event = chart.streaming.lastMouseEvent;
-	var newEvent;
-
-	if (event) {
-		if (typeof MouseEvent === 'function') {
-			newEvent = new MouseEvent('mousemove', event);
-		} else {
-			newEvent = document.createEvent('MouseEvents');
-			newEvent.initMouseEvent(
-				'mousemove', event.bubbles, event.cancelable, event.view, event.detail,
-				event.screenX, event.screenY, event.clientX, event.clientY, event.ctrlKey,
-				event.altKey, event.shiftKey, event.metaKey, event.button, event.relatedTarget
-			);
-		}
-		chart.canvas.dispatchEvent(newEvent);
-	}
-}
-
 /**
  * Update the chart data keeping the current animation but suppressing a new one
  * @param chart {Chart} chart to update
@@ -42,6 +22,7 @@ function updateChartData(chart) {
 	var animationOpts = chart.options.animation;
 	var datasets = chart.data.datasets;
 	var newControllers = chart.buildOrUpdateControllers();
+	var lastMouseEvent = chart.streaming.lastMouseEvent;
 
 	datasets.forEach(function(dataset, datasetIndex) {
 		chart.getDatasetMeta(datasetIndex).controller.buildOrUpdateElements();
@@ -74,7 +55,9 @@ function updateChartData(chart) {
 		chart.tooltip.update(true);
 	}
 
-	generateMouseMoveEvent(chart);
+	if (lastMouseEvent) {
+		chart.eventHandler(lastMouseEvent);
+	}
 }
 
 var update = Chart.prototype.update;
@@ -94,13 +77,16 @@ function drawChart(chart) {
 	var frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
 	var next = streaming.lastDrawn + frameDuration || 0;
 	var now = Date.now();
+	var lastMouseEvent = streaming.lastMouseEvent;
 
 	if (next <= now) {
 		// Draw only when animation is inactive
 		if (!chart.animating && !chart.tooltip._start) {
 			chart.draw();
 		}
-		generateMouseMoveEvent(chart);
+		if (lastMouseEvent) {
+			chart.eventHandler(lastMouseEvent);
+		}
 		streaming.lastDrawn = (next + frameDuration > now) ? next : now;
 	}
 }
@@ -112,7 +98,14 @@ export default {
 		var streaming = chart.streaming = chart.streaming || {};
 		var canvas = streaming.canvas = chart.canvas;
 		var mouseEventListener = streaming.mouseEventListener = function(event) {
-			streaming.lastMouseEvent = event;
+			var pos = helpers.getRelativePosition(event, chart);
+			streaming.lastMouseEvent = {
+				type: 'mousemove',
+				chart: chart,
+				native: event,
+				x: pos.x,
+				y: pos.y
+			};
 		};
 
 		canvas.addEventListener('mousedown', mouseEventListener);
@@ -189,7 +182,7 @@ export default {
 
 		if (event.type === 'mousemove') {
 			// Save mousemove event for reuse
-			streaming.lastMouseEvent = event.native;
+			streaming.lastMouseEvent = event;
 		} else if (event.type === 'mouseout') {
 			// Remove mousemove event
 			delete streaming.lastMouseEvent;
