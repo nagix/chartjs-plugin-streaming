@@ -1,7 +1,8 @@
 'use strict';
 
 import Chart from 'chart.js';
-import helpers from '../core/core.helpers';
+
+var helpers = Chart.helpers;
 
 // Ported from chartjs-plugin-zoom 0.6.6 b0c3b20
 var zoomNS = Chart.Zoom = Chart.Zoom || {};

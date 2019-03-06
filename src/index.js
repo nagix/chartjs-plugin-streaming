@@ -1,9 +1,12 @@
 'use strict';
 
 import Chart from 'chart.js';
-import streamingPlugin from './plugins/plugin.streaming';
+import StreamingHelper from './helpers/helpers.streaming';
+import StreamingPlugin from './plugins/plugin.streaming';
 import './plugins/plugin.zoom';
 
-Chart.plugins.register(streamingPlugin);
+Chart.helpers.streaming = StreamingHelper;
 
-export default streamingPlugin;
+Chart.plugins.register(StreamingPlugin);
+
+export default StreamingPlugin;

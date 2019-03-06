@@ -1,8 +1,11 @@
 'use strict';
 
 import Chart from 'chart.js';
-import helpers from '../core/core.helpers';
+import streamingHelpers from '../helpers/helpers.streaming';
 import RealTimeScale from '../scales/scale.realtime';
+
+var helpers = Chart.helpers;
+var canvasHelpers = helpers.canvas;
 
 Chart.defaults.global.plugins.streaming = {
 	duration: 10000,
@@ -144,9 +147,9 @@ export default {
 			}
 		});
 		if (pause) {
-			helpers.stopFrameRefreshTimer(streaming);
+			streamingHelpers.stopFrameRefreshTimer(streaming);
 		} else {
-			helpers.startFrameRefreshTimer(streaming, function() {
+			streamingHelpers.startFrameRefreshTimer(streaming, function() {
 				drawChart(chart);
 			});
 		}
@@ -169,12 +172,12 @@ export default {
 			clipArea.top = chartArea.top;
 			clipArea.bottom = chartArea.bottom;
 		}
-		helpers.canvas.clipArea(chart.ctx, clipArea);
+		canvasHelpers.clipArea(chart.ctx, clipArea);
 		return true;
 	},
 
 	afterDatasetDraw: function(chart) {
-		helpers.canvas.unclipArea(chart.ctx);
+		canvasHelpers.unclipArea(chart.ctx);
 	},
 
 	beforeEvent: function(chart, event) {
@@ -195,7 +198,7 @@ export default {
 		var canvas = streaming.canvas;
 		var mouseEventListener = streaming.mouseEventListener;
 
-		helpers.stopFrameRefreshTimer(streaming);
+		streamingHelpers.stopFrameRefreshTimer(streaming);
 
 		canvas.removeEventListener('mousedown', mouseEventListener);
 		canvas.removeEventListener('mouseup', mouseEventListener);

@@ -2,12 +2,12 @@
 
 import Chart from 'chart.js';
 import moment from 'moment';
-import helpers from '../core/core.helpers';
+import streamingHelpers from '../helpers/helpers.streaming';
 
+var helpers = Chart.helpers;
+var canvasHelpers = helpers.canvas;
 var scaleService = Chart.scaleService;
 var TimeScale = scaleService.getScaleConstructor('time');
-
-var valueOrDefault = helpers.valueOrDefault;
 
 scaleService.getScaleConstructor = function(type) {
 	// For backwards compatibility
@@ -89,7 +89,7 @@ function parse(scale, input) {
 function resolveOption(scale, key) {
 	var realtimeOpts = scale.options.realtime;
 	var streamingOpts = scale.chart.options.plugins.streaming;
-	return valueOrDefault(realtimeOpts[key], streamingOpts[key]);
+	return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
 }
 
 var datasetPropertyKeys = [
@@ -362,9 +362,9 @@ var RealTimeScale = TimeScale.extend({
 		}
 
 		if (resolveOption(me, 'pause')) {
-			helpers.stopFrameRefreshTimer(realtime);
+			streamingHelpers.stopFrameRefreshTimer(realtime);
 		} else {
-			helpers.startFrameRefreshTimer(realtime, function() {
+			streamingHelpers.startFrameRefreshTimer(realtime, function() {
 				scroll(me);
 			});
 			realtime.head = Date.now();
@@ -479,9 +479,9 @@ var RealTimeScale = TimeScale.extend({
 			};
 
 		// Clip and draw the scale
-		helpers.canvas.clipArea(context, clipArea);
+		canvasHelpers.clipArea(context, clipArea);
 		TimeScale.prototype.draw.apply(me, arguments);
-		helpers.canvas.unclipArea(context);
+		canvasHelpers.unclipArea(context);
 	},
 
 	destroy: function() {
@@ -492,7 +492,7 @@ var RealTimeScale = TimeScale.extend({
 			return;
 		}
 
-		helpers.stopFrameRefreshTimer(me.realtime);
+		streamingHelpers.stopFrameRefreshTimer(me.realtime);
 		stopDataRefreshTimer(me);
 	},
 
