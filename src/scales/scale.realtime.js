@@ -17,53 +17,73 @@ scaleService.getScaleConstructor = function(type) {
 	return this.constructors.hasOwnProperty(type) ? this.constructors[type] : undefined;
 };
 
-// Ported from Chart.js 2.7.3 1cd0469.
-function momentify(value, options) {
+// For Chart.js 2.7.x backward compatibility
+var defaultAdapter = {
+	// Ported from Chart.js 2.8.0-rc.1 35273ee
+	parse: function(value, format) {
+		if (typeof value === 'string' && typeof format === 'string') {
+			value = moment(value, format);
+		} else if (!(value instanceof moment)) {
+			value = moment(value);
+		}
+		return value.isValid() ? value.valueOf() : null;
+	}
+};
+
+// Ported from Chart.js 2.8.0-rc.1 35273ee. Modified for Chart.js 2.7.x backward compatibility.
+function toTimestamp(scale, input) {
+	var adapter = scale._adapter || defaultAdapter;
+	var options = scale.options.time;
 	var parser = options.parser;
-	var format = options.parser || options.format;
+	var format = parser || options.format;
+	var value = input;
 
 	if (typeof parser === 'function') {
-		return parser(value);
+		value = parser(value);
 	}
 
-	if (typeof value === 'string' && typeof format === 'string') {
-		return moment(value, format);
+	// Only parse if its not a timestamp already
+	if (typeof value !== 'number' && !(value instanceof Number) || !isFinite(value)) {
+		value = typeof format === 'string'
+			? adapter.parse(value, format)
+			: adapter.parse(value);
 	}
 
-	if (!(value instanceof moment)) {
-		value = moment(value);
+	if (value !== null) {
+		return +value;
 	}
 
-	if (value.isValid()) {
-		return value;
-	}
+	// Labels are in an incompatible format and no `parser` has been provided.
+	// The user might still use the deprecated `format` option for parsing.
+	if (!parser && typeof format === 'function') {
+		value = format(input);
 
-	// Labels are in an incompatible moment format and no `parser` has been provided.
-	// The user might still use the deprecated `format` option to convert his inputs.
-	if (typeof format === 'function') {
-		return format(value);
+		// `format` could return something else than a timestamp, if so, parse it
+		if (typeof value !== 'number' && !(value instanceof Number) || !isFinite(value)) {
+			value = adapter.parse(value);
+		}
 	}
 
 	return value;
 }
 
-// Ported from Chart.js 2.7.3 1cd0469.
-function parse(input, scale) {
+// Ported from Chart.js 2.8.0-rc.1 35273ee
+function parse(scale, input) {
 	if (helpers.isNullOrUndef(input)) {
 		return null;
 	}
 
 	var options = scale.options.time;
-	var value = momentify(scale.getRightValue(input), options);
-	if (!value.isValid()) {
-		return null;
+	var value = toTimestamp(scale, scale.getRightValue(input));
+	if (value === null) {
+		return value;
 	}
 
 	if (options.round) {
-		value.startOf(options.round);
+		value = +scale._adapter.startOf(value, options.round);
 	}
 
-	return value.valueOf();
+	return value;
 }
 
 function resolveOption(scale, key) {
@@ -283,7 +303,7 @@ var defaultConfig = {
 	position: 'bottom',
 	distribution: 'linear',
 	bounds: 'data',
-
+	adapters: {},
 	time: {
 		parser: false, // false == a pattern string from http://momentjs.com/docs/#/parsing/string-format/ or a custom callback that converts its argument to a moment
 		format: false, // DEPRECATED false == date objects, moment object, callback or a pattern string from http://momentjs.com/docs/#/parsing/string-format/
@@ -295,15 +315,15 @@ var defaultConfig = {
 
 		// defaults to unit's corresponding unitFormat below or override using pattern string from http://momentjs.com/docs/#/displaying/format/
 		displayFormats: {
-			millisecond: 'h:mm:ss.SSS a', // 11:20:01.123 AM,
-			second: 'h:mm:ss a', // 11:20:01 AM
-			minute: 'h:mm a', // 11:20 AM
-			hour: 'hA', // 5PM
-			day: 'MMM D', // Sep 4
-			week: 'll', // Week 46, or maybe "[W]WW - YYYY" ?
-			month: 'MMM YYYY', // Sept 2015
-			quarter: '[Q]Q - YYYY', // Q3
-			year: 'YYYY' // 2015
+			millisecond: 'h:mm:ss.SSS a',
+			second: 'h:mm:ss a',
+			minute: 'h:mm a',
+			hour: 'hA',
+			day: 'MMM D',
+			week: 'll',
+			month: 'MMM YYYY',
+			quarter: '[Q]Q - YYYY',
+			year: 'YYYY'
 		},
 	},
 	realtime: {},
@@ -488,9 +508,9 @@ var RealTimeScale = TimeScale.extend({
 		if (helpers.isNullOrUndef(time)) {
 			value = me.chart.data.datasets[datasetIndex].data[index];
 			if (helpers.isObject(value)) {
-				time = parse(me.getRightValue(value), me);
+				time = parse(me, value);
 			} else {
-				time = parse(timestamps.labels[index], me);
+				time = parse(me, timestamps.labels[index]);
 			}
 		}
 
