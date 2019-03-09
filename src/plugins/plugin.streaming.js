@@ -18,60 +18,55 @@ Chart.defaults.global.plugins.streaming = {
 };
 
 /**
- * Update the chart data keeping the current animation but suppressing a new one
- * @param chart {Chart} chart to update
+ * Update the chart keeping the current animation but suppressing a new one
+ * @param {object} config - animation options
  */
-function updateChartData(chart) {
-	var animationOpts = chart.options.animation;
-	var datasets = chart.data.datasets;
-	var newControllers = chart.buildOrUpdateControllers();
-	var lastMouseEvent = chart.streaming.lastMouseEvent;
+function update(config) {
+	var me = this;
+	var preservation = config && config.preservation;
+	var tooltip, lastActive, tooltipLastActive, lastMouseEvent;
 
-	datasets.forEach(function(dataset, datasetIndex) {
-		chart.getDatasetMeta(datasetIndex).controller.buildOrUpdateElements();
-	});
-	chart.updateLayout();
-	if (animationOpts && animationOpts.duration) {
-		helpers.each(newControllers, function(controller) {
-			controller.reset();
-		});
-	}
-	chart.updateDatasets();
-
-	if (chart.animating) {
-		// If the chart is animating, keep it until the duration is over
-		Chart.animationService.animations.forEach(function(animation) {
-			if (animation.chart === chart) {
-				chart.render({
-					duration: (animation.numSteps - animation.currentStep) * 16.66
-				});
-			}
-		});
-	} else {
-		// If the chart is not animating, make sure that all elements are at the final positions
-		datasets.forEach(function(dataset, datasetIndex) {
-			chart.getDatasetMeta(datasetIndex).controller.transition(1);
-		});
+	if (preservation) {
+		tooltip = me.tooltip;
+		lastActive = me.lastActive;
+		tooltipLastActive = tooltip._lastActive;
+		me._bufferedRender = true;
 	}
 
-	if (chart.tooltip._active) {
-		chart.tooltip.update(true);
-	}
+	Chart.prototype.update.apply(me, arguments);
 
-	if (lastMouseEvent) {
-		chart.eventHandler(lastMouseEvent);
+	if (preservation) {
+		me._bufferedRender = false;
+		me._bufferedRequest = null;
+		me.lastActive = lastActive;
+		tooltip._lastActive = tooltipLastActive;
+
+		if (me.animating) {
+			// If the chart is animating, keep it until the duration is over
+			Chart.animationService.animations.forEach(function(animation) {
+				if (animation.chart === me) {
+					me.render({
+						duration: (animation.numSteps - animation.currentStep) * 16.66
+					});
+				}
+			});
+		} else {
+			// If the chart is not animating, make sure that all elements are at the final positions
+			me.data.datasets.forEach(function(dataset, datasetIndex) {
+				me.getDatasetMeta(datasetIndex).controller.transition(1);
+			});
+		}
+
+		if (tooltip._active) {
+			tooltip.update(true);
+		}
+
+		lastMouseEvent = me.streaming.lastMouseEvent;
+		if (lastMouseEvent) {
+			me.eventHandler(lastMouseEvent);
+		}
 	}
 }
-
-var update = Chart.prototype.update;
-
-Chart.prototype.update = function(config) {
-	if (config && config.preservation) {
-		updateChartData(this);
-	} else {
-		update.apply(this, arguments);
-	}
-};
 
 // Draw chart at frameRate
 function drawChart(chart) {
@@ -116,6 +111,8 @@ export default {
 	},
 
 	afterInit: function(chart) {
+		chart.update = update;
+
 		if (chart.resetZoom) {
 			Chart.Zoom.updateResetZoom(chart);
 		}
