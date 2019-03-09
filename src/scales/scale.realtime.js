@@ -113,7 +113,8 @@ var datasetPropertyKeys = [
 	'hoverBorderWidth',
 	'hoverRadius',
 	'hitRadius',
-	'radius'
+	'radius',
+	'rotation'
 ];
 
 function refreshData(scale) {
@@ -166,6 +167,11 @@ function refreshData(scale) {
 			datasetPropertyKeys.forEach(function(key) {
 				if (dataset.hasOwnProperty(key) && helpers.isArray(dataset[key])) {
 					dataset[key].splice(start, count);
+				}
+			});
+			helpers.each(dataset.datalabels, function(value) {
+				if (helpers.isArray(value)) {
+					value.splice(start, count);
 				}
 			});
 			if (typeof data[0] !== 'object') {
