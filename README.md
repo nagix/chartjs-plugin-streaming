@@ -242,10 +242,10 @@ npm install
 The following commands will then be available from the repository root:
 
 ```bash
-gulp build      # build dist files
-gulp watch      # watch for changes and build automatically
-gulp lint       # perform code linting
-gulp package    # create an archive with dist files and samples
+gulp build            # build dist files
+gulp build --watch    # build and watch for changes
+gulp lint             # perform code linting
+gulp package          # create an archive with dist files and samples
 ```
 
 ## License

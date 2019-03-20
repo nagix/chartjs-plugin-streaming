@@ -1,28 +1,54 @@
+const terser = require('rollup-plugin-terser').terser;
 const pkg = require('./package.json');
 
-const banner = `/*
- * @license
- * ` + pkg.name + `
- * https://github.com/nagix/chartjs-plugin-streaming/
- * Version: ` + pkg.version + `
- *
- * Copyright ` + (new Date().getFullYear()) + ` Akihiko Kusanagi
- * Released under the MIT license
- * https://github.com/nagix/` + pkg.name + `/blob/master/LICENSE.md
+const banner = `/*!
+ * ${pkg.name} v${pkg.version}
+ * ${pkg.homepage}
+ * (c) ${new Date().getFullYear()} Akihiko Kusanagi
+ * Released under the ${pkg.license} license
  */`;
 
-export default {
-	input: 'src/index.js',
-	output: 'dist/' + pkg.name + '.js',
-	banner: banner,
-	format: 'umd',
-	name: pkg.name,
-	external: [
-		'moment',
-		'chart.js'
-	],
-	globals: {
-		moment: 'moment',
-		'chart.js': 'Chart'
+module.exports = [
+	{
+		input: 'src/index.js',
+		output: {
+			name: 'ChartStreaming',
+			file: `dist/${pkg.name}.js`,
+			banner: banner,
+			format: 'umd',
+			indent: false,
+			globals: {
+				moment: 'moment',
+				'chart.js': 'Chart'
+			}
+		},
+		external: [
+			'moment',
+			'chart.js',
+		]
+	},
+	{
+		input: 'src/index.js',
+		output: {
+			name: 'ChartStreaming',
+			file: `dist/${pkg.name}.min.js`,
+			format: 'umd',
+			indent: false,
+			globals: {
+				moment: 'moment',
+				'chart.js': 'Chart'
+			}
+		},
+		plugins: [
+			terser({
+				output: {
+					preamble: banner
+				}
+			})
+		],
+		external: [
+			'moment',
+			'chart.js'
+		]
 	}
-};
+];
