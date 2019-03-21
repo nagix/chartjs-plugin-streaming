@@ -1,10 +1,10 @@
 # chartjs-plugin-streaming
 
-[![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-streaming) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-streaming.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-streaming) [![Travis](https://img.shields.io/travis/nagix/chartjs-plugin-streaming/master.svg?style=flat-square)](https://travis-ci.org/nagix/chartjs-plugin-streaming) [![Code Climate](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-streaming.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-streaming)
+[![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-streaming) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-streaming.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-streaming) [![Travis](https://img.shields.io/travis/nagix/chartjs-plugin-streaming/master.svg?style=flat-square)](https://travis-ci.org/nagix/chartjs-plugin-streaming) [![Code Climate](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-streaming.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-streaming) [![Awesome](https://awesome.re/badge-flat2.svg)](https://github.com/chartjs/awesome)
 
 *[Chart.js](https://www.chartjs.org) plugin for live streaming data*
 
-Version 1.2 or earlier requires Chart.js 2.6.x. Version 1.3 or later requires Chart.js 2.7.x.
+Version 1.2 or earlier requires Chart.js 2.6.x. Version 1.3 or later requires Chart.js 2.7.x. Version 1.8 requires Chart.js 2.7.x or 2.8.x.
 
 ## Installation
 
@@ -22,13 +22,30 @@ To install via bower:
 bower install chartjs-plugin-streaming --save
 ```
 
+To use CDN:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@latest/dist/chartjs-plugin-streaming.min.js"></script>
+```
+```html
+<script src="https://unpkg.com/chartjs-plugin-streaming@latest/dist/chartjs-plugin-streaming.min.js"></script>
+```
+
 ## Usage
 
 chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and module loaders.
 
-chartjs-plugin-streaming requires [Moment.js](https://momentjs.com/) and [Chart.js](https://www.chartjs.org).
+chartjs-plugin-streaming requires [Moment.js](https://momentjs.com/) and [Chart.js](https://www.chartjs.org). If you are using Chart.js 2.8.0 or later, Moment.js can be replaced with [other date libraries and corresponding adapters](https://github.com/chartjs/awesome#adapters).
 
-Version 1.7 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](https://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](https://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) as well as the [bubble](https://www.chartjs.org/docs/latest/charts/bubble.html) and [scatter](https://www.chartjs.org/docs/latest/charts/scatter.html) chart types with Point data. In case of Point data, either x or y must be in any of the [date formats](https://momentjs.com/docs/#/parsing/) that Moment.js accepts, and the corresponding axis must have a 'realtime' scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted after the time specified by the `ttl` option, or as it disappears off the chart.
+Version 1.8 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](https://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](https://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) as well as the [bubble](https://www.chartjs.org/docs/latest/charts/bubble.html) and [scatter](https://www.chartjs.org/docs/latest/charts/scatter.html) chart types with Point data. In case of Point data, either x or y must be in any of the date formats that the data library accepts ([date formats](https://momentjs.com/docs/#/parsing/) in case of Moment.js), and the corresponding axis must have a 'realtime' scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted after the time specified by the `ttl` option, or as it disappears off the chart.
+
+### Usage in ES6 as module
+
+Nothing else than importing the module should be enough.
+
+```js
+import 'chartjs-plugin-streaming';
+```
 
 ## Tutorial and Samples
 
@@ -46,13 +63,13 @@ All available options are listed below. [This example](https://nagix.github.io/c
 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
-| `duration` | `Number` | `10000` | Duration of the chart in milliseconds (how much time of data it will show).
-| `ttl` | `Number` | | Duration of the data to be kept in milliseconds. If not set, old data will be automatically deleted as it disappears off the chart.
-| `delay` | `Number` | `0` | Delay added to the chart in milliseconds so that upcoming values are known before lines are plotted. This makes the chart look like a continual stream rather than very jumpy on the right hand side. Specify the maximum expected delay.
-| `refresh` | `Number` | `1000` | Refresh interval of data in milliseconds. `onRefresh` callback function will be called at this interval.
-| `onRefresh` | `Function` | `null` | Callback function that will be called at a regular interval. The callback takes one argument, a reference to the chart object. You can update your datasets here. The chart will be automatically updated after returning.
-| `frameRate` | `Number` | `30` | Frequency at which the chart is drawn on a display (frames per second). This option can be set at chart level but not at axis level. Decrease this value to save CPU power. [more...](#lowering-cpu-usage)
-| `pause` | `Boolean` | `false` | If set to `true`, scrolling stops. Note that `onRefresh` callback is called even when this is set to `true`.
+| `duration` | `number` | `10000` | Duration of the chart in milliseconds (how much time of data it will show).
+| `ttl` | `number` | | Duration of the data to be kept in milliseconds. If not set, old data will be automatically deleted as it disappears off the chart.
+| `delay` | `number` | `0` | Delay added to the chart in milliseconds so that upcoming values are known before lines are plotted. This makes the chart look like a continual stream rather than very jumpy on the right hand side. Specify the maximum expected delay.
+| `refresh` | `number` | `1000` | Refresh interval of data in milliseconds. `onRefresh` callback function will be called at this interval.
+| `onRefresh` | `function` | `null` | Callback function that will be called at a regular interval. The callback takes one argument, a reference to the chart object. You can update your datasets here. The chart will be automatically updated after returning.
+| `frameRate` | `number` | `30` | Frequency at which the chart is drawn on a display (frames per second). This option can be set at chart level but not at axis level. Decrease this value to save CPU power. [more...](#lowering-cpu-usage)
+| `pause` | `boolean` | `false` | If set to `true`, scrolling stops. Note that `onRefresh` callback is called even when this is set to `true`.
 
 Due to historical reasons, a chart with the 'time' scale will also auto-scroll if this plugin is enabled. If you want to stop scrolling a particular chart, set `options.plugins.streaming` to `false`.
 
@@ -69,11 +86,9 @@ Note that the following axis options are ignored for the 'realtime' scale.
 
 This plugin supports both pull and push based data feed.
 
-### Pull Model (Polling Based)
+### Pull Model (Polling Based) - Synchronous
 
 In the pull model, the user code needs to ask for new data and pull it from a data source. To enable this, the plugin provides two options: `onRefresh` which is the callback function that is called at a regular interval to check the data source and `refresh` which specifies the interval. In this callback function, you can add data into the existing data array as usual, but you don't need to call the `update` function as it is called internally.
-
-This model is suitable for data sources such as web servers, Kafka (REST Proxy), Kinesis (Data Streams API) and other time series databases with REST API support including Elasticsearch, OpenTSDB and Graphite.
 
 For example:
 
@@ -117,44 +132,55 @@ For example:
 }
 ```
 
-### Push Model (Listening Based)
+### Pull Model (Polling Based) - Asynchronous
 
-In the push model, the user code registers a listener that waits for new data, and data can be picked up immediately after it arrives. Usually, data source connector libraries that support the push model provide a listener callback function in which you can add data into the existing data array. The `update` function needs to be called after adding new data.
+If your data source responds to requests asynchronously, you will probably receive the results in a callback function in which you can add data into the existing data array. The `update` function needs to be called after adding new data.
 
 A problem with calling the `update` function for stream data feeds is that it can disrupt smooth transition because an `update` call interrupts the current animation and initiates a new one. To avoid this, this plugin added the `preservation` config property for the `update` function. If it is set to `true`, the current animation won't be interrupted and new data can be added without initiating a new animation.
 
-This model is suitable for data sources such as WebSocket, MQTT, Kinesis (Client Library) and other realtime messaging services including Socket.IO, Pusher and Firebase.
+This model is suitable for data sources such as web servers, Kafka (REST Proxy), Kinesis (Data Streams API) and other time series databases with REST API support including Elasticsearch, OpenTSDB and Graphite.
 
 For example:
 
 ```javascript
 {
-    type: 'line',               // 'line', 'bar', 'bubble' and 'scatter' types are supported
-    data: {
-        datasets: [{
-            data: []            // empty at the beginning
-        }]
-    },
     options: {
         scales: {
             xAxes: [{
-                type: 'realtime',   // x axis will auto-scroll from right to left
-                realtime: {         // per-axis options
-                    duration: 20000,    // data in the past 20000 ms will be displayed
-                    delay: 1000,        // delay of 1000 ms, so upcoming values are known before plotting a line
-                    pause: false,       // chart is not paused
-                    ttl: undefined      // data will be automatically deleted as it disappears off the chart
+                realtime: {
+                    onRefresh: function(chart) {
+                        // request data so that it can be received in a callback function
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('GET', YOUR_DATA_SOURCE_URL);
+                        xhr.onload = function () {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+
+                                // assume the response is an array of {x: timestamp, y: value} objects
+                                var data = JSON.parse(xhr.responseText);
+
+                                // append the new data array to the existing chart data
+                                Array.prototype.push.apply(chart.data.datasets[0].data, data);
+
+                                // update chart datasets keeping the current animation
+                                chart.update({
+                                    preservation: true
+                                });
+                            }
+                        };
+                        xhr.send();
+                    }
                 }
             }]
-        },
-        plugins: {
-            streaming: {            // per-chart option
-                frameRate: 30       // chart is drawn 30 times every second
-            }
         }
     }
 }
 ```
+
+### Push Model (Listening Based)
+
+In the push model, the user code registers a listener that waits for new data, and data can be picked up immediately after it arrives. Usually, data source connector libraries that support the push model provide a listener callback function in which you can add data into the existing data array. `onRefresh` is unnecessary in this model, but the `update` function needs to be called after adding new data like asynchronous pull model.
+
+This model is suitable for data sources such as WebSocket, MQTT, Kinesis (Client Library) and other realtime messaging services including Socket.IO, Pusher and Firebase.
 
 Here is an example of a listener function:
 

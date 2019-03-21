@@ -3,7 +3,7 @@
   "homepage": "https://nagix.github.io/chartjs-plugin-streaming",
   "description": "Chart.js plugin for live streaming data",
   "author": "Akihiko Kusanagi <nagi@nagi-p.com> (https://nagix.github.io/)",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "license": "MIT",
   "jsdelivr": "dist/chartjs-plugin-streaming.min.js",
   "unpkg": "dist/chartjs-plugin-streaming.min.js",
@@ -31,7 +31,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "chart.js": "~2.7.3",
+    "chart.js": "~2.8.0",
     "eslint-config-chartjs": "^0.1.0",
     "gulp": "^4.0.0",
     "gulp-eslint": "^5.0.0",

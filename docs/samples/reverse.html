@@ -63,43 +63,55 @@ function randomScalingFactor() {
 function onRefresh(chart) {
 	chart.config.data.datasets.forEach(function(dataset) {
 		dataset.data.push({
-			x: randomScalingFactor(),
-			y: Date.now()
+			x: Date.now(),
+			y: randomScalingFactor()
 		});
 	});
 }
 
 var color = Chart.helpers.color;
 var config = {
-	type: 'horizontalBar',
+	type: 'line',
 	data: {
 		datasets: [{
-			label: 'Dataset 1',
+			label: 'Dataset 1 (linear interpolation)',
 			backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
 			borderColor: chartColors.red,
-			borderWidth: 1,
+			fill: false,
+			lineTension: 0,
+			borderDash: [8, 4],
+			data: []
+		}, {
+			label: 'Dataset 2 (cubic interpolation)',
+			backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+			borderColor: chartColors.blue,
+			fill: false,
+			cubicInterpolationMode: 'monotone',
 			data: []
 		}]
 	},
 	options: {
 		title: {
 			display: true,
-			text: 'Bar chart (vertical scroll) sample'
+			text: 'Reverse sample'
 		},
 		scales: {
 			xAxes: [{
-				scaleLabel: {
-					display: true,
-					labelString: 'value'
-				}
-			}],
-			yAxes: [{
 				type: 'realtime',
 				realtime: {
 					duration: 20000,
 					refresh: 1000,
-					delay: 1000,
+					delay: 2000,
 					onRefresh: onRefresh
+				},
+				ticks: {
+					reverse: true
+				}
+			}],
+			yAxes: [{
+				scaleLabel: {
+					display: true,
+					labelString: 'value'
 				}
 			}]
 		},
@@ -122,10 +134,9 @@ window.onload = function() {
 document.getElementById('randomizeData').addEventListener('click', function() {
 	config.data.datasets.forEach(function(dataset) {
 		dataset.data.forEach(function(dataObj) {
-			dataObj.x = randomScalingFactor();
+			dataObj.y = randomScalingFactor();
 		});
 	});
-
 	window.myChart.update();
 });
 
@@ -137,7 +148,8 @@ document.getElementById('addDataset').addEventListener('click', function() {
 		label: 'Dataset ' + (config.data.datasets.length + 1),
 		backgroundColor: color(newColor).alpha(0.5).rgbString(),
 		borderColor: newColor,
-		borderWidth: 1,
+		fill: false,
+		lineTension: 0,
 		data: []
 	};
 
@@ -194,43 +206,55 @@ document.getElementById('addData').addEventListener('click', function() {
 		function onRefresh(chart) {
 			chart.config.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
-					x: randomScalingFactor(),
-					y: Date.now()
+					x: Date.now(),
+					y: randomScalingFactor()
 				});
 			});
 		}
 
 		var color = Chart.helpers.color;
 		var config = {
-			type: 'horizontalBar',
+			type: 'line',
 			data: {
 				datasets: [{
-					label: 'Dataset 1',
+					label: 'Dataset 1 (linear interpolation)',
 					backgroundColor: color(chartColors.red).alpha(0.5).rgbString(),
 					borderColor: chartColors.red,
-					borderWidth: 1,
+					fill: false,
+					lineTension: 0,
+					borderDash: [8, 4],
+					data: []
+				}, {
+					label: 'Dataset 2 (cubic interpolation)',
+					backgroundColor: color(chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: chartColors.blue,
+					fill: false,
+					cubicInterpolationMode: 'monotone',
 					data: []
 				}]
 			},
 			options: {
 				title: {
 					display: true,
-					text: 'Bar chart (vertical scroll) sample'
+					text: 'Reverse sample'
 				},
 				scales: {
 					xAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'value'
-						}
-					}],
-					yAxes: [{
 						type: 'realtime',
 						realtime: {
 							duration: 20000,
 							refresh: 1000,
-							delay: 1000,
+							delay: 2000,
 							onRefresh: onRefresh
+						},
+						ticks: {
+							reverse: true
+						}
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'value'
 						}
 					}]
 				},
@@ -253,10 +277,9 @@ document.getElementById('addData').addEventListener('click', function() {
 		document.getElementById('randomizeData').addEventListener('click', function() {
 			config.data.datasets.forEach(function(dataset) {
 				dataset.data.forEach(function(dataObj) {
-					dataObj.x = randomScalingFactor();
+					dataObj.y = randomScalingFactor();
 				});
 			});
-
 			window.myChart.update();
 		});
 
@@ -268,7 +291,8 @@ document.getElementById('addData').addEventListener('click', function() {
 				label: 'Dataset ' + (config.data.datasets.length + 1),
 				backgroundColor: color(newColor).alpha(0.5).rgbString(),
 				borderColor: newColor,
-				borderWidth: 1,
+				fill: false,
+				lineTension: 0,
 				data: []
 			};
 
