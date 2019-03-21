@@ -77,52 +77,33 @@ function updateResetZoom(chart) {
 	// For chartjs-plugin-zoom 0.6.6 backward compatibility
 	var zoom = chart.$zoom || {_originalOptions: {}};
 
-	chart.resetZoom = function() {
+	var resetZoom = chart.resetZoom;
+	var update = chart.update;
+	var resetZoomAndUpdate = function() {
 		helpers.each(chart.scales, function(scale) {
-
-			var originalOptions = zoom._originalOptions[scale.id] || scale.originalOptions;
-			var timeOptions = scale.options.time;
 			var realtimeOptions = scale.options.realtime;
-			var tickOptions = scale.options.ticks;
+			var originalOptions = zoom._originalOptions[scale.id] || scale.originalOptions;
 
-			if (originalOptions) {
-
-				if (timeOptions) {
-					timeOptions.min = originalOptions.time.min;
-					timeOptions.max = originalOptions.time.max;
-				}
-
-				if (realtimeOptions) {
+			if (realtimeOptions) {
+				if (originalOptions) {
 					realtimeOptions.duration = originalOptions.realtime.duration;
 					realtimeOptions.delay = originalOptions.realtime.delay;
-				}
-
-				if (tickOptions) {
-					tickOptions.min = originalOptions.ticks.min;
-					tickOptions.max = originalOptions.ticks.max;
-				}
-			} else {
-
-				if (timeOptions) {
-					delete timeOptions.min;
-					delete timeOptions.max;
-				}
-
-				if (realtimeOptions) {
+				} else {
 					delete realtimeOptions.duration;
 					delete realtimeOptions.delay;
-				}
-
-				if (tickOptions) {
-					delete tickOptions.min;
-					delete tickOptions.max;
 				}
 			}
 		});
 
-		chart.update({
+		update.call(chart, {
 			duration: 0
 		});
+	};
+
+	chart.resetZoom = function() {
+		chart.update = resetZoomAndUpdate;
+		resetZoom();
+		chart.update = update;
 	};
 }
 
