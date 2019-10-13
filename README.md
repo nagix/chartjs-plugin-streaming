@@ -51,6 +51,10 @@ import 'chartjs-plugin-streaming';
 
 You can find a tutorial and samples at [nagix.github.io/chartjs-plugin-streaming](https://nagix.github.io/chartjs-plugin-streaming).
 
+### Usage with socket.io/emitter-io
+
+You can find an example of usage with a socket at this [repository](https://github.com/joaorobson/real-time-chart).
+
 ## Configuration
 
 The plugin options can be changed at 3 different levels and with the following priority:
