@@ -5,38 +5,16 @@ import moment from 'moment';
 import streamingHelpers from '../helpers/helpers.streaming';
 
 var helpers = Chart.helpers;
-var canvasHelpers = helpers.canvas;
-var scaleService = Chart.scaleService;
-var TimeScale = scaleService.getScaleConstructor('time');
+var TimeScale = Chart.registry.scales.items['time'] !== undefined ? Chart.registry.scales.items['time'] : undefined;
 
-scaleService.getScaleConstructor = function(type) {
-	// For backwards compatibility
-	if (type === 'time') {
-		type = 'realtime';
-	}
-	return this.constructors.hasOwnProperty(type) ? this.constructors[type] : undefined;
-};
 
-// For Chart.js 2.7.x backward compatibility
-var defaultAdapter = {
-	// Ported from Chart.js 2.8.0-rc.1 35273ee
-	parse: function(value, format) {
-		if (typeof value === 'string' && typeof format === 'string') {
-			value = moment(value, format);
-		} else if (!(value instanceof moment)) {
-			value = moment(value);
-		}
-		return value.isValid() ? value.valueOf() : null;
-	}
-};
-
-// Ported from Chart.js 2.8.0-rc.1 35273ee. Modified for Chart.js 2.7.x backward compatibility.
+// Ported from Chart.js 2.8.0-rc.1 35273ee.
 function toTimestamp(scale, input) {
-	var adapter = scale._adapter || defaultAdapter;
-	var options = scale.options.time;
-	var parser = options.parser;
-	var format = parser || options.format;
-	var value = input;
+	let adapter = scale._adapter;
+	let options = scale.options.time;
+	let parser = options.parser;
+	let format = parser || options.format;
+	let value = input;
 
 	if (typeof parser === 'function') {
 		value = parser(value);
@@ -67,14 +45,42 @@ function toTimestamp(scale, input) {
 	return value;
 }
 
+// Scale.getRightValue is removed in Chartjs v3.x.x
+// TODO: Which function it correct to use?
+// Get the correct value. NaN bad inputs, If the value type is object get the x or y based on whether we are horizontal or not
+function getRightValue( scale,rawValue ){
+	// Null and undefined values first
+	if ( helpers.isNullOrUndef(rawValue) ){
+		return NaN;
+	}
+	// isNaN(object) returns true, so make sure NaN is checking for a number; Discard Infinite values
+	if ((typeof rawValue === 'number' || rawValue instanceof Number) && !isFinite(rawValue)) {
+		return NaN;
+	}
+
+	// If it is in fact an object, dive in one more level
+	if (rawValue) {
+		if (scale.isHorizontal()) {
+			if (rawValue.x !== undefined) {
+				return getRightValue(scale,rawValue.x);
+			}
+		} else if (rawValue.y !== undefined) {
+			return getRightValue(scale,rawValue.y);
+		}
+	}
+
+	// Value is good, return it
+	return rawValue;
+}
+
 // Ported from Chart.js 2.8.0-rc.1 35273ee
 function parse(scale, input) {
 	if (helpers.isNullOrUndef(input)) {
 		return null;
 	}
 
-	var options = scale.options.time;
-	var value = toTimestamp(scale, scale.getRightValue(input));
+	let options = scale.options.time;
+	let value = toTimestamp(scale,getRightValue(scale,input));
 	if (value === null) {
 		return value;
 	}
@@ -87,8 +93,8 @@ function parse(scale, input) {
 }
 
 function resolveOption(scale, key) {
-	var realtimeOpts = scale.options.realtime;
-	var streamingOpts = scale.chart.options.plugins.streaming;
+	let realtimeOpts = scale.options.realtime;
+	let streamingOpts = scale.chart.options.plugins.streaming;
 	return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
 }
 
@@ -118,16 +124,16 @@ var datasetPropertyKeys = [
 ];
 
 function refreshData(scale) {
-	var chart = scale.chart;
-	var id = scale.id;
-	var duration = resolveOption(scale, 'duration');
-	var delay = resolveOption(scale, 'delay');
-	var ttl = resolveOption(scale, 'ttl');
-	var pause = resolveOption(scale, 'pause');
-	var onRefresh = resolveOption(scale, 'onRefresh');
-	var max = scale.max;
-	var min = Date.now() - (isNaN(ttl) ? duration + delay : ttl);
-	var meta, data, length, i, start, count, removalRange;
+	let chart = scale.chart;
+	let id = scale.id;
+	let duration = resolveOption(scale, 'duration');
+	let delay = resolveOption(scale, 'delay');
+	let ttl = resolveOption(scale, 'ttl');
+	let pause = resolveOption(scale, 'pause');
+	let onRefresh = resolveOption(scale, 'onRefresh');
+	let max = scale.max;
+	let min = Date.now() - (isNaN(ttl) ? duration + delay : ttl);
+	let meta, data, length, i, start, count, removalRange;
 
 	if (onRefresh) {
 		onRefresh(chart);
@@ -192,8 +198,8 @@ function refreshData(scale) {
 }
 
 function stopDataRefreshTimer(scale) {
-	var realtime = scale.realtime;
-	var refreshTimerID = realtime.refreshTimerID;
+	let realtime = scale.realtime;
+	let refreshTimerID = realtime.refreshTimerID;
 
 	if (refreshTimerID) {
 		clearInterval(refreshTimerID);
@@ -203,18 +209,21 @@ function stopDataRefreshTimer(scale) {
 }
 
 function startDataRefreshTimer(scale) {
-	var realtime = scale.realtime;
-	var interval = resolveOption(scale, 'refresh');
+	let realtime = scale.realtime;
+	let interval = resolveOption(scale, 'refresh');
 
-	realtime.refreshTimerID = setInterval(function() {
-		var newInterval = resolveOption(scale, 'refresh');
+	if( realtime.refreshTimerID === undefined ){
+		realtime.refreshTimerID = setInterval(function() {
+			let newInterval = resolveOption(scale, 'refresh');
 
-		refreshData(scale);
-		if (realtime.refreshInterval !== newInterval && !isNaN(newInterval)) {
-			stopDataRefreshTimer(scale);
-			startDataRefreshTimer(scale);
-		}
-	}, interval);
+			refreshData(scale);
+			if (realtime.refreshInterval !== newInterval && !isNaN(newInterval)) {
+				stopDataRefreshTimer(scale);
+				startDataRefreshTimer(scale);
+			}
+		}, interval);
+	}
+
 	realtime.refreshInterval = interval;
 }
 
@@ -232,13 +241,13 @@ var transitionKeys = {
 };
 
 function transition(element, keys, translate) {
-	var start = element._start || {};
-	var view = element._view || {};
-	var model = element._model || {};
-	var i, ilen;
+	let start = element._start || {};
+	let view = element._view || {};
+	let model = element._model || {};
+	let i, ilen;
 
 	for (i = 0, ilen = keys.length; i < ilen; ++i) {
-		var key = keys[i];
+		let key = keys[i];
 		if (start.hasOwnProperty(key)) {
 			start[key] -= translate;
 		}
@@ -252,15 +261,14 @@ function transition(element, keys, translate) {
 }
 
 function scroll(scale) {
-	var chart = scale.chart;
-	var realtime = scale.realtime;
-	var duration = resolveOption(scale, 'duration');
-	var delay = resolveOption(scale, 'delay');
-	var id = scale.id;
-	var tooltip = chart.tooltip;
-	var activeTooltip = tooltip._active;
-	var now = Date.now();
-	var length, keys, offset, meta, elements, i, ilen;
+	let chart = scale.chart;
+	let realtime = scale.realtime;
+	let duration = resolveOption(scale, 'duration');
+	let delay = resolveOption(scale, 'delay');
+	let id = scale.id;
+	let activeTooltip = chart._active;
+	let now = Date.now();
+	let length, keys, offset, meta, elements, i, ilen;
 
 	if (scale.isHorizontal()) {
 		length = scale.width;
@@ -312,7 +320,6 @@ var defaultConfig = {
 	adapters: {},
 	time: {
 		parser: false, // false == a pattern string from http://momentjs.com/docs/#/parsing/string-format/ or a custom callback that converts its argument to a moment
-		format: false, // DEPRECATED false == date objects, moment object, callback or a pattern string from http://momentjs.com/docs/#/parsing/string-format/
 		unit: false, // false == automatic or override with week, month, year, etc.
 		round: false, // none, or override with week, month, year, etc.
 		displayFormat: false, // DEPRECATED
@@ -342,11 +349,12 @@ var defaultConfig = {
 	}
 };
 
-var RealTimeScale = TimeScale.extend({
-	initialize: function() {
-		var me = this;
+class RealTimeScale extends TimeScale {
 
-		TimeScale.prototype.initialize.apply(me, arguments);
+	init() {
+		let me = this;
+
+		TimeScale.prototype.init.apply(me, arguments);
 
 		// For backwards compatibility
 		if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
@@ -356,11 +364,11 @@ var RealTimeScale = TimeScale.extend({
 		me.realtime = me.realtime || {};
 
 		startDataRefreshTimer(me);
-	},
+	};
 
-	update: function() {
-		var me = this;
-		var realtime = me.realtime;
+	update() {
+		let me = this;
+		let realtime = me.realtime;
 
 		// For backwards compatibility
 		if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
@@ -377,32 +385,32 @@ var RealTimeScale = TimeScale.extend({
 		}
 
 		return TimeScale.prototype.update.apply(me, arguments);
-	},
+	};
 
-	buildTicks: function() {
-		var me = this;
-		var options = me.options;
+	buildTicks() {
+		let me = this;
+		let options = me.options;
 
 		// For backwards compatibility
 		if (options.type === 'time' && !me.chart.options.plugins.streaming) {
 			return TimeScale.prototype.buildTicks.apply(me, arguments);
 		}
 
-		var timeOpts = options.time;
-		var majorTicksOpts = options.ticks.major;
-		var duration = resolveOption(me, 'duration');
-		var delay = resolveOption(me, 'delay');
-		var refresh = resolveOption(me, 'refresh');
-		var bounds = options.bounds;
-		var distribution = options.distribution;
-		var offset = options.offset;
-		var minTime = timeOpts.min;
-		var maxTime = timeOpts.max;
-		var majorEnabled = majorTicksOpts.enabled;
-		var max = me.realtime.head - delay;
-		var min = max - duration;
-		var maxArray = [max + refresh, max];
-		var ticks;
+		let timeOpts = options.time;
+		let majorTicksOpts = options.ticks.major;
+		let duration = resolveOption(me, 'duration');
+		let delay = resolveOption(me, 'delay');
+		let refresh = resolveOption(me, 'refresh');
+		let bounds = options.bounds;
+		let distribution = options.distribution;
+		let offset = options.offset;
+		let minTime = timeOpts.min;
+		let maxTime = timeOpts.max;
+		let majorEnabled = majorTicksOpts.enabled;
+		let max = me.realtime.head - delay;
+		let min = max - duration;
+		let maxArray = [max + refresh, max];
+		let ticks;
 
 		options.bounds = undefined;
 		options.distribution = 'linear';
@@ -440,11 +448,11 @@ var RealTimeScale = TimeScale.extend({
 		me._table = [{time: min, pos: 0}, {time: max, pos: 1}];
 
 		return ticks;
-	},
+	};
 
-	fit: function() {
-		var me = this;
-		var options = me.options;
+	fit() {
+		let me = this;
+		let options = me.options;
 
 		TimeScale.prototype.fit.apply(me, arguments);
 
@@ -456,13 +464,13 @@ var RealTimeScale = TimeScale.extend({
 		if (options.ticks.display && options.display && me.isHorizontal()) {
 			me.paddingLeft = 3;
 			me.paddingRight = 3;
-			me.handleMargins();
+			me._handleMargins();
 		}
-	},
+	};
 
-	draw: function(chartArea) {
-		var me = this;
-		var chart = me.chart;
+	draw(chartArea) {
+		let me = this;
+		let chart = me.chart;
 
 		// For backwards compatibility
 		if (me.options.type === 'time' && !chart.options.plugins.streaming) {
@@ -470,7 +478,7 @@ var RealTimeScale = TimeScale.extend({
 			return;
 		}
 
-		var context = me.ctx;
+		let context = me.ctx;
 		var	clipArea = me.isHorizontal() ?
 			{
 				left: chartArea.left,
@@ -485,13 +493,13 @@ var RealTimeScale = TimeScale.extend({
 			};
 
 		// Clip and draw the scale
-		canvasHelpers.clipArea(context, clipArea);
+		helpers.clipArea(context, clipArea);
 		TimeScale.prototype.draw.apply(me, arguments);
-		canvasHelpers.unclipArea(context);
-	},
+		helpers.unclipArea(context);
+	};
 
-	destroy: function() {
-		var me = this;
+	destroy() {
+		let me = this;
 
 		// For backwards compatibility
 		if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
@@ -500,16 +508,16 @@ var RealTimeScale = TimeScale.extend({
 
 		streamingHelpers.stopFrameRefreshTimer(me.realtime);
 		stopDataRefreshTimer(me);
-	},
+	};
 
 	/*
 	 * @private
 	 */
-	_getTimeForIndex: function(index, datasetIndex) {
-		var me = this;
-		var timestamps = me._timestamps;
-		var time = timestamps.datasets[datasetIndex][index];
-		var value;
+	_getTimeForIndex(index, datasetIndex) {
+		let me = this;
+		let timestamps = me.chart.data;
+		let time = timestamps.datasets[datasetIndex][index];
+		let value;
 
 		if (helpers.isNullOrUndef(time)) {
 			value = me.chart.data.datasets[datasetIndex].data[index];
@@ -521,10 +529,13 @@ var RealTimeScale = TimeScale.extend({
 		}
 
 		return time;
-	}
-});
+	};
 
-scaleService.registerScaleType('realtime', RealTimeScale, defaultConfig);
+}
+RealTimeScale.id = 'realtime';
+RealTimeScale.defaults = defaultConfig;
+
+Chart.registry.addScales(RealTimeScale);
 
 export default RealTimeScale;
 export {
