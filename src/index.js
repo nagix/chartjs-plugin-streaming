@@ -7,6 +7,6 @@ import './plugins/plugin.zoom';
 
 Chart.helpers.streaming = StreamingHelper;
 
-Chart.plugins.register(StreamingPlugin);
+Chart.register(StreamingPlugin);
 
 export default StreamingPlugin;
