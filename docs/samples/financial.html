@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
@@ -7,8 +7,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
 	<script src="https://www.chartjs.org/chartjs-chart-financial/chartjs-chart-financial.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
 	<style>
@@ -76,7 +77,7 @@ var config = {
 			display: false,
 		},
 		scales: {
-			xAxes: [{
+			'x': [{
 				type: 'realtime',
 				realtime: {
 					duration: 120000,
@@ -103,8 +104,8 @@ window.onload = function() {
 			</div>
 			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
 				<pre class="prettyprint lang-html p-3 bg-light">&lt;head&gt;
-	&lt;script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"&gt;&lt;/script&gt;
-	&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0"&gt;&lt;/script&gt;
 	&lt;script src="https://www.chartjs.org/chartjs-chart-financial/chartjs-chart-financial.js"&gt;&lt;/script&gt;
 	&lt;script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"&gt;&lt;/script&gt;
 &lt;/head&gt;
@@ -155,7 +156,7 @@ window.onload = function() {
 					display: false,
 				},
 				scales: {
-					xAxes: [{
+					'x': [{
 						type: 'realtime',
 						realtime: {
 							duration: 120000,

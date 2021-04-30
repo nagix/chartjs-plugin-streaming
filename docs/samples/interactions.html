@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
@@ -7,8 +7,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
 	<style>
 		canvas {
@@ -143,7 +144,7 @@ var config = {
 			text: 'Interactions sample'
 		},
 		scales: {
-			xAxes: [{
+			'x': [{
 				type: 'realtime',
 				realtime: {
 					duration: 20000,
@@ -154,7 +155,7 @@ var config = {
 					onRefresh: onRefresh
 				}
 			}],
-			yAxes: [{
+			'y': [{
 				type: 'linear',
 				display: true,
 				scaleLabel: {
@@ -222,25 +223,25 @@ document.getElementById('addData').addEventListener('click', function() {
 });
 
 document.getElementById('duration').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.scales.xAxes[0].realtime.duration = +this.value;
+	config.options.scales.'x'[0].realtime.duration = +this.value;
 	window.myChart.update({duration: 0});
 	document.getElementById('durationValue').innerHTML = this.value;
 });
 
 document.getElementById('ttl').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.scales.xAxes[0].realtime.ttl = +this.value;
+	config.options.scales.'x'[0].realtime.ttl = +this.value;
 	window.myChart.update({duration: 0});
 	document.getElementById('ttlValue').innerHTML = this.value;
 });
 
 document.getElementById('refresh').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.scales.xAxes[0].realtime.refresh = +this.value;
+	config.options.scales.'x'[0].realtime.refresh = +this.value;
 	window.myChart.update({duration: 0});
 	document.getElementById('refreshValue').innerHTML = this.value;
 });
 
 document.getElementById('delay').addEventListener(isIE ? 'change' : 'input', function() {
-	config.options.scales.xAxes[0].realtime.delay = +this.value;
+	config.options.scales.'x'[0].realtime.delay = +this.value;
 	window.myChart.update({duration: 0});
 	document.getElementById('delayValue').innerHTML = this.value;
 });
@@ -252,15 +253,15 @@ document.getElementById('frameRate').addEventListener(isIE ? 'change' : 'input',
 });
 
 document.getElementById('pause').addEventListener('change', function() {
-	config.options.scales.xAxes[0].realtime.pause = this.checked;
+	config.options.scales.'x'[0].realtime.pause = this.checked;
 	window.myChart.update({duration: 0});
 	document.getElementById('pauseValue').innerHTML = this.checked;
 });</pre>
 			</div>
 			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
 				<pre class="prettyprint lang-html p-3 bg-light">&lt;head&gt;
-	&lt;script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"&gt;&lt;/script&gt;
-	&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0"&gt;&lt;/script&gt;
 	&lt;script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"&gt;&lt;/script&gt;
 	&lt;style&gt;
 		.label {
@@ -376,7 +377,7 @@ document.getElementById('pause').addEventListener('change', function() {
 					text: 'Interactions sample'
 				},
 				scales: {
-					xAxes: [{
+					'x': [{
 						type: 'realtime',
 						realtime: {
 							duration: 20000,
@@ -387,7 +388,7 @@ document.getElementById('pause').addEventListener('change', function() {
 							onRefresh: onRefresh
 						}
 					}],
-					yAxes: [{
+					'y': [{
 						type: 'linear',
 						display: true,
 						scaleLabel: {
@@ -455,25 +456,25 @@ document.getElementById('pause').addEventListener('change', function() {
 		});
 
 		document.getElementById('duration').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.scales.xAxes[0].realtime.duration = +this.value;
+			config.options.scales.'x'[0].realtime.duration = +this.value;
 			window.myChart.update({duration: 0});
 			document.getElementById('durationValue').innerHTML = this.value;
 		});
 
 		document.getElementById('ttl').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.scales.xAxes[0].realtime.ttl = +this.value;
+			config.options.scales.'x'[0].realtime.ttl = +this.value;
 			window.myChart.update({duration: 0});
 			document.getElementById('ttlValue').innerHTML = this.value;
 		});
 
 		document.getElementById('refresh').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.scales.xAxes[0].realtime.refresh = +this.value;
+			config.options.scales.'x'[0].realtime.refresh = +this.value;
 			window.myChart.update({duration: 0});
 			document.getElementById('refreshValue').innerHTML = this.value;
 		});
 
 		document.getElementById('delay').addEventListener(isIE ? 'change' : 'input', function() {
-			config.options.scales.xAxes[0].realtime.delay = +this.value;
+			config.options.scales.'x'[0].realtime.delay = +this.value;
 			window.myChart.update({duration: 0});
 			document.getElementById('delayValue').innerHTML = this.value;
 		});
@@ -485,7 +486,7 @@ document.getElementById('pause').addEventListener('change', function() {
 		});
 
 		document.getElementById('pause').addEventListener('change', function() {
-			config.options.scales.xAxes[0].realtime.pause = this.checked;
+			config.options.scales.'x'[0].realtime.pause = this.checked;
 			window.myChart.update({duration: 0});
 			document.getElementById('pauseValue').innerHTML = this.checked;
 		});

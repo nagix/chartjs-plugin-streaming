@@ -1,34 +1,39 @@
 # chartjs-plugin-streaming
 
-[![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-streaming) [![Bower](https://img.shields.io/bower/v/chartjs-plugin-streaming.svg?style=flat-square)](https://libraries.io/bower/chartjs-plugin-streaming) [![Travis](https://img.shields.io/travis/nagix/chartjs-plugin-streaming/master.svg?style=flat-square)](https://travis-ci.org/nagix/chartjs-plugin-streaming) [![Code Climate](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-streaming.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-streaming) [![Awesome](https://awesome.re/badge-flat2.svg)](https://github.com/chartjs/awesome)
+[![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?style=flat-square)](https://npmjs.com/package/@kevinoo91/chartjs-plugin-streaming)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a4873bc4162cb4a44ddb/maintainability)](https://codeclimate.com/github/kevinoo/chartjs-plugin-streaming/maintainability)
+[![Awesome](https://awesome.re/badge-flat2.svg)](https://github.com/chartjs/awesome)
+[![](https://data.jsdelivr.com/v1/package/npm/@kevinoo91/chartjs-plugin-streaming/badge)](https://www.jsdelivr.com/package/npm/@kevinoo91/chartjs-plugin-streaming)
 
 *[Chart.js](https://www.chartjs.org) plugin for live streaming data*
 
-Version 1.2 or earlier requires Chart.js 2.6.x. Version 1.3 or later requires Chart.js 2.7.x. Version 1.8 requires Chart.js 2.7.x or 2.8.x.
+#### Version 1.8 requires Chart.js 2.x.x version
+
+#### Version 2.x requires Chart.js 3.x.x version
+
 
 ## Installation
 
-You can download the latest version of chartjs-plugin-streaming from the [GitHub releases](https://github.com/nagix/chartjs-plugin-streaming/releases/latest).
+You can download the latest version of @kevinoo/chartjs-plugin-streaming from the [GitHub releases](https://github.com/kevinoo/chartjs-plugin-streaming/releases/latest).
 
 To install via npm:
 
 ```bash
-npm install chartjs-plugin-streaming --save
+npm install @kevinoo91/chartjs-plugin-streaming --save
 ```
 
-To install via bower:
-
-```bash
-bower install chartjs-plugin-streaming --save
-```
+[comment]: <> (To install via bower:)
+[comment]: <> (```bash)
+[comment]: <> (bower install chartjs-plugin-streaming --save)
+[comment]: <> (```)
 
 To use CDN:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@latest/dist/chartjs-plugin-streaming.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@kevinoo91/chartjs-plugin-streaming@latest/dist/@kevinoo91/chartjs-plugin-streaming.min.js"></script>
 ```
 ```html
-<script src="https://unpkg.com/chartjs-plugin-streaming@latest/dist/chartjs-plugin-streaming.min.js"></script>
+<script src="https://unpkg.com/@kevinoo91/chartjs-plugin-streaming@latest/dist/@kevinoo91/chartjs-plugin-streaming.min.js"></script>
 ```
 
 ## Usage
@@ -36,8 +41,6 @@ To use CDN:
 chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and module loaders.
 
 chartjs-plugin-streaming requires [Moment.js](https://momentjs.com/) and [Chart.js](https://www.chartjs.org). If you are using Chart.js 2.8.0 or later, Moment.js can be replaced with [other date libraries and corresponding adapters](https://github.com/chartjs/awesome#adapters).
-
-Version 1.8 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](https://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](https://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) as well as the [bubble](https://www.chartjs.org/docs/latest/charts/bubble.html) and [scatter](https://www.chartjs.org/docs/latest/charts/scatter.html) chart types with Point data. In case of Point data, either x or y must be in any of the date formats that the data library accepts ([date formats](https://momentjs.com/docs/#/parsing/) in case of Moment.js), and the corresponding axis must have a 'realtime' scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted after the time specified by the `ttl` option, or as it disappears off the chart.
 
 ### Usage in ES6 as module
 
@@ -49,17 +52,17 @@ import 'chartjs-plugin-streaming';
 
 ## Tutorial and Samples
 
-You can find a tutorial and samples at [nagix.github.io/chartjs-plugin-streaming](https://nagix.github.io/chartjs-plugin-streaming).
+You can find a tutorial and samples at [kevinoo.github.io/chartjs-plugin-streaming/](https://kevinoo.github.io/chartjs-plugin-streaming/).
 
 ## Configuration
 
 The plugin options can be changed at 3 different levels and with the following priority:
 
-- per axis: `options.scales.xAxes[].realtime.*` or `options.scales.yAxes[].realtime.*`
+- per axis: `options.scales.'x'[].realtime.*` or `options.scales.'y'[].realtime.*`
 - per chart: `options.plugins.streaming.*`
-- globally: `Chart.defaults.global.plugins.streaming.*`
+- globally: `Chart.defaults.plugins.streaming.*`
 
-All available options are listed below. [This example](https://nagix.github.io/chartjs-plugin-streaming/samples/interactions.html) shows how each option affects the appearance of a chart.
+All available options are listed below. [This example](https://kevinoo.github.io/chartjs-plugin-streaming/) shows how each option affects the appearance of a chart.
 
 | Name | Type | Default | Description
 | ---- | ---- | ------- | -----------
@@ -94,15 +97,15 @@ For example:
 
 ```javascript
 {
-    type: 'line',               // 'line', 'bar', 'bubble' and 'scatter' types are supported
+    type: 'line',   // 'line', 'bar', 'bubble' and 'scatter' types are supported
     data: {
         datasets: [{
-            data: []            // empty at the beginning
+            data: []  // empty at the beginning
         }]
     },
     options: {
         scales: {
-            xAxes: [{
+            'x': [{
                 type: 'realtime',   // x axis will auto-scroll from right to left
                 realtime: {         // per-axis options
                     duration: 20000,    // data in the past 20000 ms will be displayed
@@ -112,7 +115,7 @@ For example:
                     ttl: undefined,     // data will be automatically deleted as it disappears off the chart
 
                     // a callback to update datasets
-                    onRefresh: function(chart) {
+                    onRefresh: function( chart ){
 
                         // query your data source and get the array of {x: timestamp, y: value} objects
                         var data = getLatestData();
@@ -146,7 +149,7 @@ For example:
 {
     options: {
         scales: {
-            xAxes: [{
+            'x': [{
                 realtime: {
                     onRefresh: function(chart) {
                         // request data so that it can be received in a callback function
@@ -263,6 +266,17 @@ You first need to install node dependencies (requires [Node.js](https://nodejs.o
 
 ```bash
 npm install
+```
+
+To install gulp (if you have not installed yet) and dependencies:
+
+```bash
+npm install --save-dev gulp
+npm install --save-dev gulp-eslint
+npm install --save-dev gulp-file
+npm install --save-dev gulp-replace
+npm install --save-dev gulp-streamify
+npm install --save-dev gulp-zip
 ```
 
 The following commands will then be available from the repository root:

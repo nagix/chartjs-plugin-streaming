@@ -1,11 +1,12 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<script src="../dist/chartjs-plugin-streaming.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0/dist/chart.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+	<script src="../dist/@kevinoo91/chartjs-plugin-streaming.js"></script>
 	<style>
 		canvas {
 			-moz-user-select: none;
@@ -35,7 +36,7 @@
 		</p>
 	</div>
 
-	<script>
+	<script type="text/javascript">
 		var chartColors = {
 			red: 'rgb(255, 99, 132)',
 			orange: 'rgb(255, 159, 64)',
@@ -51,7 +52,7 @@
 		}
 
 		function onRefresh(chart) {
-			chart.config.data.datasets.forEach(function(dataset) {
+			chart.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
 					x: Date.now(),
 					y: randomScalingFactor()
@@ -86,30 +87,35 @@
 					text: 'Line chart (hotizontal scroll) sample'
 				},
 				scales: {
-					xAxes: [{
+					'x': {
 						type: 'realtime',
 						realtime: {
 							duration: 20000,
-							refresh: 1000,
+							// refresh: 1000,
 							delay: 2000,
 							onRefresh: onRefresh
 						}
-					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'value'
+					},
+					'y': {
+						'type': 'linear',
+						'scaleLabel': {
+							'display': true,
+							'labelString': 'value'
+						},
+						'ticks': {
+							'min': 0,
+							'suggestedMax': 10
 						}
-					}]
+					}
 				},
-				tooltips: {
-					mode: 'nearest',
-					intersect: false
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: false
-				}
+				// tooltips: {
+				// 	mode: 'nearest',
+				// 	intersect: false
+				// },
+				// hover: {
+				// 	mode: 'nearest',
+				// 	intersect: false
+				// }
 			}
 		};
 
@@ -119,7 +125,7 @@
 		};
 
 		document.getElementById('randomizeData').addEventListener('click', function() {
-			config.data.datasets.forEach(function(dataset) {
+			window.myChart.data.datasets.forEach(function(dataset) {
 				dataset.data.forEach(function(dataObj) {
 					dataObj.y = randomScalingFactor();
 				});
@@ -140,12 +146,12 @@
 				data: []
 			};
 
-			config.data.datasets.push(newDataset);
+			window.myChart.data.datasets.push(newDataset);
 			window.myChart.update();
 		});
 
 		document.getElementById('removeDataset').addEventListener('click', function() {
-			config.data.datasets.pop();
+			window.myChart.data.datasets.pop();
 			window.myChart.update();
 		});
 

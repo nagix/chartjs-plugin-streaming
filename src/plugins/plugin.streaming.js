@@ -5,9 +5,8 @@ import streamingHelpers from '../helpers/helpers.streaming';
 import RealTimeScale from '../scales/scale.realtime';
 
 var helpers = Chart.helpers;
-var canvasHelpers = helpers.canvas;
 
-Chart.defaults.global.plugins.streaming = {
+Chart.defaults.plugins.streaming = {
 	duration: 10000,
 	delay: 0,
 	frameRate: 30,
@@ -51,10 +50,11 @@ function update(config) {
 				}
 			});
 		} else {
+			// TODO: "controller.transition(1)" this is undefined
 			// If the chart is not animating, make sure that all elements are at the final positions
-			me.data.datasets.forEach(function(dataset, datasetIndex) {
-				me.getDatasetMeta(datasetIndex).controller.transition(1);
-			});
+			// me.data.datasets.forEach(function(dataset, datasetIndex) {
+			// 	me.getDatasetMeta(datasetIndex).controller.transition(1);
+			// });
 		}
 
 		if (tooltip._active) {
@@ -79,7 +79,7 @@ function drawChart(chart) {
 
 	if (next <= now) {
 		// Draw only when animation is inactive
-		if (!chart.animating && !chart.tooltip._start) {
+		if( !chart.animating ) {
 			chart.draw();
 		}
 		if (lastMouseEvent) {
@@ -122,9 +122,9 @@ export default {
 		var chartOpts = chart.options;
 		var scalesOpts = chartOpts.scales;
 
-		if (scalesOpts) {
-			scalesOpts.xAxes.concat(scalesOpts.yAxes).forEach(function(scaleOpts) {
-				if (scaleOpts.type === 'realtime' || scaleOpts.type === 'time') {
+		if( scalesOpts ){
+			[scalesOpts.x,scalesOpts.y].forEach(function(scaleOpts){
+				if( scaleOpts.type === 'realtime' || scaleOpts.type === 'time' ){
 					// Allow Bézier control to be outside the chart
 					chartOpts.elements.line.capBezierPoints = false;
 				}
@@ -169,12 +169,12 @@ export default {
 			clipArea.top = chartArea.top;
 			clipArea.bottom = chartArea.bottom;
 		}
-		canvasHelpers.clipArea(chart.ctx, clipArea);
+		helpers.clipArea(chart.ctx, clipArea);
 		return true;
 	},
 
 	afterDatasetDraw: function(chart) {
-		canvasHelpers.unclipArea(chart.ctx);
+		helpers.unclipArea(chart.ctx);
 	},
 
 	beforeEvent: function(chart, event) {
