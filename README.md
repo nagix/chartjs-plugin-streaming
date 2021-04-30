@@ -9,7 +9,7 @@
 
 #### Version 1.8 requires Chart.js 2.x.x version
 
-#### Version 2.0 requires Chart.js 3.x.x version
+#### Version 2.x requires Chart.js 3.x.x version
 
 
 ## Installation
@@ -30,10 +30,10 @@ npm install @kevinoo91/chartjs-plugin-streaming --save
 To use CDN:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@latest/dist/chartjs-plugin-streaming.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@kevinoo91/chartjs-plugin-streaming@latest/dist/@kevinoo91/chartjs-plugin-streaming.min.js"></script>
 ```
 ```html
-<script src="https://unpkg.com/chartjs-plugin-streaming@latest/dist/chartjs-plugin-streaming.min.js"></script>
+<script src="https://unpkg.com/@kevinoo91/chartjs-plugin-streaming@latest/dist/@kevinoo91/chartjs-plugin-streaming.min.js"></script>
 ```
 
 ## Usage

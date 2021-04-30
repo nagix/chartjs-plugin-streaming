@@ -3,7 +3,7 @@
   "homepage": "https://github.com/kevinoo/chartjs-plugin-streaming#readme",
   "description": "Chart.js plugin for live streaming data",
   "author": "Kevin Lucich <lucichkevin@gmail.com> (https://www.lucichkevin.it)",
-  "version": "2.0.0",
+  "version": "2.1.1",
   "license": "MIT",
   "main": "gulpfile.js",
   "directories": {
