@@ -8,19 +8,19 @@
     <title>chartjs-plugin-streaming</title>
     <meta property="og:title" content="chartjs-plugin-streaming" />
     <meta property="og:locale" content="en_US" />
-    <link rel="canonical" href="https://nagix.github.io/chartjs-plugin-streaming" />
-    <meta property="og:url" content="https://nagix.github.io/chartjs-plugin-streaming" />
+    <link rel="canonical" href="https://kevinoo.github.io/chartjs-plugin-streaming/" />
+    <meta property="og:url" content="https://kevinoo.github.io/chartjs-plugin-streaming/" />
     <meta property="og:site_name" content="chartjs-plugin-streaming" />
-    <meta name="twitter:site" content="@nagix" />
+    <meta name="twitter:site" content="@KevinLucich" />
     <meta name="theme-color" content="#ffffff">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
   </head>
   <body>
     <section id="hero-spot" class="hero-spot">
       <h1>chartjs-plugin-streaming</h1>
-      <h2><a href="./samples">Samples</a> | <a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub</a></h2>
+      <h2><a href="./samples">Samples</a> | <a href="https://github.com/kevinoo/chartjs-plugin-streaming">GitHub</a></h2>
       <a href="./ja/" class="help-link">日本語</a>
     </section>
     <section id="tutorial" class="tutorial">
@@ -39,7 +39,7 @@
 
         <li>
           <h4>Include scripts</h4>
-          <p>First, we need to include <a href="https://momentjs.com">moment.js</a>, <a href="https://github.com/chartjs/Chart.js/releases/latest">Chart.js</a> and <a href="https://github.com/nagix/chartjs-plugin-streaming/releases/latest">chartjs-plugin-streaming.js</a> in our page.</p>
+          <p>First, we need to include <a href="https://momentjs.com">moment.js</a>, <a href="https://github.com/chartjs/Chart.js/releases/latest">Chart.js</a> and <a href="https://github.com/kevinoo/chartjs-plugin-streaming/releases/latest">chartjs-plugin-streaming.js</a> in our page.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
@@ -79,7 +79,7 @@
               <p>&nbsp;&nbsp;},</p>
               <p>&nbsp;&nbsp;options: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
@@ -103,7 +103,7 @@
               <p>&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;options: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
@@ -138,7 +138,7 @@
               <p>&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;options: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
@@ -186,7 +186,7 @@
 
         <li>
           <h4>...and you're done!</h4>
-          <p>See also <a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
+          <p>See also <a href="https://github.com/kevinoo/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
           <div class="hero-octicon">
             <span class="mega-octicon octicon-check"></span>
           </div>
@@ -212,7 +212,7 @@
 
         <li>
           <h4>Install modules</h4>
-          <p>Install <a href="https://valor-software.com/ng2-charts/">ng2-charts</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
+          <p>Install <a href="https://valor-software.com/ng2-charts/">ng2-charts</a> and <a href="https://kevinoo.github.io/chartjs-plugin-streaming//">chartjs-plugin-streaming</a> into our project.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
@@ -289,7 +289,7 @@
               <p>&nbsp;&nbsp;}];</p>
               <p>&nbsp;&nbsp;options: any = {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
@@ -318,7 +318,7 @@
               <p>&nbsp;&nbsp;}];</p>
               <p>&nbsp;&nbsp;options: any = {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart: any) {</p>
@@ -341,7 +341,7 @@
 
         <li>
           <h4>...and you're done!</h4>
-          <p>See also <a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
+          <p>See also <a href="https://github.com/kevinoo/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
           <div class="hero-octicon">
             <span class="mega-octicon octicon-check"></span>
           </div>
@@ -367,7 +367,7 @@
 
         <li>
           <h4>Install modules</h4>
-          <p>Install <a href="http://jerairrest.github.io/react-chartjs-2/">react-chartjs-2</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
+          <p>Install <a href="http://jerairrest.github.io/react-chartjs-2/">react-chartjs-2</a> and <a href="https://kevinoo.github.io/chartjs-plugin-streaming//">chartjs-plugin-streaming</a> into our project.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
@@ -400,7 +400,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options={{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
@@ -440,7 +440,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options={{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
@@ -464,7 +464,7 @@
 
         <li>
           <h4>...and you're done!</h4>
-          <p>See also <a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
+          <p>See also <a href="https://github.com/kevinoo/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
           <div class="hero-octicon">
             <span class="mega-octicon octicon-check"></span>
           </div>
@@ -490,7 +490,7 @@
 
         <li>
           <h4>Install modules</h4>
-          <p>Install <a href="https://vue-chartjs.org/">vue-chartjs</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
+          <p>Install <a href="https://vue-chartjs.org/">vue-chartjs</a> and <a href="https://kevinoo.github.io/chartjs-plugin-streaming//">chartjs-plugin-streaming</a> into our project.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
@@ -546,7 +546,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
@@ -581,7 +581,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'x': [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
@@ -604,7 +604,7 @@
 
         <li>
           <h4>...and you're done!</h4>
-          <p>See also <a href="https://github.com/nagix/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
+          <p>See also <a href="https://github.com/kevinoo/chartjs-plugin-streaming">GitHub repository</a> and <a href="./samples">samples</a></p>
           <div class="hero-octicon">
             <span class="mega-octicon octicon-check"></span>
           </div>
@@ -627,14 +627,14 @@
       var chart1 = new Chart(ctx1, {
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{ type: 'realtime' }] } }
+        options: { scales: { 'x': [{ type: 'realtime' }] } }
       });
 
       var ctx2 = document.getElementById('chart2').getContext('2d');
       var chart2 = new Chart(ctx2, {
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{
+        options: { scales: { 'x': [{
           type: 'realtime',
           realtime: { onRefresh: onRefresh }
         }] } }
@@ -644,7 +644,7 @@
       var chart3 = new Chart(ctx3, {
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{
+        options: { scales: { 'x': [{
           type: 'realtime',
           realtime: { onRefresh: onRefresh, delay: 2000 }
         }] } }
@@ -666,7 +666,7 @@
           borderColor: 'rgb(54, 162, 235)',
           backgroundColor: 'rgba(54, 162, 235, 0.5)'
         }] },
-        options: { scales: { xAxes: [{
+        options: { scales: { 'x': [{
           type: 'realtime',
           realtime: { onRefresh: onRefresh, delay: 2000 }
         }] } }
@@ -676,8 +676,8 @@
     <script src="/js/application.js"></script>
     <footer class="page-footer">
       <ul class="site-footer-links right">
-        <li><a href="https://github.com/nagix"><i class="fa fa-github-square fa-2x" style="color: #999;"></i></a></li>
-        <li><a href="https://twitter.com/nagix"><i class="fa fa-twitter-square fa-2x" style="color: #999;"></i></a></li>
+        <li><a href="https://github.com/kevinoo"><i class="fa fa-github-square fa-2x" style="color: #999;"></i></a></li>
+        <li><a href="https://twitter.com/kevinoo"><i class="fa fa-twitter-square fa-2x" style="color: #999;"></i></a></li>
         <li><a href="https://www.linkedin.com/in/akihiko-kusanagi"><i class="fa fa-linkedin-square fa-2x" style="color: #999;"></i></a></li>
       </ul>
       <a href="/">

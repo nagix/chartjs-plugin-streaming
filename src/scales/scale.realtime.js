@@ -1,7 +1,6 @@
 'use strict';
 
 import Chart from 'chart.js';
-import moment from 'moment';
 import streamingHelpers from '../helpers/helpers.streaming';
 
 var helpers = Chart.helpers;
@@ -95,7 +94,21 @@ function parse(scale, input) {
 function resolveOption(scale, key) {
 	let realtimeOpts = scale.options.realtime;
 	let streamingOpts = scale.chart.options.plugins.streaming;
-	return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
+
+	if( key === 'onRefresh' ){
+		console.dir({
+			'key': key,
+			'scale': scale,
+			'realtimeOpts[onRefresh]': realtimeOpts['onRefresh'],
+			'streamingOpts[onRefresh]': streamingOpts['onRefresh'],
+
+			'realtimeOpts[delay]': realtimeOpts['delay'],
+			'streamingOpts[delay]': streamingOpts['delay'],
+		});
+		// return function(){};
+	}else{
+		return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
+	}
 }
 
 var datasetPropertyKeys = [
@@ -130,13 +143,22 @@ function refreshData(scale) {
 	let delay = resolveOption(scale, 'delay');
 	let ttl = resolveOption(scale, 'ttl');
 	let pause = resolveOption(scale, 'pause');
-	let onRefresh = resolveOption(scale, 'onRefresh');
+
+	// This throw an error with ChartJS v3.0.0
+	// let onRefresh = resolveOption(, 'onRefresh');
+
 	let max = scale.max;
 	let min = Date.now() - (isNaN(ttl) ? duration + delay : ttl);
 	let meta, data, length, i, start, count, removalRange;
 
-	if (onRefresh) {
-		onRefresh(chart);
+
+	try {
+		if( typeof scale.chart.config._config.options.scales[scale.id].realtime.onRefresh !== 'undefined' ){
+			let onRefresh = scale.chart.config._config.options.scales[scale.id].realtime.onRefresh;
+			onRefresh(chart);
+		}
+	}catch( e ){
+		throw Error('Error to access to the onRefresh callback in config.options.scales['+ scale.id +'].realtime.onRefresh"')
 	}
 
 	// Remove old data
@@ -208,7 +230,7 @@ function stopDataRefreshTimer(scale) {
 	}
 }
 
-function startDataRefreshTimer(scale) {
+function startDataRefreshTimer( scale ){
 	let realtime = scale.realtime;
 	let interval = resolveOption(scale, 'refresh');
 
@@ -217,6 +239,7 @@ function startDataRefreshTimer(scale) {
 			let newInterval = resolveOption(scale, 'refresh');
 
 			refreshData(scale);
+
 			if (realtime.refreshInterval !== newInterval && !isNaN(newInterval)) {
 				stopDataRefreshTimer(scale);
 				startDataRefreshTimer(scale);

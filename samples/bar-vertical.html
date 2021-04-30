@@ -1,11 +1,12 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<script src="../dist/chartjs-plugin-streaming.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+	<script src="../dist/@kevinoo91/chartjs-plugin-streaming.js"></script>
 	<style>
 		canvas {
 			-moz-user-select: none;
@@ -77,13 +78,13 @@
 					text: 'Bar chart (vertical scroll) sample'
 				},
 				scales: {
-					xAxes: [{
+					'x': [{
 						scaleLabel: {
 							display: true,
 							labelString: 'value'
 						}
 					}],
-					yAxes: [{
+					'y': [{
 						type: 'realtime',
 						realtime: {
 							duration: 20000,
