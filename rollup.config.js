@@ -9,46 +9,46 @@ const banner = `/*!
  */`;
 
 module.exports = [
-	{
-		input: 'src/index.js',
-		output: {
-			name: 'ChartStreaming',
-			file: `dist/${pkg.name}.js`,
-			banner: banner,
-			format: 'umd',
-			indent: false,
-			globals: {
-				moment: 'moment',
-				'chart.js': 'Chart'
-			}
-		},
-		external: [
-			'moment',
-			'chart.js',
-		]
-	},
-	{
-		input: 'src/index.js',
-		output: {
-			name: 'ChartStreaming',
-			file: `dist/${pkg.name}.min.js`,
-			format: 'umd',
-			indent: false,
-			globals: {
-				moment: 'moment',
-				'chart.js': 'Chart'
-			}
-		},
-		plugins: [
-			terser({
-				output: {
-					preamble: banner
-				}
-			})
-		],
-		external: [
-			'moment',
-			'chart.js'
-		]
-	}
+  {
+    input: 'src/index.js',
+    output: {
+      name: 'ChartStreaming',
+      file: `dist/${pkg.name}.js`,
+      banner: banner,
+      format: 'umd',
+      indent: false,
+      globals: {
+        'chart.js': 'Chart',
+        'chart.js/helpers': 'Chart.helpers'
+      }
+    },
+    external: [
+      'chart.js',
+      'chart.js/helpers'
+    ]
+  },
+  {
+    input: 'src/index.js',
+    output: {
+      name: 'ChartStreaming',
+      file: `dist/${pkg.name}.min.js`,
+      format: 'umd',
+      indent: false,
+      globals: {
+        'chart.js': 'Chart',
+        'chart.js/helpers': 'Chart.helpers'
+      }
+    },
+    plugins: [
+      terser({
+        output: {
+          preamble: banner
+        }
+      })
+    ],
+    external: [
+      'chart.js',
+      'chart.js/helpers'
+    ]
+  }
 ];

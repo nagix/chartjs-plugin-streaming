@@ -1,116 +1,90 @@
-'use strict';
+import {each} from 'chart.js/helpers';
+import {clamp, resolveOption} from '../helpers/helpers.streaming';
 
-import Chart from 'chart.js';
+const chartStates = new WeakMap();
 
-var helpers = Chart.helpers;
+function getState(chart) {
+  let state = chartStates.get(chart);
 
-// Ported from chartjs-plugin-zoom 0.7.0 3c187b7
-var zoomNS = Chart.Zoom = Chart.Zoom || {};
-
-// Ported from chartjs-plugin-zoom 0.7.0 3c187b7
-zoomNS.zoomFunctions = zoomNS.zoomFunctions || {};
-zoomNS.panFunctions = zoomNS.panFunctions || {};
-
-// Ported from chartjs-plugin-zoom 0.7.0 3c187b7
-function rangeMaxLimiter(zoomPanOptions, newMax) {
-	if (zoomPanOptions.scaleAxes && zoomPanOptions.rangeMax &&
-			!helpers.isNullOrUndef(zoomPanOptions.rangeMax[zoomPanOptions.scaleAxes])) {
-		var rangeMax = zoomPanOptions.rangeMax[zoomPanOptions.scaleAxes];
-		if (newMax > rangeMax) {
-			newMax = rangeMax;
-		}
-	}
-	return newMax;
+  if (!state) {
+    state = {originalScaleLimits: {}};
+    chartStates.set(chart, state);
+  }
+  return state;
 }
 
-// Ported from chartjs-plugin-zoom 0.7.0 3c187b7
-function rangeMinLimiter(zoomPanOptions, newMin) {
-	if (zoomPanOptions.scaleAxes && zoomPanOptions.rangeMin &&
-			!helpers.isNullOrUndef(zoomPanOptions.rangeMin[zoomPanOptions.scaleAxes])) {
-		var rangeMin = zoomPanOptions.rangeMin[zoomPanOptions.scaleAxes];
-		if (newMin < rangeMin) {
-			newMin = rangeMin;
-		}
-	}
-	return newMin;
+function storeOriginalScaleLimits(chart) {
+  const {originalScaleLimits} = getState(chart);
+  const scales = chart.scales;
+
+  each(scales, scale => {
+    const id = scale.id;
+
+    if (!originalScaleLimits[id]) {
+      originalScaleLimits[id] = {
+        duration: resolveOption(scale, 'duration'),
+        delay: resolveOption(scale, 'delay')
+      };
+    }
+  });
+  each(originalScaleLimits, (opt, key) => {
+    if (!scales[key]) {
+      delete originalScaleLimits[key];
+    }
+  });
+  return originalScaleLimits;
 }
 
-function zoomRealTimeScale(scale, zoom, center, zoomOptions) {
-	var realtimeOpts = scale.options.realtime;
-	var streamingOpts = scale.chart.options.plugins.streaming;
-	var duration = helpers.valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
-	var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
-	var newDuration = duration * (2 - zoom);
-	var maxPercent, limitedDuration;
+export function zoomRealTimeScale(scale, zoom, center, limits) {
+  const {chart, axis} = scale;
+  const {minDuration = 0, maxDuration = Infinity, minDelay = -Infinity, maxDelay = Infinity} = limits && limits[axis] || {};
+  const realtimeOpts = scale.options.realtime;
+  const duration = resolveOption(scale, 'duration');
+  const delay = resolveOption(scale, 'delay');
+  const newDuration = clamp(duration * (2 - zoom), minDuration, maxDuration);
+  let maxPercent, newDelay;
 
-	if (scale.isHorizontal()) {
-		maxPercent = (scale.right - center.x) / (scale.right - scale.left);
-	} else {
-		maxPercent = (scale.bottom - center.y) / (scale.bottom - scale.top);
-	}
-	if (zoom < 1) {
-		limitedDuration = rangeMaxLimiter(zoomOptions, newDuration);
-	} else {
-		limitedDuration = rangeMinLimiter(zoomOptions, newDuration);
-	}
-	realtimeOpts.duration = limitedDuration;
-	realtimeOpts.delay = delay + maxPercent * (duration - limitedDuration);
+  storeOriginalScaleLimits(chart);
+
+  if (scale.isHorizontal()) {
+    maxPercent = (scale.right - center.x) / (scale.right - scale.left);
+  } else {
+    maxPercent = (scale.bottom - center.y) / (scale.bottom - scale.top);
+  }
+  newDelay = delay + maxPercent * (duration - newDuration);
+  realtimeOpts.duration = newDuration;
+  realtimeOpts.delay = clamp(newDelay, minDelay, maxDelay);
+  return newDuration !== scale.max - scale.min;
 }
 
-function panRealTimeScale(scale, delta, panOptions) {
-	var realtimeOpts = scale.options.realtime;
-	var streamingOpts = scale.chart.options.plugins.streaming;
-	var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
-	var newDelay = delay + (scale.getValueForPixel(delta) - scale.getValueForPixel(0));
+export function panRealTimeScale(scale, delta, limits) {
+  const {chart, axis} = scale;
+  const {minDelay = -Infinity, maxDelay = Infinity} = limits && limits[axis] || {};
+  const delay = resolveOption(scale, 'delay');
+  const newDelay = delay + (scale.getValueForPixel(delta) - scale.getValueForPixel(0));
 
-	if (delta > 0) {
-		realtimeOpts.delay = rangeMaxLimiter(panOptions, newDelay);
-	} else {
-		realtimeOpts.delay = rangeMinLimiter(panOptions, newDelay);
-	}
+  storeOriginalScaleLimits(chart);
+
+  scale.options.realtime.delay = clamp(newDelay, minDelay, maxDelay);
+  return true;
 }
 
-zoomNS.zoomFunctions.realtime = zoomRealTimeScale;
-zoomNS.panFunctions.realtime = panRealTimeScale;
+export function resetRealTimeOptions(chart) {
+  const originalScaleLimits = storeOriginalScaleLimits(chart);
 
-function updateResetZoom(chart) {
-	// For chartjs-plugin-zoom 0.6.6 backward compatibility
-	var zoom = chart.$zoom || {_originalOptions: {}};
+  each(chart.scales, scale => {
+    const realtimeOptions = scale.options.realtime;
 
-	var resetZoom = chart.resetZoom;
-	var update = chart.update;
-	var resetZoomAndUpdate = function() {
-		helpers.each(chart.scales, function(scale) {
-			var realtimeOptions = scale.options.realtime;
-			var originalOptions = zoom._originalOptions[scale.id] || scale.originalOptions;
+    if (realtimeOptions) {
+      const original = originalScaleLimits[scale.id];
 
-			if (realtimeOptions) {
-				if (originalOptions) {
-					realtimeOptions.duration = originalOptions.realtime.duration;
-					realtimeOptions.delay = originalOptions.realtime.delay;
-				} else {
-					delete realtimeOptions.duration;
-					delete realtimeOptions.delay;
-				}
-			}
-		});
-
-		update.call(chart, {
-			duration: 0
-		});
-	};
-
-	chart.resetZoom = function() {
-		chart.update = resetZoomAndUpdate;
-		resetZoom();
-		chart.update = update;
-	};
+      if (original) {
+        realtimeOptions.duration = original.duration;
+        realtimeOptions.delay = original.delay;
+      } else {
+        delete realtimeOptions.duration;
+        delete realtimeOptions.delay;
+      }
+    }
+  });
 }
-
-zoomNS.updateResetZoom = updateResetZoom;
-
-export {
-	zoomRealTimeScale,
-	panRealTimeScale,
-	updateResetZoom
-};

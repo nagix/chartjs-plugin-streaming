@@ -1,41 +1,40 @@
-'use strict';
+import {noop, requestAnimFrame, valueOrDefault} from 'chart.js/helpers';
 
-import Chart from 'chart.js';
+export function clamp(value, lower, upper) {
+  return Math.min(Math.max(value, lower), upper);
+}
 
-var helpers = Chart.helpers;
+export function resolveOption(scale, key) {
+  const realtimeOpts = scale.options.realtime;
+  const streamingOpts = scale.chart.options.plugins.streaming;
+  return valueOrDefault(realtimeOpts[key], streamingOpts[key]);
+}
 
-var cancelAnimFrame = (function() {
-	if (typeof window !== 'undefined') {
-		return window.cancelAnimationFrame ||
-			window.webkitCancelAnimationFrame ||
-			window.mozCancelAnimationFrame ||
-			window.oCancelAnimationFrame ||
-			window.msCancelAnimationFrame ||
-			function(id) {
-				return window.clearTimeout(id);
-			};
-	}
+/**
+* Cancel animation polyfill
+*/
+export const cancelAnimFrame = (function() {
+  if (typeof window === 'undefined') {
+    return noop;
+  }
+  return window.cancelAnimationFrame;
 }());
 
-export default {
+export function startFrameRefreshTimer(context, func) {
+  if (!context.frameRequestID) {
+    const frameRefresh = function() {
+      func();
+      context.frameRequestID = requestAnimFrame.call(window, frameRefresh);
+    };
+    context.frameRequestID = requestAnimFrame.call(window, frameRefresh);
+  }
+}
 
-	startFrameRefreshTimer: function(context, func) {
-		if (!context.frameRequestID) {
-			var frameRefresh = function() {
-				func();
-				context.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
-			};
-			context.frameRequestID = helpers.requestAnimFrame.call(window, frameRefresh);
-		}
-	},
+export function stopFrameRefreshTimer(context) {
+  const frameRequestID = context.frameRequestID;
 
-	stopFrameRefreshTimer: function(context) {
-		var frameRequestID = context.frameRequestID;
-
-		if (frameRequestID) {
-			cancelAnimFrame.call(window, frameRequestID);
-			delete context.frameRequestID;
-		}
-	}
-
-};
+  if (frameRequestID) {
+    cancelAnimFrame.call(window, frameRequestID);
+    delete context.frameRequestID;
+  }
+}

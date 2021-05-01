@@ -1,12 +1,10 @@
-'use strict';
-
 import Chart from 'chart.js';
-import StreamingHelper from './helpers/helpers.streaming';
+import * as StreamingHelper from './helpers/helpers.streaming';
 import StreamingPlugin from './plugins/plugin.streaming';
-import './plugins/plugin.zoom';
+import RealTimeScale from './scales/scale.realtime';
 
 Chart.helpers.streaming = StreamingHelper;
 
-Chart.plugins.register(StreamingPlugin);
+Chart.register(StreamingPlugin, RealTimeScale);
 
 export default StreamingPlugin;

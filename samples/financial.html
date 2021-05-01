@@ -2,92 +2,97 @@
 <html>
 
 <head>
-	<title>chartjs-plugin-streaming sample</title>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<script src="https://www.chartjs.org/chartjs-chart-financial/chartjs-chart-financial.js"></script>
-	<script src="../dist/chartjs-plugin-streaming.js"></script>
-	<style>
-		canvas {
-			-moz-user-select: none;
-			-webkit-user-select: none;
-			-ms-user-select: none;
-		}
-		.chart {
-			margin: auto;
-			width: 75%;
-		}
-	</style>
+  <title>chartjs-plugin-streaming sample</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0/dist/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+  <script src="https://www.chartjs.org/chartjs-chart-financial/chartjs-chart-financial.js"></script>
+  <script src="../dist/chartjs-plugin-streaming.js"></script>
+  <style>
+    canvas {
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+    }
+    .chart {
+      margin: auto;
+      width: 75%;
+    }
+  </style>
 </head>
 
 <body>
-	<div class="chart">
-		<canvas id="myChart"></canvas>
-	</div>
+  <div class="chart">
+    <canvas id="myChart"></canvas>
+  </div>
 
-	<script>
-		function onRefresh(chart) {
-			var t = Date.now();
-			var data = chart.data.datasets[0].data;
-			var last;
+  <script>
+    function onRefresh(chart) {
+      var t = Date.now();
+      var data = chart.data.datasets[0].data;
+      var last;
 
-			t -= t % 5000;
-			if (data.length === 0) {
-				data.push({ t: t - 5000, o: 99, h: 101, l: 98, c: 100 });
-			}
-			last = data[data.length - 1];
-			if (t != last.t) {
-				var c = last.c;
-				last = { t: t, o: c, h: c, l: c, c: c };
-				data.push(last);
-			}
-			last.c += Math.random() - 0.5;
-			last.h = Math.max(last.h, last.c);
-			last.l = Math.min(last.l, last.c);
-		}
+      t -= t % 5000;
+      if (data.length === 0) {
+        data.push({ x: t - 5000, o: 99, h: 101, l: 98, c: 100 });
+      }
+      last = data[data.length - 1];
+      if (t != last.x) {
+        var c = last.c;
+        last = { x: t, o: c, h: c, l: c, c: c };
+        data.push(last);
+      }
+      last.c += Math.random() - 0.5;
+      last.h = Math.max(last.h, last.c);
+      last.l = Math.min(last.l, last.c);
+    }
 
-		var config = {
-			type: 'candlestick',
-			data: {
-				datasets: [{
-					data: [],
-					fractionalDigitsCount: 2
-				}]
-			},
-			options: {
-				title: {
-					display: true,
-					text: 'Financial chart sample'
-				},
-				legend: {
-					display: false,
-				},
-				scales: {
-					xAxes: [{
-						type: 'realtime',
-						realtime: {
-							duration: 120000,
-							refresh: 500,
-							delay: 0,
-							onRefresh: onRefresh
-						}
-					}]
-				},
-				tooltips: {
-					position: 'nearest',
-					intersect: false
-				},
-				animation: {
-					duration: 0
-				}
-			}
-		};
+    var config = {
+      type: 'candlestick',
+      data: {
+        datasets: [{
+          data: [],
+          fractionalDigitsCount: 2
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            type: 'realtime',
+            ticks: {
+              source: 'auto'
+            },
+            realtime: {
+              duration: 120000,
+              refresh: 500,
+              delay: 0,
+              onRefresh: onRefresh
+            }
+          }
+        },
+        interaction: {
+          intersect: false
+        },
+        animation: {
+          duration: 0
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: 'Financial chart sample'
+          },
+          legend: {
+            display: false,
+          }
+        }
+      }
+    };
 
-		window.onload = function() {
-			var ctx = document.getElementById('myChart').getContext('2d');
-			window.myChart = new Chart(ctx, config);
-		};
-	</script>
+    window.onload = function() {
+      var ctx = document.getElementById('myChart').getContext('2d');
+      window.myChart = new Chart(ctx, config);
+    };
+  </script>
 </body>
 
 </html>

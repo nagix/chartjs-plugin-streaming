@@ -1,8 +1,20 @@
 extends: chartjs
 
-parserOptions:
-  sourceType: module
-
 env:
+  es6: true
   browser: true
   node: true
+
+parserOptions:
+  ecmaVersion: 2018
+  sourceType: module
+  ecmaFeatures:
+    impliedStrict: true
+    modules: true
+
+rules:
+  class-methods-use-this: "off"
+  complexity: ["warn", 10]
+  max-statements: ["warn", 30]
+  no-empty-function: "off"
+  no-use-before-define: ["error", { "functions": false }]
