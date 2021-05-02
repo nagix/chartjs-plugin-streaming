@@ -3,8 +3,8 @@
 
 <head>
   <title>chartjs-plugin-streaming sample</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0/dist/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.1"></script>
   <script src="../dist/chartjs-plugin-streaming.js"></script>
@@ -53,7 +53,7 @@
     }
 
     function onRefresh(chart) {
-      const now = Date.now();
+      var now = Date.now();
       chart.config.data.datasets.forEach(function(dataset) {
         dataset.data.push({
           x: now,
@@ -79,7 +79,6 @@
           borderColor: chartColors.blue,
           fill: false,
           cubicInterpolationMode: 'monotone',
-          tension: 1e-6,
           data: []
         }]
       },

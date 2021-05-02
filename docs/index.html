@@ -13,9 +13,10 @@
     <meta property="og:site_name" content="chartjs-plugin-streaming" />
     <meta name="twitter:site" content="@nagix" />
     <meta name="theme-color" content="#ffffff">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0-beta.1"></script>
   </head>
   <body>
     <section id="hero-spot" class="hero-spot">
@@ -39,12 +40,14 @@
 
         <li>
           <h4>Include scripts</h4>
-          <p>First, we need to include <a href="https://momentjs.com">moment.js</a>, <a href="https://github.com/chartjs/Chart.js/releases/latest">Chart.js</a> and <a href="https://github.com/nagix/chartjs-plugin-streaming/releases/latest">chartjs-plugin-streaming.js</a> in our page.</p>
+          <p>First, we need to include <a href="https://github.com/chartjs/Chart.js/releases/latest">Chart.js</a>, <a href="https://momentjs.com">moment.js</a>, <a href="https://github.com/chartjs/chartjs-adapter-moment/releases/latest">chartjs-adapter-moment</a><br />
+          and <a href="https://github.com/nagix/chartjs-plugin-streaming/releases/latest">chartjs-plugin-streaming.js</a> in our page.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
-              <p>&lt;script type="text/javascript" src="moment.js"&gt;&lt;/script&gt;</p>
               <p>&lt;script type="text/javascript" src="Chart.js"&gt;&lt;/script&gt;</p>
+              <p>&lt;script type="text/javascript" src="moment.js"&gt;&lt;/script&gt;</p>
+              <p>&lt;script type="text/javascript" src="chartjs-adapter-moment.js"&gt;&lt;/script&gt;</p>
               <p>&lt;script type="text/javascript" src="chartjs-plugin-streaming.js"&gt;&lt;/script&gt;</p>
             </div>
           </div>
@@ -79,9 +82,9 @@
               <p>&nbsp;&nbsp;},</p>
               <p>&nbsp;&nbsp;options: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;}</p>
               <p>});</p>
@@ -103,7 +106,7 @@
               <p>&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;options: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
@@ -138,7 +141,7 @@
               <p>&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;options: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
@@ -166,13 +169,13 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 1',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(255, 99, 132)',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(255, 99, 132, 0.5)',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineTension: 0,</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderDash: [8, 4]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(54, 162, 235)',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cubicInterpolationMode: 'monotone'</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
             </div>
@@ -289,9 +292,9 @@
               <p>&nbsp;&nbsp;}];</p>
               <p>&nbsp;&nbsp;options: any = {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;};</p>
               <p>}</p>
@@ -310,15 +313,15 @@
               <p>&nbsp;&nbsp;datasets: any[] = [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 1',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;lineTension: 0,</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;borderDash: [8, 4]</p>
               <p>&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;cubicInterpolationMode: 'monotone'</p>
               <p>&nbsp;&nbsp;}];</p>
               <p>&nbsp;&nbsp;options: any = {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart: any) {</p>
@@ -331,7 +334,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay: 2000</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;};</p>
               <p>}</p>
@@ -367,7 +370,7 @@
 
         <li>
           <h4>Install modules</h4>
-          <p>Install <a href="http://jerairrest.github.io/react-chartjs-2/">react-chartjs-2</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
+          <p>Install <a href="http://reactchartjs.github.io/react-chartjs-2/">react-chartjs-2</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
@@ -400,9 +403,9 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options={{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&gt;</p>
@@ -417,7 +420,7 @@
 
        <li>
           <h4>Stream data</h4>
-          <p>You can append the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming chart.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and react-chartjs-2 <a href="https://github.com/jerairrest/react-chartjs-2">documentation</a><br />for the customization options.</p>
+          <p>You can append the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming chart.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and react-chartjs-2 <a href="https://github.com/reactchartjs/react-chartjs-2">documentation</a><br />for the customization options.</p>
           <div class="terminal">
             <div class="header">src/App.js (Patial)</div>
             <div class="shell">
@@ -429,13 +432,13 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 1',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(255, 99, 132)',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(255, 99, 132, 0.5)',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineTension: 0,</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderDash: [8, 4]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(54, 162, 235)',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cubicInterpolationMode: 'monotone'</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options={{</p>
@@ -453,7 +456,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay: 2000</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&gt;</p>
@@ -546,9 +549,9 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;});</p>
               <p>&nbsp;&nbsp;}</p>
@@ -571,17 +574,17 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 1',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(255, 99, 132)',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(255, 99, 132, 0.5)',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineTension: 0,</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderDash: [8, 4]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label: 'Dataset 2',</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;borderColor: 'rgb(54, 162, 235)',</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)'</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backgroundColor: 'rgba(54, 162, 235, 0.5)',</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cubicInterpolationMode: 'monotone'</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
@@ -594,7 +597,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delay: 2000</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;});</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;...</p>
@@ -627,27 +630,27 @@
       var chart1 = new Chart(ctx1, {
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{ type: 'realtime' }] } }
+        options: { scales: { x: { type: 'realtime' } } }
       });
 
       var ctx2 = document.getElementById('chart2').getContext('2d');
       var chart2 = new Chart(ctx2, {
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{
+        options: { scales: { x: {
           type: 'realtime',
           realtime: { onRefresh: onRefresh }
-        }] } }
+        } } }
       });
 
       var ctx3 = document.getElementById('chart3').getContext('2d');
       var chart3 = new Chart(ctx3, {
         type: 'line',
         data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{
+        options: { scales: { x: {
           type: 'realtime',
           realtime: { onRefresh: onRefresh, delay: 2000 }
-        }] } }
+        } } }
       });
 
       var ctx4 = document.getElementById('chart4').getContext('2d');
@@ -658,18 +661,19 @@
           label: 'Dataset 1',
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          lineTension: 0,
           borderDash: [8, 4]
         }, {
           data: [],
           label: 'Dataset 2',
           borderColor: 'rgb(54, 162, 235)',
-          backgroundColor: 'rgba(54, 162, 235, 0.5)'
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          cubicInterpolationMode: 'monotone',
+          tension: 1e-6
         }] },
-        options: { scales: { xAxes: [{
+        options: { scales: { x: {
           type: 'realtime',
           realtime: { onRefresh: onRefresh, delay: 2000 }
-        }] } }
+        } } }
       });
     </script>
     <script src="/js/jquery.js"></script>
@@ -684,7 +688,7 @@
         <img src="/favicon-32x32-glay.png" style="position: absolute; top: 34px; left: 50%; margin-left: -16px;">
       </a>
       <ul class="site-footer-links">
-        <li>&copy; 2019 Akihiko Kusanagi</li>
+        <li>&copy; 2021 Akihiko Kusanagi</li>
       </ul>
     </footer>
     <script>
