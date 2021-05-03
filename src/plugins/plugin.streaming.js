@@ -1,8 +1,9 @@
-import Chart from 'chart.js';
+import {registry} from 'chart.js';
 import {each, noop, getRelativePosition, clipArea, unclipArea} from 'chart.js/helpers';
 import {resolveOption, startFrameRefreshTimer, stopFrameRefreshTimer} from '../helpers/helpers.streaming';
 import {zoomRealTimeScale, panRealTimeScale, resetRealTimeOptions} from '../plugins/plugin.zoom';
 import RealTimeScale from '../scales/scale.realtime';
+import {version} from '../../package.json';
 
 // Draw chart at frameRate
 function drawChart(chart) {
@@ -28,6 +29,8 @@ function drawChart(chart) {
 
 export default {
   id: 'streaming',
+
+  version,
 
   beforeInit(chart) {
     const streaming = chart.streaming = chart.streaming || {};
@@ -68,7 +71,7 @@ export default {
     };
 
     if (resetZoom) {
-      const zoomPlugin = Chart.registry.getPlugin('zoom');
+      const zoomPlugin = registry.getPlugin('zoom');
 
       zoomPlugin.zoomFunctions.realtime = zoomRealTimeScale;
       zoomPlugin.panFunctions.realtime = panRealTimeScale;

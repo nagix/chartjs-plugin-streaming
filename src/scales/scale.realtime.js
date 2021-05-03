@@ -1,8 +1,6 @@
-import Chart from 'chart.js';
+import {defaults, TimeScale} from 'chart.js';
 import {_lookup, callback as call, each, isArray, isNumber, noop, clipArea, unclipArea} from 'chart.js/helpers';
 import {resolveOption, startFrameRefreshTimer, stopFrameRefreshTimer} from '../helpers/helpers.streaming';
-
-const TimeScale = Chart.registry.getScale('time');
 
 // Ported from Chart.js 2.8.0 35273ee.
 const INTERVALS = {
@@ -539,6 +537,6 @@ RealTimeScale.defaults = {
   }
 };
 
-Chart.defaults.describe('scale.realtime', {
+defaults.describe('scale.realtime', {
   _scriptable: name => name !== 'onRefresh'
 });
