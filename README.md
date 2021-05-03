@@ -11,7 +11,7 @@ The latest version of chartjs-plugin-streaming requires Chart.js 3.0.0 or later.
 
 ## Installation
 
-You can download the latest version of chartjs-plugin-streaming from the [GitHub releases](https://github.com/nagix/chartjs-plugin-streaming/releases/latest).
+You can download the latest version of chartjs-plugin-streaming from the [GitHub releases](https://github.com/nagix/chartjs-plugin-streaming/releases).
 
 To install via npm:
 
@@ -31,7 +31,7 @@ chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and modu
 
 chartjs-plugin-streaming requires both a date library and a corresponding adapter to display time scales. Please choose from the [available adapters](https://github.com/chartjs/awesome#adapters).
 
-Version 2.0 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Primitive[]](https://www.chartjs.org/docs/latest/general/data-structures.html#primitive) and [Object[]](https://www.chartjs.org/docs/latest/general/data-structures.html#object) data (each data point is specified an array of objects containing x and y properties) as well as the [bubble](https://www.chartjs.org/docs/latest/charts/bubble.html) and [scatter](https://www.chartjs.org/docs/latest/charts/scatter.html) chart types with Object[] data. In case of Object[] data, either x or y must be in any of the date formats that the data library accepts ([date formats](https://momentjs.com/docs/#/parsing/) in Moment.js for example), and the corresponding axis must have a `'realtime'` scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted after the time specified by the `ttl` option, or as it disappears off the chart.
+Version 2.0 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Primitive[]](https://www.chartjs.org/docs/latest/general/data-structures.html#primitive) and [Object[]](https://www.chartjs.org/docs/latest/general/data-structures.html#object) data (each data point is specified an array of objects containing x and y properties) as well as the [bubble](https://www.chartjs.org/docs/latest/charts/bubble.html) and [scatter](https://www.chartjs.org/docs/latest/charts/scatter.html) chart types with Object[] data. In case of Object[] data, either x or y must be in any of the date formats that the date library accepts ([Formatting](https://moment.github.io/luxon/docs/manual/formatting) in Luxon for example), and the corresponding axis must have a `'realtime'` scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted after the time specified by the `ttl` option, or as it disappears off the chart.
 
 ### Usage in ES6 as module
 

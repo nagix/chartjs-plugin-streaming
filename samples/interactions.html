@@ -4,8 +4,8 @@
 <head>
   <title>chartjs-plugin-streaming sample</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
   <script src="../dist/chartjs-plugin-streaming.js"></script>
   <style>
     canvas {
@@ -129,7 +129,6 @@
         }]
       },
       options: {
-        animation: false,
         scales: {
           x: {
             type: 'realtime',

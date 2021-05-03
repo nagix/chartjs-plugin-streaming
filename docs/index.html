@@ -13,9 +13,9 @@
     <meta property="og:site_name" content="chartjs-plugin-streaming" />
     <meta name="twitter:site" content="@nagix" />
     <meta name="theme-color" content="#ffffff">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0-beta.1"></script>
   </head>
   <body>
@@ -40,14 +40,13 @@
 
         <li>
           <h4>Include scripts</h4>
-          <p>First, we need to include <a href="https://github.com/chartjs/Chart.js/releases/latest">Chart.js</a>, <a href="https://momentjs.com">moment.js</a>, <a href="https://github.com/chartjs/chartjs-adapter-moment/releases/latest">chartjs-adapter-moment</a><br />
-          and <a href="https://github.com/nagix/chartjs-plugin-streaming/releases/latest">chartjs-plugin-streaming.js</a> in our page.</p>
+          <p>First, we need to include <a href="https://github.com/chartjs/Chart.js/releases/latest">Chart.js</a>, <a href="https://moment.github.io/luxon/">luxon.js</a>, <a href="https://github.com/chartjs/chartjs-adapter-luxon/releases/latest">chartjs-adapter-luxon.js</a><br />and <a href="https://github.com/nagix/chartjs-plugin-streaming/releases">chartjs-plugin-streaming.js</a> in our page.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
               <p>&lt;script type="text/javascript" src="Chart.js"&gt;&lt;/script&gt;</p>
-              <p>&lt;script type="text/javascript" src="moment.js"&gt;&lt;/script&gt;</p>
-              <p>&lt;script type="text/javascript" src="chartjs-adapter-moment.js"&gt;&lt;/script&gt;</p>
+              <p>&lt;script type="text/javascript" src="luxon.js"&gt;&lt;/script&gt;</p>
+              <p>&lt;script type="text/javascript" src="chartjs-adapter-luxon.js"&gt;&lt;/script&gt;</p>
               <p>&lt;script type="text/javascript" src="chartjs-plugin-streaming.js"&gt;&lt;/script&gt;</p>
             </div>
           </div>
@@ -370,23 +369,24 @@
 
         <li>
           <h4>Install modules</h4>
-          <p>Install <a href="http://reactchartjs.github.io/react-chartjs-2/">react-chartjs-2</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
+          <p>Install <a href="https://www.chartjs.org">chart.js</a>, <a href="http://reactchartjs.github.io/react-chartjs-2/">react-chartjs-2</a>, <a href="https://moment.github.io/luxon/">luxon</a>, <a href="https://github.com/chartjs/chartjs-adapter-luxon">chartjs-adapter-luxon</a><br />and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
-              <p><span class="prompt">$</span>npm install chart.js react-chartjs-2 chartjs-plugin-streaming --save</p>
+              <p><span class="prompt">$</span>npm install chart.js react-chartjs-2 luxon chartjs-adapter-luxon chartjs-plugin-streaming --save</p>
             </div>
           </div>
         </li>
 
         <li>
           <h4>Create a chart component</h4>
-          <p>Now you’ll want to create a chart component with a realtime scale.<br />Import a Line chart component from react-chartjs-2 as well as<br />chartjs-plugin-streaming, and extend it.</p>
+          <p>Now you’ll want to create a chart component with a realtime scale.<br />Import a Line chart component from react-chartjs-2 as well as<br />chartjs-adapter-luxon and chartjs-plugin-streaming, and extend it.</p>
           <div class="terminal">
             <div class="header">src/App.js</div>
             <div class="shell">
               <p>import React, { Component } from 'react';</p>
               <p>import { Line } from 'react-chartjs-2';</p>
+              <p>import 'chartjs-adapter-luxon';</p>
               <p>import 'chartjs-plugin-streaming';</p>
               <p>import './App.css';</p>
               <br />
@@ -443,7 +443,7 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;options={{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;realtime: {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;onRefresh: function(chart) {</p>
@@ -493,11 +493,11 @@
 
         <li>
           <h4>Install modules</h4>
-          <p>Install <a href="https://vue-chartjs.org/">vue-chartjs</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
+          <p>Install <a href="https://www.chartjs.org">chart.js</a>, <a href="https://vue-chartjs.org/">vue-chartjs</a> and <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> into our project.</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
-              <p><span class="prompt">$</span>npm install vue-chartjs chartjs-plugin-streaming --save</p>
+              <p><span class="prompt">$</span>npm install chart.js@2.8 vue-chartjs chartjs-plugin-streaming@1.8 --save</p>
             </div>
           </div>
         </li>
@@ -549,9 +549,9 @@
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;}, {</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scales: {</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x: {</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xAxes: [{</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: 'realtime'</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}]</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</p>
               <p>&nbsp;&nbsp;&nbsp;&nbsp;});</p>
               <p>&nbsp;&nbsp;}</p>
@@ -563,7 +563,7 @@
 
         <li>
           <h4>Stream data</h4>
-          <p>You can append the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming chart.<br />See the Chart.js <a href="https://www.chartjs.org/docs">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and vue-chartjs <a href="https://vue-chartjs.org/#/Home">documentation</a><br />for the customization options.</p>
+          <p>You can append the data in the callback function and add more chart options.<br />The browser refreshes and displays a live streaming chart.<br />See the Chart.js <a href="https://www.chartjs.org/docs/2.8.0">documentation</a>, <a href="https://www.chartjs.org/samples">samples</a> and vue-chartjs <a href="https://vue-chartjs.org/#/Home">documentation</a><br />for the customization options.</p>
           <div class="terminal">
             <div class="header">src/components/MyChart.vue (Patial)</div>
             <div class="shell">
