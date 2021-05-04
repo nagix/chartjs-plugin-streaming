@@ -1,0 +1,3 @@
+globals:
+  Chart: readonly
+  ChartDataLabels: readonly

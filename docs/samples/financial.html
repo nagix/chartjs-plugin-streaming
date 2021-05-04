@@ -47,12 +47,12 @@
 
   t -= t % 5000;
   if (data.length === 0) {
-    data.push({ x: t - 5000, o: 99, h: 101, l: 98, c: 100 });
+    data.push({x: t - 5000, o: 99, h: 101, l: 98, c: 100});
   }
   last = data[data.length - 1];
-  if (t != last.x) {
+  if (t !== last.x) {
     var c = last.c;
-    last = { x: t, o: c, h: c, l: c, c: c };
+    last = {x: t, o: c, h: c, l: c, c: c};
     data.push(last);
   }
   last.c += Math.random() - 0.5;
@@ -131,12 +131,12 @@ window.onload = function() {
 
       t -= t % 5000;
       if (data.length === 0) {
-        data.push({ x: t - 5000, o: 99, h: 101, l: 98, c: 100 });
+        data.push({x: t - 5000, o: 99, h: 101, l: 98, c: 100});
       }
       last = data[data.length - 1];
-      if (t != last.x) {
+      if (t !== last.x) {
         var c = last.c;
-        last = { x: t, o: c, h: c, l: c, c: c };
+        last = {x: t, o: c, h: c, l: c, c: c};
         data.push(last);
       }
       last.c += Math.random() - 0.5;

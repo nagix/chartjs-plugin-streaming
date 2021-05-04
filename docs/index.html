@@ -617,6 +617,8 @@
 
     </section>
     <script>
+      /* eslint no-unused-vars: ["error", {"varsIgnorePattern": "chart[1-4]"}] */
+
       function onRefresh(chart) {
         chart.data.datasets.forEach(function(dataset) {
           dataset.data.push({
@@ -629,51 +631,53 @@
       var ctx1 = document.getElementById('chart1').getContext('2d');
       var chart1 = new Chart(ctx1, {
         type: 'line',
-        data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { x: { type: 'realtime' } } }
+        data: {datasets: [{data: []}, {data: []}]},
+        options: {scales: {x: {type: 'realtime'}}}
       });
 
       var ctx2 = document.getElementById('chart2').getContext('2d');
       var chart2 = new Chart(ctx2, {
         type: 'line',
-        data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { x: {
+        data: {datasets: [{data: []}, {data: []}]},
+        options: {scales: {x: {
           type: 'realtime',
-          realtime: { onRefresh: onRefresh }
-        } } }
+          realtime: {onRefresh: onRefresh}
+        }}}
       });
 
       var ctx3 = document.getElementById('chart3').getContext('2d');
       var chart3 = new Chart(ctx3, {
         type: 'line',
-        data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { x: {
+        data: {datasets: [{data: []}, {data: []}]},
+        options: {scales: {x: {
           type: 'realtime',
-          realtime: { onRefresh: onRefresh, delay: 2000 }
-        } } }
+          realtime: {onRefresh: onRefresh, delay: 2000}
+        }}}
       });
 
       var ctx4 = document.getElementById('chart4').getContext('2d');
       var chart4 = new Chart(ctx4, {
         type: 'line',
-        data: { datasets: [{
-          data: [],
-          label: 'Dataset 1',
-          borderColor: 'rgb(255, 99, 132)',
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          borderDash: [8, 4]
-        }, {
-          data: [],
-          label: 'Dataset 2',
-          borderColor: 'rgb(54, 162, 235)',
-          backgroundColor: 'rgba(54, 162, 235, 0.5)',
-          cubicInterpolationMode: 'monotone',
-          tension: 1e-6
-        }] },
-        options: { scales: { x: {
+        data: {
+          datasets: [{
+            data: [],
+            label: 'Dataset 1',
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderDash: [8, 4]
+          }, {
+            data: [],
+            label: 'Dataset 2',
+            borderColor: 'rgb(54, 162, 235)',
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            cubicInterpolationMode: 'monotone',
+            tension: 1e-6
+          }]
+        },
+        options: {scales: {x: {
           type: 'realtime',
-          realtime: { onRefresh: onRefresh, delay: 2000 }
-        } } }
+          realtime: {onRefresh: onRefresh, delay: 2000}
+        }}}
       });
     </script>
     <script src="/js/jquery.js"></script>
@@ -692,6 +696,7 @@
       </ul>
     </footer>
     <script>
+      /* eslint-disable */
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)

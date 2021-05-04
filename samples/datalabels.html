@@ -62,7 +62,6 @@
       });
     }
 
-    var color = Chart.helpers.color;
     var config = {
       type: 'line',
       data: {
@@ -112,7 +111,7 @@
             text: 'Data labels plugin sample'
           },
           datalabels: {
-              backgroundColor: function(context) {
+            backgroundColor: function(context) {
               return context.dataset.backgroundColor;
             },
             padding: 4,

@@ -8,9 +8,9 @@ before_script:
   - ./cc-test-reporter before-build
 
 script:
-  - gulp lint
-  - gulp package
-  - gulp bower
+  - npm run lint
+  - npm run package
+  - npm run bower
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
@@ -31,6 +31,7 @@ deploy:
     file:
       - "./dist/chartjs-plugin-streaming.js"
       - "./dist/chartjs-plugin-streaming.min.js"
+      - "./dist/chartjs-plugin-streaming.tgz"
       - "./dist/chartjs-plugin-streaming.zip"
     skip_cleanup: true
     on:

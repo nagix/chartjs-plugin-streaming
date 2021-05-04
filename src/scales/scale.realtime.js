@@ -186,7 +186,7 @@ function refreshData(scale) {
 
       data.splice(start, count);
       datasetPropertyKeys.forEach(key => {
-        if (dataset.hasOwnProperty(key) && isArray(dataset[key])) {
+        if (isArray(dataset[key])) {
           dataset[key].splice(start, count);
         }
       });
