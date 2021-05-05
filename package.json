@@ -32,9 +32,9 @@
   },
   "devDependencies": {
     "chart.js": "^2.9.4",
-    "eslint-config-chartjs": "^0.3.0",
+    "eslint-config-chartjs": "^0.1.0",
     "gulp": "^4.0.2",
-    "gulp-eslint": "^6.0.0",
+    "gulp-eslint": "^5.0.0",
     "gulp-file": "^0.4.0",
     "gulp-replace": "^1.0.0",
     "gulp-streamify": "^1.0.2",

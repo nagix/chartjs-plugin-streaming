@@ -335,7 +335,7 @@ function refreshData(scale) {
 
 			data.splice(start, count);
 			datasetPropertyKeys.forEach(function(key) {
-				if (dataset.hasOwnProperty(key) && helpers.isArray(dataset[key])) {
+				if (helpers.isArray(dataset[key])) {
 					dataset[key].splice(start, count);
 				}
 			});
