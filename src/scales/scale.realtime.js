@@ -17,9 +17,63 @@ scaleService.getScaleConstructor = function(type) {
 	return this.constructors.hasOwnProperty(type) ? this.constructors[type] : undefined;
 };
 
+// Ported from Chart.js 2.8.0 35273ee.
+var MAX_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
+
+// Ported from Chart.js 2.8.0 35273ee.
+var INTERVALS = {
+	millisecond: {
+		common: true,
+		size: 1,
+		steps: [1, 2, 5, 10, 20, 50, 100, 250, 500]
+	},
+	second: {
+		common: true,
+		size: 1000,
+		steps: [1, 2, 5, 10, 15, 30]
+	},
+	minute: {
+		common: true,
+		size: 60000,
+		steps: [1, 2, 5, 10, 15, 30]
+	},
+	hour: {
+		common: true,
+		size: 3600000,
+		steps: [1, 2, 3, 6, 12]
+	},
+	day: {
+		common: true,
+		size: 86400000,
+		steps: [1, 2, 5]
+	},
+	week: {
+		common: false,
+		size: 604800000,
+		steps: [1, 2, 3, 4]
+	},
+	month: {
+		common: true,
+		size: 2.628e9,
+		steps: [1, 2, 3]
+	},
+	quarter: {
+		common: false,
+		size: 7.884e9,
+		steps: [1, 2, 3, 4]
+	},
+	year: {
+		common: true,
+		size: 3.154e10
+	}
+};
+
+// Ported from Chart.js 2.8.0 35273ee.
+var UNITS = Object.keys(INTERVALS);
+
 // For Chart.js 2.7.x backward compatibility
 var defaultAdapter = {
-	// Ported from Chart.js 2.8.0-rc.1 35273ee
+	// Ported from Chart.js 2.9.4 707e52a.
 	parse: function(value, format) {
 		if (typeof value === 'string' && typeof format === 'string') {
 			value = moment(value, format);
@@ -27,10 +81,24 @@ var defaultAdapter = {
 			value = moment(value);
 		}
 		return value.isValid() ? value.valueOf() : null;
+	},
+
+	// Ported from Chart.js 2.9.4 707e52a.
+	add: function(time, amount, unit) {
+		return moment(time).add(amount, unit).valueOf();
+	},
+
+	// Ported from Chart.js 2.9.4 707e52a.
+	startOf: function(time, unit, weekday) {
+		time = moment(time);
+		if (unit === 'isoWeek') {
+			return time.isoWeekday(weekday).valueOf();
+		}
+		return time.startOf(unit).valueOf();
 	}
 };
 
-// Ported from Chart.js 2.8.0-rc.1 35273ee. Modified for Chart.js 2.7.x backward compatibility.
+// Ported from Chart.js 2.8.0 35273ee. Modified for Chart.js 2.7.x backward compatibility.
 function toTimestamp(scale, input) {
 	var adapter = scale._adapter || defaultAdapter;
 	var options = scale.options.time;
@@ -67,7 +135,7 @@ function toTimestamp(scale, input) {
 	return value;
 }
 
-// Ported from Chart.js 2.8.0-rc.1 35273ee
+// Ported from Chart.js 2.8.0 35273ee. Modified for Chart.js 2.7.x backward compatibility.
 function parse(scale, input) {
 	if (helpers.isNullOrUndef(input)) {
 		return null;
@@ -80,10 +148,112 @@ function parse(scale, input) {
 	}
 
 	if (options.round) {
-		value = +scale._adapter.startOf(value, options.round);
+		value = +(scale._adapter || defaultAdapter).startOf(value, options.round);
 	}
 
 	return value;
+}
+
+// Ported from Chart.js 2.8.0 35273ee.
+function determineStepSize(min, max, unit, capacity) {
+	var range = max - min;
+	var interval = INTERVALS[unit];
+	var milliseconds = interval.size;
+	var steps = interval.steps;
+	var i, ilen, factor;
+
+	if (!steps) {
+		return Math.ceil(range / (capacity * milliseconds));
+	}
+
+	for (i = 0, ilen = steps.length; i < ilen; ++i) {
+		factor = steps[i];
+		if (Math.ceil(range / (milliseconds * factor)) <= capacity) {
+			break;
+		}
+	}
+
+	return factor;
+}
+
+// Ported from Chart.js 2.8.0 35273ee.
+function determineUnitForAutoTicks(minUnit, min, max, capacity) {
+	var ilen = UNITS.length;
+	var i, interval, factor;
+
+	for (i = UNITS.indexOf(minUnit); i < ilen - 1; ++i) {
+		interval = INTERVALS[UNITS[i]];
+		factor = interval.steps ? interval.steps[interval.steps.length - 1] : MAX_INTEGER;
+
+		if (interval.common && Math.ceil((max - min) / (factor * interval.size)) <= capacity) {
+			return UNITS[i];
+		}
+	}
+
+	return UNITS[ilen - 1];
+}
+
+// Ported from Chart.js 2.8.0 35273ee.
+function determineMajorUnit(unit) {
+	for (var i = UNITS.indexOf(unit) + 1, ilen = UNITS.length; i < ilen; ++i) {
+		if (INTERVALS[UNITS[i]].common) {
+			return UNITS[i];
+		}
+	}
+}
+
+// Ported from Chart.js 2.8.0 35273ee. Modified for Chart.js 2.7.x backward compatibility.
+function generate(scale, min, max, capacity) {
+	var adapter = scale._adapter || defaultAdapter;
+	var options = scale.options;
+	var timeOpts = options.time;
+	var minor = timeOpts.unit || determineUnitForAutoTicks(timeOpts.minUnit, min, max, capacity);
+	var major = determineMajorUnit(minor);
+	var stepSize = helpers.valueOrDefault(timeOpts.stepSize, timeOpts.unitStepSize);
+	var weekday = minor === 'week' ? timeOpts.isoWeekday : false;
+	var majorTicksEnabled = options.ticks.major.enabled;
+	var interval = INTERVALS[minor];
+	var first = min;
+	var last = max;
+	var ticks = [];
+	var time;
+
+	if (!stepSize) {
+		stepSize = determineStepSize(min, max, minor, capacity);
+	}
+
+	// For 'week' unit, handle the first day of week option
+	if (weekday) {
+		first = +adapter.startOf(first, 'isoWeek', weekday);
+		last = +adapter.startOf(last, 'isoWeek', weekday);
+	}
+
+	// Align first/last ticks on unit
+	first = +adapter.startOf(first, weekday ? 'day' : minor);
+	last = +adapter.startOf(last, weekday ? 'day' : minor);
+
+	// Make sure that the last tick include max
+	if (last < max) {
+		last = +adapter.add(last, 1, minor);
+	}
+
+	time = first;
+
+	if (majorTicksEnabled && major && !weekday && !timeOpts.round) {
+		// Align the first tick on the previous `minor` unit aligned on the `major` unit:
+		// we first aligned time on the previous `major` unit then add the number of full
+		// stepSize there is between first and the previous major time.
+		time = +adapter.startOf(time, major);
+		time = +adapter.add(time, ~~((first - time) / (interval.size * stepSize)) * stepSize, minor);
+	}
+
+	for (; time < last; time = +adapter.add(time, stepSize, minor)) {
+		ticks.push(+time);
+	}
+
+	ticks.push(+time);
+
+	return ticks;
 }
 
 function resolveOption(scale, key) {
@@ -256,13 +426,15 @@ function scroll(scale) {
 	var realtime = scale.realtime;
 	var duration = resolveOption(scale, 'duration');
 	var delay = resolveOption(scale, 'delay');
+	var isHorizontal = scale.isHorizontal();
+	var reverse = scale.options.ticks.reverse || !(isHorizontal || '_reversePixels' in scale);
 	var id = scale.id;
 	var tooltip = chart.tooltip;
 	var activeTooltip = tooltip._active;
 	var now = Date.now();
 	var length, keys, offset, meta, elements, i, ilen;
 
-	if (scale.isHorizontal()) {
+	if (isHorizontal) {
 		length = scale.width;
 		keys = transitionKeys.x;
 	} else {
@@ -271,11 +443,11 @@ function scroll(scale) {
 	}
 	offset = length * (now - realtime.head) / duration;
 
-	if (scale.options.ticks.reverse) {
+	if (isHorizontal === reverse) {
 		offset = -offset;
 	}
 
-	// Shift all the elements leftward or upward
+	// Shift all the elements leftward or downward
 	helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
 		meta = chart.getDatasetMeta(datasetIndex);
 		if (id === meta.xAxisID || id === meta.yAxisID) {
@@ -291,7 +463,7 @@ function scroll(scale) {
 		}
 	});
 
-	// Shift tooltip leftward or upward
+	// Shift tooltip leftward or downward
 	if (activeTooltip && activeTooltip[0]) {
 		meta = chart.getDatasetMeta(activeTooltip[0]._datasetIndex);
 		if (id === meta.xAxisID || id === meta.yAxisID) {
@@ -312,7 +484,6 @@ var defaultConfig = {
 	adapters: {},
 	time: {
 		parser: false, // false == a pattern string from http://momentjs.com/docs/#/parsing/string-format/ or a custom callback that converts its argument to a moment
-		format: false, // DEPRECATED false == date objects, moment object, callback or a pattern string from http://momentjs.com/docs/#/parsing/string-format/
 		unit: false, // false == automatic or override with week, month, year, etc.
 		round: false, // none, or override with week, month, year, etc.
 		displayFormat: false, // DEPRECATED
@@ -361,9 +532,21 @@ var RealTimeScale = TimeScale.extend({
 	update: function() {
 		var me = this;
 		var realtime = me.realtime;
+		var options = me.options;
+		var bounds = options.bounds;
+		var distribution = options.distribution;
+		var offset = options.offset;
+		var ticksOpts = options.ticks;
+		var autoSkip = ticksOpts.autoSkip;
+		var source = ticksOpts.source;
+		var minTick = ticksOpts.min;
+		var maxTick = ticksOpts.max;
+		var majorTicksOpts = ticksOpts.major;
+		var majorEnabled = majorTicksOpts.enabled;
+		var minSize;
 
 		// For backwards compatibility
-		if (me.options.type === 'time' && !me.chart.options.plugins.streaming) {
+		if (options.type === 'time' && !me.chart.options.plugins.streaming) {
 			return TimeScale.prototype.update.apply(me, arguments);
 		}
 
@@ -376,7 +559,27 @@ var RealTimeScale = TimeScale.extend({
 			realtime.head = Date.now();
 		}
 
-		return TimeScale.prototype.update.apply(me, arguments);
+		options.bounds = undefined;
+		options.distribution = 'linear';
+		options.offset = false;
+		ticksOpts.autoSkip = false;
+		ticksOpts.source = source === 'auto' ? '' : source;
+		ticksOpts.min = -1e15;
+		ticksOpts.max = 1e15;
+		majorTicksOpts.enabled = true;
+
+		minSize = TimeScale.prototype.update.apply(me, arguments);
+
+		options.bounds = bounds;
+		options.distribution = distribution;
+		options.offset = offset;
+		ticksOpts.autoSkip = autoSkip;
+		ticksOpts.source = source;
+		ticksOpts.min = minTick;
+		ticksOpts.max = maxTick;
+		majorTicksOpts.enabled = majorEnabled;
+
+		return minSize;
 	},
 
 	buildTicks: function() {
@@ -388,28 +591,21 @@ var RealTimeScale = TimeScale.extend({
 			return TimeScale.prototype.buildTicks.apply(me, arguments);
 		}
 
-		var timeOpts = options.time;
-		var majorTicksOpts = options.ticks.major;
 		var duration = resolveOption(me, 'duration');
 		var delay = resolveOption(me, 'delay');
 		var refresh = resolveOption(me, 'refresh');
-		var bounds = options.bounds;
-		var distribution = options.distribution;
-		var offset = options.offset;
-		var minTime = timeOpts.min;
-		var maxTime = timeOpts.max;
-		var majorEnabled = majorTicksOpts.enabled;
+		var ticksOpts = options.ticks;
+		var source = ticksOpts.source;
+		var timestamps = me._timestamps.data;
 		var max = me.realtime.head - delay;
 		var min = max - duration;
 		var maxArray = [max + refresh, max];
 		var ticks;
 
-		options.bounds = undefined;
-		options.distribution = 'linear';
-		options.offset = false;
-		timeOpts.min = -1e15;
-		timeOpts.max = 1e15;
-		majorTicksOpts.enabled = true;
+		if (source === '') {
+			ticksOpts.source = 'data';
+			me._timestamps.data = generate(me, min, max + refresh, me.getLabelCapacity(min), options);
+		}
 
 		Object.defineProperty(me, 'min', {
 			get: function() {
@@ -428,18 +624,34 @@ var RealTimeScale = TimeScale.extend({
 
 		delete me.min;
 		delete me.max;
-
 		me.min = min;
 		me.max = max;
-		options.bounds = bounds;
-		options.distribution = distribution;
-		options.offset = offset;
-		timeOpts.min = minTime;
-		timeOpts.max = maxTime;
-		majorTicksOpts.enabled = majorEnabled;
+
+		if (source === '') {
+			ticksOpts.source = source;
+			me._timestamps.data = timestamps;
+		}
+
 		me._table = [{time: min, pos: 0}, {time: max, pos: 1}];
 
 		return ticks;
+	},
+
+	calculateTickRotation: function() {
+		var me = this;
+		var options = me.options;
+		var ticksOpts = options.ticks;
+		var maxRotation = ticksOpts.maxRotation;
+
+		// For backwards compatibility
+		if (options.type === 'time' && !me.chart.options.plugins.streaming) {
+			TimeScale.prototype.calculateTickRotation.apply(me, arguments);
+			return;
+		}
+
+		ticksOpts.maxRotation = ticksOpts.minRotation || 0;
+		TimeScale.prototype.calculateTickRotation.apply(me, arguments);
+		ticksOpts.maxRotation = maxRotation;
 	},
 
 	fit: function() {
@@ -483,6 +695,9 @@ var RealTimeScale = TimeScale.extend({
 				right: chart.width,
 				bottom: chartArea.bottom
 			};
+
+		me._gridLineItems = null;
+		me._labelItems = null;
 
 		// Clip and draw the scale
 		canvasHelpers.clipArea(context, clipArea);

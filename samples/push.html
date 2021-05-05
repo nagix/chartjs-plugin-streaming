@@ -3,8 +3,8 @@
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
 	<script src="../dist/chartjs-plugin-streaming.js"></script>
 	<style>
 		canvas {
@@ -70,7 +70,7 @@
 					value: randomScalingFactor()
 				});
 				timeoutIDs[index] = setTimeout(receive, Math.random() * 1000 + 500);
-			}
+			};
 			timeoutIDs[index] = setTimeout(receive, Math.random() * 1000 + 500);
 		}
 
@@ -171,9 +171,10 @@
 		});
 
 		document.getElementById('addData').addEventListener('click', function() {
+			var now = Date.now();
 			config.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
-					x: Date.now(),
+					x: now,
 					y: randomScalingFactor()
 				});
 			});

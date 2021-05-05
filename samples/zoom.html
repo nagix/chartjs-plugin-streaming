@@ -3,10 +3,10 @@
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
 	<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
 	<script src="../dist/chartjs-plugin-streaming.js"></script>
 	<style>
 		canvas {
@@ -54,9 +54,10 @@
 		}
 
 		function onRefresh(chart) {
+			var now = Date.now();
 			chart.config.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
-					x: Date.now(),
+					x: now,
 					y: randomScalingFactor()
 				});
 			});

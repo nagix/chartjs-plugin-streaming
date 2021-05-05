@@ -3,9 +3,9 @@
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<script src="https://www.chartjs.org/chartjs-chart-financial/chartjs-chart-financial.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+	<script src="https://cdn.jsdelivr.net/gh/chartjs/chartjs-chart-financial@f0c37e1dc24923a02c7793df8a292921db4b46cb/docs/chartjs-chart-financial.js"></script>
 	<script src="../dist/chartjs-plugin-streaming.js"></script>
 	<style>
 		canvas {
@@ -33,12 +33,12 @@
 
 			t -= t % 5000;
 			if (data.length === 0) {
-				data.push({ t: t - 5000, o: 99, h: 101, l: 98, c: 100 });
+				data.push({x: t - 5000, o: 99, h: 101, l: 98, c: 100});
 			}
 			last = data[data.length - 1];
-			if (t != last.t) {
+			if (t !== last.x) {
 				var c = last.c;
-				last = { t: t, o: c, h: c, l: c, c: c };
+				last = {x: t, o: c, h: c, l: c, c: c};
 				data.push(last);
 			}
 			last.c += Math.random() - 0.5;

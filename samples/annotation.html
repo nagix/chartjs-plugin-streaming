@@ -3,8 +3,8 @@
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@0.5.7/chartjs-plugin-annotation.min.js"></script>
 	<script src="../dist/chartjs-plugin-streaming.js"></script>
 	<style>
@@ -52,9 +52,10 @@
 		}
 
 		function onRefresh(chart) {
+			var now = Date.now();
 			chart.config.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
-					x: Date.now(),
+					x: now,
 					y: randomScalingFactor()
 				});
 			});
@@ -139,7 +140,7 @@
 							yMin: randomScalingFactor(),
 							yMax: randomScalingFactor(),
 							backgroundColor: color(chartColors.purple).alpha(0.25).rgbString(),
-							borderColor: color(chartColors.purple),
+							borderColor: chartColors.purple,
 							borderWidth: 1,
 							onClick: function(e) {
 								console.log('Box', e.type, this);

@@ -3,9 +3,9 @@
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.6.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@1.0.0"></script>
 	<script src="../dist/chartjs-plugin-streaming.js"></script>
 	<style>
 		canvas {
@@ -52,15 +52,15 @@
 		}
 
 		function onRefresh(chart) {
+			var now = Date.now();
 			chart.config.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
-					x: Date.now(),
+					x: now,
 					y: randomScalingFactor()
 				});
 			});
 		}
 
-		var color = Chart.helpers.color;
 		var config = {
 			type: 'line',
 			data: {
@@ -81,6 +81,7 @@
 					data: []
 				}]
 			},
+			plugins: [ChartDataLabels],
 			options: {
 				title: {
 					display: true,
