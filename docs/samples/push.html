@@ -61,7 +61,7 @@ function randomScalingFactor() {
 }
 
 function onReceive(event) {
-	window.myChart.config.data.datasets[event.index].data.push({
+	window.myChart.data.datasets[event.index].data.push({
 		x: event.timestamp,
 		y: event.value
 	});
@@ -227,7 +227,7 @@ document.getElementById('addData').addEventListener('click', function() {
 		}
 
 		function onReceive(event) {
-			window.myChart.config.data.datasets[event.index].data.push({
+			window.myChart.data.datasets[event.index].data.push({
 				x: event.timestamp,
 				y: event.value
 			});

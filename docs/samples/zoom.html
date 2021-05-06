@@ -64,7 +64,7 @@ function randomScalingFactor() {
 }
 
 function onRefresh(chart) {
-	chart.config.data.datasets.forEach(function(dataset) {
+	chart.data.datasets.forEach(function(dataset) {
 		dataset.data.push({
 			x: Date.now(),
 			y: randomScalingFactor()
@@ -234,7 +234,7 @@ document.getElementById('resetZoom').addEventListener('click', function() {
 		}
 
 		function onRefresh(chart) {
-			chart.config.data.datasets.forEach(function(dataset) {
+			chart.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
 					x: Date.now(),
 					y: randomScalingFactor()

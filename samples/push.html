@@ -51,7 +51,7 @@
 		}
 
 		function onReceive(event) {
-			window.myChart.config.data.datasets[event.index].data.push({
+			window.myChart.data.datasets[event.index].data.push({
 				x: event.timestamp,
 				y: event.value
 			});

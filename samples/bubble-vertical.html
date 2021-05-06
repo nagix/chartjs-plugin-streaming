@@ -52,7 +52,7 @@
 
 		function onRefresh(chart) {
 			var now = Date.now();
-			chart.config.data.datasets.forEach(function(dataset) {
+			chart.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
 					x: randomScalingFactor(),
 					y: now,

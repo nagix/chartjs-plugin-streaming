@@ -61,8 +61,8 @@ function randomScalingFactor() {
 }
 
 function onRefresh(chart) {
-	chart.config.data.labels.push(Date.now());
-	chart.config.data.datasets.forEach(function(dataset) {
+	chart.data.labels.push(Date.now());
+	chart.data.datasets.forEach(function(dataset) {
 		dataset.data.push(randomScalingFactor());
 	});
 }
@@ -201,8 +201,8 @@ document.getElementById('addData').addEventListener('click', function() {
 		}
 
 		function onRefresh(chart) {
-			chart.config.data.labels.push(Date.now());
-			chart.config.data.datasets.forEach(function(dataset) {
+			chart.data.labels.push(Date.now());
+			chart.data.datasets.forEach(function(dataset) {
 				dataset.data.push(randomScalingFactor());
 			});
 		}
