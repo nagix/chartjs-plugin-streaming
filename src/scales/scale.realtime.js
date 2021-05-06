@@ -295,11 +295,11 @@ function scroll(scale) {
   }
   offset = length * (now - realtime.head) / duration;
 
-  if (!!isHorizontal === !!scale.options.reverse) {
+  if (isHorizontal === !!scale.options.reverse) {
     offset = -offset;
   }
 
-  // Shift all the elements leftward or upward
+  // Shift all the elements leftward or downward
   each(chart.data.datasets, (dataset, datasetIndex) => {
     const meta = chart.getDatasetMeta(datasetIndex);
 
@@ -317,7 +317,7 @@ function scroll(scale) {
     }
   });
 
-  // Shift tooltip leftward or upward
+  // Shift tooltip leftward or downward
   if (activeTooltip && activeTooltip[0]) {
     const meta = chart.getDatasetMeta(activeTooltip[0].datasetIndex);
 
