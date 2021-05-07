@@ -33,8 +33,8 @@ function updateBoxAnnotation(element, chart, options) {
   }
 
   if (yScale) {
-    const min = scaleValue(xScale, yMin, top);
-    const max = scaleValue(xScale, yMax, bottom);
+    const min = scaleValue(yScale, yMin, top);
+    const max = scaleValue(yScale, yMax, bottom);
     const reverse = min.value > max.value;
 
     if (min.transitionable) {
