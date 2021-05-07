@@ -1,6 +1,7 @@
 import {defaults, TimeScale} from 'chart.js';
-import {_lookup, callback as call, each, isArray, isNumber, noop, clipArea, unclipArea} from 'chart.js/helpers';
+import {_lookup, callback as call, each, isArray, isFinite, isNumber, noop, clipArea, unclipArea} from 'chart.js/helpers';
 import {resolveOption, startFrameRefreshTimer, stopFrameRefreshTimer} from '../helpers/helpers.streaming';
+import {getElements} from '../plugins/plugin.annotation';
 
 // Ported from Chart.js 2.8.0 35273ee.
 const INTERVALS = {
@@ -110,10 +111,6 @@ function addTick(ticks, time, timestamps) {
   }
 }
 
-function getAxisKey(meta, id) {
-  return id === meta.xAxisID && 'x' || id === meta.yAxisID && 'y';
-}
-
 const datasetPropertyKeys = [
   'pointBackgroundColor',
   'pointBorderColor',
@@ -152,9 +149,9 @@ function refreshData(scale) {
   call(onRefresh, [chart]);
 
   // Remove old data
-  chart.data.datasets.forEach((dataset, datasetIndex) => {
+  each(chart.data.datasets, (dataset, datasetIndex) => {
     const meta = chart.getDatasetMeta(datasetIndex);
-    const axis = getAxisKey(meta, id);
+    const axis = id === meta.xAxisID && 'x' || id === meta.yAxisID && 'y';
 
     if (axis) {
       const controller = meta.controller;
@@ -185,7 +182,7 @@ function refreshData(scale) {
       }
 
       data.splice(start, count);
-      datasetPropertyKeys.forEach(key => {
+      each(datasetPropertyKeys, key => {
         if (isArray(dataset[key])) {
           dataset[key].splice(start, count);
         }
@@ -241,39 +238,23 @@ function startDataRefreshTimer(scale) {
   realtime.refreshInterval = interval;
 }
 
-const transitionKeys = {
-  x: {
-    data: ['x', 'controlPointPreviousX', 'controlPointNextX'],
-    dataset: ['x'],
-    tooltip: ['x', 'caretX']
-  },
-  y: {
-    data: ['y', 'controlPointPreviousY', 'controlPointNextY'],
-    dataset: ['y'],
-    tooltip: ['y', 'caretY']
-  }
-};
+function transition(element, id, translate) {
+  const animations = element.$animations || {};
 
-function transition(element, keys, translate) {
-  const animations = element.$animations;
+  each(element.$streaming, (item, key) => {
+    if (item.axisId === id) {
+      const delta = item.reverse ? -translate : translate;
+      const animation = animations[key];
 
-  for (let i = 0, ilen = keys.length; i < ilen; ++i) {
-    const key = keys[i];
-
-    if (!isNaN(element[key])) {
-      element[key] -= translate;
-    }
-  }
-  if (animations) {
-    for (let i = 0, ilen = keys.length; i < ilen; ++i) {
-      const value = animations[keys[i]];
-
-      if (value) {
-        value._from -= translate;
-        value._to -= translate;
+      if (isFinite(element[key])) {
+        element[key] -= delta;
+      }
+      if (animation) {
+        animation._from -= delta;
+        animation._to -= delta;
       }
     }
-  }
+  });
 }
 
 function scroll(scale) {
@@ -281,50 +262,37 @@ function scroll(scale) {
   const duration = resolveOption(scale, 'duration');
   const delay = resolveOption(scale, 'delay');
   const isHorizontal = scale.isHorizontal();
-  const tooltip = chart.tooltip;
-  const activeTooltip = tooltip._active;
+  const length = isHorizontal ? scale.width : scale.height;
   const now = Date.now();
-  let length, keys, offset;
-
-  if (isHorizontal) {
-    length = scale.width;
-    keys = transitionKeys.x;
-  } else {
-    length = scale.height;
-    keys = transitionKeys.y;
-  }
-  offset = length * (now - realtime.head) / duration;
+  const tooltip = chart.tooltip;
+  const annotations = getElements(chart);
+  let offset = length * (now - realtime.head) / duration;
 
   if (isHorizontal === !!scale.options.reverse) {
     offset = -offset;
   }
 
   // Shift all the elements leftward or downward
+
   each(chart.data.datasets, (dataset, datasetIndex) => {
     const meta = chart.getDatasetMeta(datasetIndex);
+    const {data: elements = [], dataset: element} = meta;
 
-    if (getAxisKey(meta, id)) {
-      const {data, dataset: element} = meta;
-      const elements = data || [];
-
-      for (let i = 0, ilen = elements.length; i < ilen; ++i) {
-        transition(elements[i], keys.data, offset);
-      }
-
-      if (element) {
-        transition(element, keys.dataset, offset);
-      }
+    for (let i = 0, ilen = elements.length; i < ilen; ++i) {
+      transition(elements[i], id, offset);
+    }
+    if (element) {
+      transition(element, id, offset);
     }
   });
 
-  // Shift tooltip leftward or downward
-  if (activeTooltip && activeTooltip[0]) {
-    const meta = chart.getDatasetMeta(activeTooltip[0].datasetIndex);
-
-    if (getAxisKey(meta, id)) {
-      transition(tooltip, keys.tooltip, offset);
-    }
+  // Shift all the annotation elements leftward or downward
+  for (let i = 0, ilen = annotations.length; i < ilen; ++i) {
+    transition(annotations[i], id, offset);
   }
+
+  // Shift tooltip leftward or downward
+  transition(tooltip, id, offset);
 
   scale.max = now - delay;
   scale.min = scale.max - duration;

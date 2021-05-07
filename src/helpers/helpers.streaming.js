@@ -1,4 +1,4 @@
-import {noop, requestAnimFrame, valueOrDefault} from 'chart.js/helpers';
+import {each, noop, isFinite, requestAnimFrame, valueOrDefault} from 'chart.js/helpers';
 
 export function clamp(value, lower, upper) {
   return Math.min(Math.max(value, lower), upper);
@@ -8,6 +8,22 @@ export function resolveOption(scale, key) {
   const realtimeOpts = scale.options.realtime;
   const streamingOpts = scale.chart.options.plugins.streaming;
   return valueOrDefault(realtimeOpts[key], streamingOpts[key]);
+}
+
+export function getAxisMap(element, {x, y}, {xAxisID, yAxisID}) {
+  const axisMap = {};
+
+  each(x, key => {
+    if (isFinite(element[key])) {
+      axisMap[key] = {axisId: xAxisID};
+    }
+  });
+  each(y, key => {
+    if (isFinite(element[key])) {
+      axisMap[key] = {axisId: yAxisID};
+    }
+  });
+  return axisMap;
 }
 
 /**

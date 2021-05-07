@@ -7,35 +7,39 @@ function getState(chart) {
   let state = chartStates.get(chart);
 
   if (!state) {
-    state = {originalScaleLimits: {}};
+    state = {originalScaleOptions: {}};
     chartStates.set(chart, state);
   }
   return state;
 }
 
-function storeOriginalScaleLimits(chart) {
-  const {originalScaleLimits} = getState(chart);
+function removeState(chart) {
+  chartStates.delete(chart);
+}
+
+function storeOriginalScaleOptions(chart) {
+  const {originalScaleOptions} = getState(chart);
   const scales = chart.scales;
 
   each(scales, scale => {
     const id = scale.id;
 
-    if (!originalScaleLimits[id]) {
-      originalScaleLimits[id] = {
+    if (!originalScaleOptions[id]) {
+      originalScaleOptions[id] = {
         duration: resolveOption(scale, 'duration'),
         delay: resolveOption(scale, 'delay')
       };
     }
   });
-  each(originalScaleLimits, (opt, key) => {
+  each(originalScaleOptions, (opt, key) => {
     if (!scales[key]) {
-      delete originalScaleLimits[key];
+      delete originalScaleOptions[key];
     }
   });
-  return originalScaleLimits;
+  return originalScaleOptions;
 }
 
-export function zoomRealTimeScale(scale, zoom, center, limits) {
+function zoomRealTimeScale(scale, zoom, center, limits) {
   const {chart, axis} = scale;
   const {minDuration = 0, maxDuration = Infinity, minDelay = -Infinity, maxDelay = Infinity} = limits && limits[axis] || {};
   const realtimeOpts = scale.options.realtime;
@@ -44,7 +48,7 @@ export function zoomRealTimeScale(scale, zoom, center, limits) {
   const newDuration = clamp(duration * (2 - zoom), minDuration, maxDuration);
   let maxPercent, newDelay;
 
-  storeOriginalScaleLimits(chart);
+  storeOriginalScaleOptions(chart);
 
   if (scale.isHorizontal()) {
     maxPercent = (scale.right - center.x) / (scale.right - scale.left);
@@ -57,26 +61,26 @@ export function zoomRealTimeScale(scale, zoom, center, limits) {
   return newDuration !== scale.max - scale.min;
 }
 
-export function panRealTimeScale(scale, delta, limits) {
+function panRealTimeScale(scale, delta, limits) {
   const {chart, axis} = scale;
   const {minDelay = -Infinity, maxDelay = Infinity} = limits && limits[axis] || {};
   const delay = resolveOption(scale, 'delay');
   const newDelay = delay + (scale.getValueForPixel(delta) - scale.getValueForPixel(0));
 
-  storeOriginalScaleLimits(chart);
+  storeOriginalScaleOptions(chart);
 
   scale.options.realtime.delay = clamp(newDelay, minDelay, maxDelay);
   return true;
 }
 
-export function resetRealTimeOptions(chart) {
-  const originalScaleLimits = storeOriginalScaleLimits(chart);
+function resetRealTimeScaleOptions(chart) {
+  const originalScaleOptions = storeOriginalScaleOptions(chart);
 
   each(chart.scales, scale => {
     const realtimeOptions = scale.options.realtime;
 
     if (realtimeOptions) {
-      const original = originalScaleLimits[scale.id];
+      const original = originalScaleOptions[scale.id];
 
       if (original) {
         realtimeOptions.duration = original.duration;
@@ -87,4 +91,29 @@ export function resetRealTimeOptions(chart) {
       }
     }
   });
+}
+
+function initZoomPlugin(plugin) {
+  plugin.zoomFunctions.realtime = zoomRealTimeScale;
+  plugin.panFunctions.realtime = panRealTimeScale;
+}
+
+export function attachChart(plugin, chart) {
+  if (chart.streaming.zoomPlugin !== plugin) {
+    const resetZoom = chart.streaming.resetZoom = chart.resetZoom;
+
+    initZoomPlugin(plugin);
+    chart.resetZoom = transition => {
+      resetRealTimeScaleOptions(chart);
+      resetZoom(transition);
+    };
+    chart.streaming.zoomPlugin = plugin;
+  }
+}
+
+export function detachChart(chart) {
+  chart.resetZoom = chart.streaming.resetZoom;
+  removeState(chart);
+  delete chart.streaming.resetZoom;
+  delete chart.streaming.zoomPlugin;
 }
