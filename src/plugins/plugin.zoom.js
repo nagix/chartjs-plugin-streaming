@@ -99,21 +99,27 @@ function initZoomPlugin(plugin) {
 }
 
 export function attachChart(plugin, chart) {
-  if (chart.streaming.zoomPlugin !== plugin) {
-    const resetZoom = chart.streaming.resetZoom = chart.resetZoom;
+  const streaming = chart.streaming;
+
+  if (streaming.zoomPlugin !== plugin) {
+    const resetZoom = streaming.resetZoom = chart.resetZoom;
 
     initZoomPlugin(plugin);
     chart.resetZoom = transition => {
       resetRealTimeScaleOptions(chart);
       resetZoom(transition);
     };
-    chart.streaming.zoomPlugin = plugin;
+    streaming.zoomPlugin = plugin;
   }
 }
 
 export function detachChart(chart) {
-  chart.resetZoom = chart.streaming.resetZoom;
-  removeState(chart);
-  delete chart.streaming.resetZoom;
-  delete chart.streaming.zoomPlugin;
+  const streaming = chart.streaming;
+
+  if (streaming.zoomPlugin) {
+    chart.resetZoom = streaming.resetZoom;
+    removeState(chart);
+    delete streaming.resetZoom;
+    delete streaming.zoomPlugin;
+  }
 }

@@ -162,11 +162,13 @@ function initAnnotationPlugin() {
 }
 
 export function attachChart(plugin, chart) {
-  if (chart.streaming.annotationPlugin !== plugin) {
+  const streaming = chart.streaming;
+
+  if (streaming.annotationPlugin !== plugin) {
     const afterUpdate = plugin.afterUpdate;
 
     initAnnotationPlugin();
-    chart.streaming.annotationPlugin = plugin;
+    streaming.annotationPlugin = plugin;
     plugin.afterUpdate = (_chart, args, options) => {
       const mode = args.mode;
       const animationOpts = options.animation;
