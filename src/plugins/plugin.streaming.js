@@ -2,6 +2,8 @@
 
 import Chart from 'chart.js';
 import streamingHelpers from '../helpers/helpers.streaming';
+import AnnotationPlugin from '../plugins/plugin.annotation';
+import ZoomPlugin from '../plugins/plugin.zoom';
 import RealTimeScale from '../scales/scale.realtime';
 
 var helpers = Chart.helpers;
@@ -17,6 +19,49 @@ Chart.defaults.global.plugins.streaming = {
 	ttl: undefined
 };
 
+// Ported from Chart.js 2.9.4 d6a5ea0. Modified for realtime scale.
+Chart.defaults.global.legend.onClick = function(e, legendItem) {
+	var index = legendItem.datasetIndex;
+	var ci = this.chart;
+	var meta = ci.getDatasetMeta(index);
+
+	meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+	ci.update({duration: 0});
+};
+
+function getAxisMap(element, keys, meta) {
+	var axisMap = {};
+
+	helpers.each(keys.x, function(key) {
+		axisMap[key] = {axisId: meta.xAxisID};
+	});
+	helpers.each(keys.y, function(key) {
+		axisMap[key] = {axisId: meta.yAxisID};
+	});
+	return axisMap;
+}
+
+var transitionKeys = {
+	x: ['x', 'controlPointPreviousX', 'controlPointNextX', 'caretX'],
+	y: ['y', 'controlPointPreviousY', 'controlPointNextY', 'caretY']
+};
+
+function updateElements(chart) {
+	helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
+		var meta = chart.getDatasetMeta(datasetIndex);
+		var elements = meta.data || [];
+		var element = meta.dataset;
+		var i, ilen;
+
+		for (i = 0, ilen = elements.length; i < ilen; ++i) {
+			elements[i]._streaming = getAxisMap(elements[i], transitionKeys, meta);
+		}
+		if (element) {
+			element._streaming = getAxisMap(element, transitionKeys, meta);
+		}
+	});
+}
+
 /**
  * Update the chart keeping the current animation but suppressing a new one
  * @param {object} config - animation options
@@ -24,13 +69,20 @@ Chart.defaults.global.plugins.streaming = {
 function update(config) {
 	var me = this;
 	var preservation = config && config.preservation;
-	var tooltip, lastActive, tooltipLastActive, lastMouseEvent;
+	var tooltip, lastActive, tooltipLastActive, lastMouseEvent, legend, legendUpdate;
 
 	if (preservation) {
 		tooltip = me.tooltip;
 		lastActive = me.lastActive;
 		tooltipLastActive = tooltip._lastActive;
 		me._bufferedRender = true;
+		legend = me.legend;
+
+		// Skip legend update
+		if (legend) {
+			legendUpdate = legend.update;
+			legend.update = helpers.noop;
+		}
 	}
 
 	Chart.prototype.update.apply(me, arguments);
@@ -40,6 +92,10 @@ function update(config) {
 		me._bufferedRequest = null;
 		me.lastActive = lastActive;
 		tooltip._lastActive = tooltipLastActive;
+
+		if (legend) {
+			legend.update = legendUpdate;
+		}
 
 		if (me.animating) {
 			// If the chart is animating, keep it until the duration is over
@@ -66,6 +122,21 @@ function update(config) {
 			me.eventHandler(lastMouseEvent);
 		}
 	}
+}
+
+function tooltipUpdate() {
+	var me = this;
+	var element = me._active && me._active[0];
+	var meta;
+
+	if (element) {
+		meta = me._chart.getDatasetMeta(element._datasetIndex);
+		me._streaming = getAxisMap(me, transitionKeys, meta);
+	} else {
+		me._streaming = {};
+	}
+
+	return Chart.Tooltip.prototype.update.apply(me, arguments);
 }
 
 // Draw chart at frameRate
@@ -112,10 +183,7 @@ export default {
 
 	afterInit: function(chart) {
 		chart.update = update;
-
-		if (chart.resetZoom) {
-			Chart.Zoom.updateResetZoom(chart);
-		}
+		chart.tooltip.update = tooltipUpdate;
 	},
 
 	beforeUpdate: function(chart) {
@@ -123,24 +191,39 @@ export default {
 		var scalesOpts = chartOpts.scales;
 
 		if (scalesOpts) {
-			scalesOpts.xAxes.concat(scalesOpts.yAxes).forEach(function(scaleOpts) {
+			helpers.each(scalesOpts.xAxes.concat(scalesOpts.yAxes), function(scaleOpts) {
 				if (scaleOpts.type === 'realtime' || scaleOpts.type === 'time') {
 					// Allow Bézier control to be outside the chart
 					chartOpts.elements.line.capBezierPoints = false;
 				}
 			});
 		}
+
+		if (chart.annotation) {
+			AnnotationPlugin.attachChart(chart);
+		} else {
+			AnnotationPlugin.detachChart(chart);
+		}
+
+		if (chart.resetZoom) {
+			ZoomPlugin.attachChart(chart);
+		} else {
+			ZoomPlugin.detachChart(chart);
+		}
+
 		return true;
 	},
 
-	afterUpdate: function(chart, options) {
+	afterUpdate: function(chart) {
 		var streaming = chart.streaming;
 		var pause = true;
+
+		updateElements(chart);
 
 		// if all scales are paused, stop refreshing frames
 		helpers.each(chart.scales, function(scale) {
 			if (scale instanceof RealTimeScale) {
-				pause &= helpers.valueOrDefault(scale.options.realtime.pause, options.pause);
+				pause &= streamingHelpers.resolveOption(scale, 'pause');
 			}
 		});
 		if (pause) {
@@ -196,6 +279,9 @@ export default {
 		var mouseEventListener = streaming.mouseEventListener;
 
 		streamingHelpers.stopFrameRefreshTimer(streaming);
+
+		delete chart.update;
+		delete chart.tooltip.update;
 
 		canvas.removeEventListener('mousedown', mouseEventListener);
 		canvas.removeEventListener('mouseup', mouseEventListener);

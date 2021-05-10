@@ -1,6 +1,7 @@
 'use strict';
 
 import Chart from 'chart.js';
+import streamingHelpers from '../helpers/helpers.streaming';
 
 var helpers = Chart.helpers;
 
@@ -37,9 +38,8 @@ function rangeMinLimiter(zoomPanOptions, newMin) {
 
 function zoomRealTimeScale(scale, zoom, center, zoomOptions) {
 	var realtimeOpts = scale.options.realtime;
-	var streamingOpts = scale.chart.options.plugins.streaming;
-	var duration = helpers.valueOrDefault(realtimeOpts.duration, streamingOpts.duration);
-	var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
+	var duration = streamingHelpers.resolveOption(scale, 'duration');
+	var delay = streamingHelpers.resolveOption(scale, 'delay');
 	var newDuration = duration * (2 - zoom);
 	var maxPercent, limitedDuration;
 
@@ -59,8 +59,7 @@ function zoomRealTimeScale(scale, zoom, center, zoomOptions) {
 
 function panRealTimeScale(scale, delta, panOptions) {
 	var realtimeOpts = scale.options.realtime;
-	var streamingOpts = scale.chart.options.plugins.streaming;
-	var delay = helpers.valueOrDefault(realtimeOpts.delay, streamingOpts.delay);
+	var delay = streamingHelpers.resolveOption(scale, 'delay');
 	var newDelay = delay + (scale.getValueForPixel(delta) - scale.getValueForPixel(0));
 
 	if (delta > 0) {
@@ -69,9 +68,6 @@ function panRealTimeScale(scale, delta, panOptions) {
 		realtimeOpts.delay = rangeMinLimiter(panOptions, newDelay);
 	}
 }
-
-zoomNS.zoomFunctions.realtime = zoomRealTimeScale;
-zoomNS.panFunctions.realtime = panRealTimeScale;
 
 function updateResetZoom(chart) {
 	// For chartjs-plugin-zoom 0.6.6 backward compatibility
@@ -107,10 +103,30 @@ function updateResetZoom(chart) {
 	};
 }
 
-zoomNS.updateResetZoom = updateResetZoom;
+function initZoomPlugin() {
+	zoomNS.zoomFunctions.realtime = zoomRealTimeScale;
+	zoomNS.panFunctions.realtime = panRealTimeScale;
+}
 
-export {
-	zoomRealTimeScale,
-	panRealTimeScale,
-	updateResetZoom
+export default {
+	attachChart(chart) {
+		var streaming = chart.streaming;
+
+		if (!streaming.zoomPlugin) {
+			initZoomPlugin();
+			streaming.resetZoom = chart.resetZoom;
+			updateResetZoom(chart);
+			streaming.zoomPlugin = true;
+		}
+	},
+
+	detachChart(chart) {
+		var streaming = chart.streaming;
+
+		if (streaming.zoomPlugin) {
+			chart.resetZoom = streaming.resetZoom;
+			delete streaming.resetZoom;
+			delete streaming.zoomPlugin;
+		}
+	}
 };

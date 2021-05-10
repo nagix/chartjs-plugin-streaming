@@ -3,6 +3,7 @@
 import Chart from 'chart.js';
 import moment from 'moment';
 import streamingHelpers from '../helpers/helpers.streaming';
+import AnnotationPlugin from '../plugins/plugin.annotation';
 
 var helpers = Chart.helpers;
 var canvasHelpers = helpers.canvas;
@@ -256,12 +257,6 @@ function generate(scale, min, max, capacity) {
 	return ticks;
 }
 
-function resolveOption(scale, key) {
-	var realtimeOpts = scale.options.realtime;
-	var streamingOpts = scale.chart.options.plugins.streaming;
-	return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
-}
-
 var datasetPropertyKeys = [
 	'pointBackgroundColor',
 	'pointBorderColor',
@@ -290,11 +285,11 @@ var datasetPropertyKeys = [
 function refreshData(scale) {
 	var chart = scale.chart;
 	var id = scale.id;
-	var duration = resolveOption(scale, 'duration');
-	var delay = resolveOption(scale, 'delay');
-	var ttl = resolveOption(scale, 'ttl');
-	var pause = resolveOption(scale, 'pause');
-	var onRefresh = resolveOption(scale, 'onRefresh');
+	var duration = streamingHelpers.resolveOption(scale, 'duration');
+	var delay = streamingHelpers.resolveOption(scale, 'delay');
+	var ttl = streamingHelpers.resolveOption(scale, 'ttl');
+	var pause = streamingHelpers.resolveOption(scale, 'pause');
+	var onRefresh = streamingHelpers.resolveOption(scale, 'onRefresh');
 	var max = scale.max;
 	var min = Date.now() - (isNaN(ttl) ? duration + delay : ttl);
 	var meta, data, length, i, start, count, removalRange;
@@ -304,7 +299,7 @@ function refreshData(scale) {
 	}
 
 	// Remove old data
-	chart.data.datasets.forEach(function(dataset, datasetIndex) {
+	helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
 		meta = chart.getDatasetMeta(datasetIndex);
 		if (id === meta.xAxisID || id === meta.yAxisID) {
 			data = dataset.data;
@@ -334,7 +329,7 @@ function refreshData(scale) {
 			}
 
 			data.splice(start, count);
-			datasetPropertyKeys.forEach(function(key) {
+			helpers.each(datasetPropertyKeys, function(key) {
 				if (helpers.isArray(dataset[key])) {
 					dataset[key].splice(start, count);
 				}
@@ -374,10 +369,10 @@ function stopDataRefreshTimer(scale) {
 
 function startDataRefreshTimer(scale) {
 	var realtime = scale.realtime;
-	var interval = resolveOption(scale, 'refresh');
+	var interval = streamingHelpers.resolveOption(scale, 'refresh');
 
 	realtime.refreshTimerID = setInterval(function() {
-		var newInterval = resolveOption(scale, 'refresh');
+		var newInterval = streamingHelpers.resolveOption(scale, 'refresh');
 
 		refreshData(scale);
 		if (realtime.refreshInterval !== newInterval && !isNaN(newInterval)) {
@@ -388,60 +383,43 @@ function startDataRefreshTimer(scale) {
 	realtime.refreshInterval = interval;
 }
 
-var transitionKeys = {
-	x: {
-		data: ['x', 'controlPointPreviousX', 'controlPointNextX'],
-		dataset: ['x'],
-		tooltip: ['x', 'caretX']
-	},
-	y: {
-		data: ['y', 'controlPointPreviousY', 'controlPointNextY'],
-		dataset: ['y'],
-		tooltip: ['y', 'caretY']
-	}
-};
-
-function transition(element, keys, translate) {
+function transition(element, id, translate) {
 	var start = element._start || {};
 	var view = element._view || {};
 	var model = element._model || {};
-	var i, ilen;
 
-	for (i = 0, ilen = keys.length; i < ilen; ++i) {
-		var key = keys[i];
-		if (start.hasOwnProperty(key)) {
-			start[key] -= translate;
+	helpers.each(element._streaming, (item, key) => {
+		if (item.axisId === id) {
+			if (start.hasOwnProperty(key)) {
+				start[key] -= translate;
+			}
+			if (view.hasOwnProperty(key) && view !== start) {
+				view[key] -= translate;
+			}
+			if (model.hasOwnProperty(key) && model !== view) {
+				model[key] -= translate;
+			}
 		}
-		if (view.hasOwnProperty(key) && view !== start) {
-			view[key] -= translate;
-		}
-		if (model.hasOwnProperty(key) && model !== view) {
-			model[key] -= translate;
-		}
-	}
+	});
 }
 
 function scroll(scale) {
 	var chart = scale.chart;
 	var realtime = scale.realtime;
-	var duration = resolveOption(scale, 'duration');
-	var delay = resolveOption(scale, 'delay');
-	var isHorizontal = scale.isHorizontal();
-	var reverse = scale.options.ticks.reverse || !(isHorizontal || '_reversePixels' in scale);
 	var id = scale.id;
-	var tooltip = chart.tooltip;
-	var activeTooltip = tooltip._active;
+	var duration = streamingHelpers.resolveOption(scale, 'duration');
+	var delay = streamingHelpers.resolveOption(scale, 'delay');
+	var isHorizontal = scale.isHorizontal();
+	var length = isHorizontal ? scale.width : scale.height;
 	var now = Date.now();
-	var length, keys, offset, meta, elements, i, ilen;
 
-	if (isHorizontal) {
-		length = scale.width;
-		keys = transitionKeys.x;
-	} else {
-		length = scale.height;
-		keys = transitionKeys.y;
-	}
-	offset = length * (now - realtime.head) / duration;
+	// For Chart.js 2.8.x backward compatibility
+	var reverse = scale.options.ticks.reverse || !(isHorizontal || '_reversePixels' in scale);
+
+	var tooltip = chart.tooltip;
+	var annotations = AnnotationPlugin.getElements(chart);
+	var offset = length * (now - realtime.head) / duration;
+	var i, ilen;
 
 	if (isHorizontal === reverse) {
 		offset = -offset;
@@ -449,27 +427,25 @@ function scroll(scale) {
 
 	// Shift all the elements leftward or downward
 	helpers.each(chart.data.datasets, function(dataset, datasetIndex) {
-		meta = chart.getDatasetMeta(datasetIndex);
-		if (id === meta.xAxisID || id === meta.yAxisID) {
-			elements = meta.data || [];
+		var meta = chart.getDatasetMeta(datasetIndex);
+		var elements = meta.data || [];
+		var element = meta.dataset;
 
-			for (i = 0, ilen = elements.length; i < ilen; ++i) {
-				transition(elements[i], keys.data, offset);
-			}
-
-			if (meta.dataset) {
-				transition(meta.dataset, keys.dataset, offset);
-			}
+		for (i = 0, ilen = elements.length; i < ilen; ++i) {
+			transition(elements[i], id, offset);
+		}
+		if (element) {
+			transition(element, id, offset);
 		}
 	});
 
-	// Shift tooltip leftward or downward
-	if (activeTooltip && activeTooltip[0]) {
-		meta = chart.getDatasetMeta(activeTooltip[0]._datasetIndex);
-		if (id === meta.xAxisID || id === meta.yAxisID) {
-			transition(tooltip, keys.tooltip, offset);
-		}
+	// Shift all the annotation elements leftward or downward
+	for (i = 0, ilen = annotations.length; i < ilen; ++i) {
+		transition(annotations[i], id, offset);
 	}
+
+	// Shift tooltip leftward or downward
+	transition(tooltip, id, offset);
 
 	scale.max = scale._table[1].time = now - delay;
 	scale.min = scale._table[0].time = scale.max - duration;
@@ -550,7 +526,7 @@ var RealTimeScale = TimeScale.extend({
 			return TimeScale.prototype.update.apply(me, arguments);
 		}
 
-		if (resolveOption(me, 'pause')) {
+		if (streamingHelpers.resolveOption(me, 'pause')) {
 			streamingHelpers.stopFrameRefreshTimer(realtime);
 		} else {
 			streamingHelpers.startFrameRefreshTimer(realtime, function() {
@@ -591,9 +567,9 @@ var RealTimeScale = TimeScale.extend({
 			return TimeScale.prototype.buildTicks.apply(me, arguments);
 		}
 
-		var duration = resolveOption(me, 'duration');
-		var delay = resolveOption(me, 'delay');
-		var refresh = resolveOption(me, 'refresh');
+		var duration = streamingHelpers.resolveOption(me, 'duration');
+		var delay = streamingHelpers.resolveOption(me, 'delay');
+		var refresh = streamingHelpers.resolveOption(me, 'refresh');
 		var ticksOpts = options.ticks;
 		var source = ticksOpts.source;
 		var timestamps = me._timestamps.data;

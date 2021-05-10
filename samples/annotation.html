@@ -52,6 +52,7 @@
 		}
 
 		function onRefresh(chart) {
+			var box = chart.options.annotation.annotations[1];
 			var now = Date.now();
 			chart.data.datasets.forEach(function(dataset) {
 				dataset.data.push({
@@ -59,6 +60,13 @@
 					y: randomScalingFactor()
 				});
 			});
+			if (!(box.xMax >= now - 22000)) {
+				box.xMin = now - 2000;
+				box.xMax = now + 8000;
+				box.yMin = randomScalingFactor();
+				box.yMax = randomScalingFactor();
+				chart.update({duration: 0});
+			}
 		}
 
 		var color = Chart.helpers.color;
@@ -136,9 +144,10 @@
 						{
 							drawTime: 'beforeDatasetsDraw',
 							type: 'box',
+							xScaleID: 'x-axis-0',
 							yScaleID: 'y-axis-0',
-							yMin: randomScalingFactor(),
-							yMax: randomScalingFactor(),
+							xMin: 0,
+							xMax: 0,
 							backgroundColor: color(chartColors.purple).alpha(0.25).rgbString(),
 							borderColor: chartColors.purple,
 							borderWidth: 1,

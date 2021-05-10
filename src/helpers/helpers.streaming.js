@@ -19,6 +19,12 @@ var cancelAnimFrame = (function() {
 
 export default {
 
+	resolveOption(scale, key) {
+		var realtimeOpts = scale.options.realtime;
+		var streamingOpts = scale.chart.options.plugins.streaming;
+		return helpers.valueOrDefault(realtimeOpts[key], streamingOpts[key]);
+	},
+
 	startFrameRefreshTimer: function(context, func) {
 		if (!context.frameRequestID) {
 			var frameRefresh = function() {
