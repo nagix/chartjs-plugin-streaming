@@ -6,7 +6,7 @@
 
 The latest version of chartjs-plugin-streaming requires Chart.js 3.0.0 or later. If you need Chart.js 2.x support, use the following versions.
 
-- For Chart.js 2.8.x or 2.7.x, use [version 1.8.0](https://github.com/nagix/chartjs-plugin-streaming/releases/tag/v1.8.0)
+- For Chart.js 2.9.x, 2.8.x or 2.7.x, use [version 1.9.0](https://github.com/nagix/chartjs-plugin-streaming/releases/tag/v1.9.0)
 - For Chart.js 2.6.x, use [version 1.2.0](https://github.com/nagix/chartjs-plugin-streaming/releases/tag/v1.2.0)
 
 ## Installation
