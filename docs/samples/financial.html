@@ -3,14 +3,14 @@
 
 <head>
 	<title>chartjs-plugin-streaming sample</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	<script src="https://www.chartjs.org/chartjs-chart-financial/chartjs-chart-financial.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+	<script src="https://cdn.jsdelivr.net/gh/chartjs/chartjs-chart-financial@f0c37e1dc24923a02c7793df8a292921db4b46cb/docs/chartjs-chart-financial.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.9.0"></script>
 	<style>
 		canvas {
 			-moz-user-select: none;
@@ -46,12 +46,12 @@
 
 	t -= t % 5000;
 	if (data.length === 0) {
-		data.push({ t: t - 5000, o: 99, h: 101, l: 98, c: 100 });
+		data.push({x: t - 5000, o: 99, h: 101, l: 98, c: 100});
 	}
 	last = data[data.length - 1];
-	if (t != last.t) {
+	if (t !== last.x) {
 		var c = last.c;
-		last = { t: t, o: c, h: c, l: c, c: c };
+		last = {x: t, o: c, h: c, l: c, c: c};
 		data.push(last);
 	}
 	last.c += Math.random() - 0.5;
@@ -103,10 +103,10 @@ window.onload = function() {
 			</div>
 			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
 				<pre class="prettyprint lang-html p-3 bg-light">&lt;head&gt;
-	&lt;script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"&gt;&lt;/script&gt;
-	&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"&gt;&lt;/script&gt;
-	&lt;script src="https://www.chartjs.org/chartjs-chart-financial/chartjs-chart-financial.js"&gt;&lt;/script&gt;
-	&lt;script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/gh/chartjs/chartjs-chart-financial@f0c37e1dc24923a02c7793df8a292921db4b46cb/docs/chartjs-chart-financial.js"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.9.0"&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 	&lt;div&gt;
@@ -125,12 +125,12 @@ window.onload = function() {
 
 			t -= t % 5000;
 			if (data.length === 0) {
-				data.push({ t: t - 5000, o: 99, h: 101, l: 98, c: 100 });
+				data.push({x: t - 5000, o: 99, h: 101, l: 98, c: 100});
 			}
 			last = data[data.length - 1];
-			if (t != last.t) {
+			if (t !== last.x) {
 				var c = last.c;
-				last = { t: t, o: c, h: c, l: c, c: c };
+				last = {x: t, o: c, h: c, l: c, c: c};
 				data.push(last);
 			}
 			last.c += Math.random() - 0.5;

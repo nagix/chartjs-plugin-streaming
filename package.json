@@ -3,7 +3,7 @@
   "homepage": "https://nagix.github.io/chartjs-plugin-streaming",
   "description": "Chart.js plugin for live streaming data",
   "author": "Akihiko Kusanagi <nagi@nagi-p.com> (https://nagix.github.io/)",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "license": "MIT",
   "jsdelivr": "dist/chartjs-plugin-streaming.min.js",
   "unpkg": "dist/chartjs-plugin-streaming.min.js",

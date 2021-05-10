@@ -4,7 +4,7 @@
 
 *[Chart.js](https://www.chartjs.org) plugin for live streaming data*
 
-Version 1.2 or earlier requires Chart.js 2.6.x. Version 1.3 or later requires Chart.js 2.7.x. Version 1.8 requires Chart.js 2.7.x or 2.8.x.
+Version 1.9 requires Chart.js 2.7.x, 2.8.x or 2.9.x. If you need Chart.js 2.6.x support, use [version 1.2.0](https://github.com/nagix/chartjs-plugin-streaming/releases/tag/v1.2.0).
 
 ## Installation
 
@@ -35,9 +35,9 @@ To use CDN:
 
 chartjs-plugin-streaming can be used with ES6 modules, plain JavaScript and module loaders.
 
-chartjs-plugin-streaming requires [Moment.js](https://momentjs.com/) and [Chart.js](https://www.chartjs.org). If you are using Chart.js 2.8.0 or later, Moment.js can be replaced with [other date libraries and corresponding adapters](https://github.com/chartjs/awesome#adapters).
+chartjs-plugin-streaming requires [Moment.js](https://momentjs.com/) and [Chart.js](https://www.chartjs.org). If you are using Chart.js 2.8.0 or later, [other date libraries and corresponding adapters](https://github.com/chartjs/awesome#adapters) can be used. Note that Moment.js is still required, though.
 
-Version 1.8 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](https://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](https://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) as well as the [bubble](https://www.chartjs.org/docs/latest/charts/bubble.html) and [scatter](https://www.chartjs.org/docs/latest/charts/scatter.html) chart types with Point data. In case of Point data, either x or y must be in any of the date formats that the data library accepts ([date formats](https://momentjs.com/docs/#/parsing/) in case of Moment.js), and the corresponding axis must have a 'realtime' scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted after the time specified by the `ttl` option, or as it disappears off the chart.
+Version 1.9 supports the [line](https://www.chartjs.org/docs/latest/charts/line.html) and [bar](https://www.chartjs.org/docs/latest/charts/bar.html) chart types with both [Number data](https://www.chartjs.org/docs/latest/charts/line.html#number) and [Point data](https://www.chartjs.org/docs/latest/charts/line.html#point) (each data point is specified an array of objects containing x and y properties) as well as the [bubble](https://www.chartjs.org/docs/latest/charts/bubble.html) and [scatter](https://www.chartjs.org/docs/latest/charts/scatter.html) chart types with Point data. In case of Point data, either x or y must be in any of the date formats that the data library accepts ([date formats](https://momentjs.com/docs/#/parsing/) in case of Moment.js), and the corresponding axis must have a 'realtime' scale that has the same options as [time](https://www.chartjs.org/docs/latest/axes/cartesian/time.html) scale. Once the realtime scale is specified, the chart will auto-scroll along with that axis. Old data will be automatically deleted after the time specified by the `ttl` option, or as it disappears off the chart.
 
 ### Usage in ES6 as module
 

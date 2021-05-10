@@ -13,9 +13,9 @@
     <meta property="og:site_name" content="chartjs-plugin-streaming" />
     <meta name="twitter:site" content="@nagix" />
     <meta name="theme-color" content="#ffffff">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.8.0"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.9.0"></script>
   </head>
   <body>
     <section id="hero-spot" class="hero-spot">
@@ -367,7 +367,7 @@
 
         <li>
           <h4>モジュールをインストールする</h4>
-          <p><a href="http://jerairrest.github.io/react-chartjs-2/">react-chartjs-2</a> および <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> をプロジェクトにインストールします。</p>
+          <p><a href="http://reactchartjs.github.io/react-chartjs-2/">react-chartjs-2</a> および <a href="https://nagix.github.io/chartjs-plugin-streaming/">chartjs-plugin-streaming</a> をプロジェクトにインストールします。</p>
           <div class="terminal">
             <div class="header"></div>
             <div class="shell">
@@ -417,7 +417,7 @@
 
        <li>
           <h4>データを流し込む</h4>
-          <p>コールバック関数でデータを追加し、様々なチャートオプションを指定することができます。<br />ブラウザは自動更新され、ストリーミングチャートが表示されます。<br />カスタマイズのオプションについては Chart.js の<a href="https://www.chartjs.org/docs">ドキュメント</a>や<a href="https://www.chartjs.org/samples">サンプル</a>、<br />react-chartjs-2 の<a href="https://github.com/jerairrest/react-chartjs-2">ドキュメント</a>をご覧ください。</p>
+          <p>コールバック関数でデータを追加し、様々なチャートオプションを指定することができます。<br />ブラウザは自動更新され、ストリーミングチャートが表示されます。<br />カスタマイズのオプションについては Chart.js の<a href="https://www.chartjs.org/docs">ドキュメント</a>や<a href="https://www.chartjs.org/samples">サンプル</a>、<br />react-chartjs-2 の<a href="https://github.com/reactchartjs/react-chartjs-2">ドキュメント</a>をご覧ください。</p>
           <div class="terminal">
             <div class="header">src/App.js (一部)</div>
             <div class="shell">
@@ -626,34 +626,34 @@
       var ctx1 = document.getElementById('chart1').getContext('2d');
       var chart1 = new Chart(ctx1, {
         type: 'line',
-        data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{ type: 'realtime' }] } }
+        data: {datasets: [{data: []}, {data: []}]},
+        options: {scales: {xAxes: [{type: 'realtime'}]}}
       });
 
       var ctx2 = document.getElementById('chart2').getContext('2d');
       var chart2 = new Chart(ctx2, {
         type: 'line',
-        data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{
+        data: {datasets: [{data: []}, {data: []}]},
+        options: {scales: {xAxes: [{
           type: 'realtime',
-          realtime: { onRefresh: onRefresh }
-        }] } }
+          realtime: {onRefresh: onRefresh}
+        }]}}
       });
 
       var ctx3 = document.getElementById('chart3').getContext('2d');
       var chart3 = new Chart(ctx3, {
         type: 'line',
-        data: { datasets: [{ data: [] }, { data: [] }] },
-        options: { scales: { xAxes: [{
+        data: {datasets: [{data: []}, {data: []}]},
+        options: {scales: {xAxes: [{
           type: 'realtime',
-          realtime: { onRefresh: onRefresh, delay: 2000 }
-        }] } }
+          realtime: {onRefresh: onRefresh, delay: 2000}
+        }]}}
       });
 
       var ctx4 = document.getElementById('chart4').getContext('2d');
       var chart4 = new Chart(ctx4, {
         type: 'line',
-        data: { datasets: [{
+        data: {datasets: [{
           data: [],
           label: 'Dataset 1',
           borderColor: 'rgb(255, 99, 132)',
@@ -665,11 +665,11 @@
           label: 'Dataset 2',
           borderColor: 'rgb(54, 162, 235)',
           backgroundColor: 'rgba(54, 162, 235, 0.5)'
-        }] },
-        options: { scales: { xAxes: [{
+        }]},
+        options:{scales: {xAxes: [{
           type: 'realtime',
-          realtime: { onRefresh: onRefresh, delay: 2000 }
-        }] } }
+          realtime: {onRefresh: onRefresh, delay: 2000}
+        }]}}
       });
     </script>
     <script src="/js/jquery.js"></script>
@@ -684,7 +684,7 @@
         <img src="/favicon-32x32-glay.png" style="position: absolute; top: 34px; left: 50%; margin-left: -16px;">
       </a>
       <ul class="site-footer-links">
-        <li>&copy; 2019 Akihiko Kusanagi</li>
+        <li>&copy; 2017-2021 Akihiko Kusanagi</li>
       </ul>
     </footer>
     <script>
