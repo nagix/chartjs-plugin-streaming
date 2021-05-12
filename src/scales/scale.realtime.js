@@ -208,7 +208,7 @@ function refreshData(scale) {
 }
 
 function stopDataRefreshTimer(scale) {
-  const realtime = scale.realtime;
+  const realtime = scale.$realtime;
   const refreshTimerID = realtime.refreshTimerID;
 
   if (refreshTimerID) {
@@ -219,7 +219,7 @@ function stopDataRefreshTimer(scale) {
 }
 
 function startDataRefreshTimer(scale) {
-  const realtime = scale.realtime;
+  const realtime = scale.$realtime;
   const interval = resolveOption(scale, 'refresh');
 
   if (realtime.refreshTimerID) {
@@ -258,7 +258,7 @@ function transition(element, id, translate) {
 }
 
 function scroll(scale) {
-  const {chart, id, realtime} = scale;
+  const {chart, id, $realtime: realtime} = scale;
   const duration = resolveOption(scale, 'duration');
   const delay = resolveOption(scale, 'delay');
   const isHorizontal = scale.isHorizontal();
@@ -304,7 +304,7 @@ export default class RealTimeScale extends TimeScale {
 
   constructor(props) {
     super(props);
-    this.realtime = this.realtime || {};
+    this.$realtime = this.$realtime || {};
   }
 
   init(scaleOpts, opts) {
@@ -314,7 +314,7 @@ export default class RealTimeScale extends TimeScale {
 
   update(maxWidth, maxHeight, margins) {
     const me = this;
-    const {realtime, options} = me;
+    const {$realtime: realtime, options} = me;
     const {bounds, offset, ticks: ticksOpts} = options;
     const {autoSkip, source, major: majorTicksOpts} = ticksOpts;
     const majorEnabled = majorTicksOpts.enabled;
@@ -347,7 +347,7 @@ export default class RealTimeScale extends TimeScale {
     const me = this;
     const duration = resolveOption(me, 'duration');
     const delay = resolveOption(me, 'delay');
-    const max = me.realtime.head - delay;
+    const max = me.$realtime.head - delay;
     const min = max - duration;
     const maxArray = [1e15, max];
     const minArray = [-1e15, min];
@@ -421,7 +421,7 @@ export default class RealTimeScale extends TimeScale {
   destroy() {
     const me = this;
 
-    stopFrameRefreshTimer(me.realtime);
+    stopFrameRefreshTimer(me.$realtime);
     stopDataRefreshTimer(me);
   }
 
@@ -431,7 +431,7 @@ export default class RealTimeScale extends TimeScale {
     const duration = resolveOption(me, 'duration');
     const delay = resolveOption(me, 'delay');
     const refresh = resolveOption(me, 'refresh');
-    const max = me.realtime.head - delay;
+    const max = me.$realtime.head - delay;
     const min = max - duration;
     const capacity = me._getLabelCapacity(min);
     const {time: timeOpts, ticks: ticksOpts} = me.options;

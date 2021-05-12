@@ -33,7 +33,7 @@ function updateElements(chart) {
 
 // Draw chart at frameRate
 function drawChart(chart) {
-  const streaming = chart.streaming;
+  const streaming = chart.$streaming;
   const frameRate = chart.options.plugins.streaming.frameRate;
   const frameDuration = 1000 / (Math.max(frameRate, 0) || 30);
   const next = streaming.lastDrawn + frameDuration || 0;
@@ -59,7 +59,7 @@ export default {
   version,
 
   beforeInit(chart) {
-    const streaming = chart.streaming = chart.streaming || {};
+    const streaming = chart.$streaming = chart.$streaming || {};
     const canvas = streaming.canvas = chart.canvas;
     const mouseEventListener = streaming.mouseEventListener = event => {
       const pos = getRelativePosition(event, chart);
@@ -129,7 +129,7 @@ export default {
   },
 
   afterUpdate(chart) {
-    const {scales, streaming} = chart;
+    const {scales, $streaming: streaming} = chart;
     let pause = true;
 
     updateElements(chart);
@@ -176,7 +176,7 @@ export default {
   },
 
   beforeEvent(chart, args) {
-    const streaming = chart.streaming;
+    const streaming = chart.$streaming;
     const event = args.event;
 
     if (event.type === 'mousemove') {
@@ -190,7 +190,7 @@ export default {
   },
 
   destroy(chart) {
-    const {scales, streaming} = chart;
+    const {scales, $streaming: streaming} = chart;
     const {canvas, mouseEventListener} = streaming;
 
     stopFrameRefreshTimer(streaming);

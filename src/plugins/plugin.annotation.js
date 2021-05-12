@@ -162,7 +162,7 @@ function initAnnotationPlugin() {
 }
 
 export function attachChart(plugin, chart) {
-  const streaming = chart.streaming;
+  const streaming = chart.$streaming;
 
   if (streaming.annotationPlugin !== plugin) {
     const afterUpdate = plugin.afterUpdate;
@@ -185,7 +185,7 @@ export function attachChart(plugin, chart) {
 }
 
 export function getElements(chart) {
-  const plugin = chart.streaming.annotationPlugin;
+  const plugin = chart.$streaming.annotationPlugin;
 
   if (plugin) {
     const state = plugin._getState(chart);
@@ -195,6 +195,6 @@ export function getElements(chart) {
 }
 
 export function detachChart(chart) {
-  delete chart.streaming.annotationPlugin;
+  delete chart.$streaming.annotationPlugin;
 }
 

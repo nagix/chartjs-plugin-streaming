@@ -99,7 +99,7 @@ function initZoomPlugin(plugin) {
 }
 
 export function attachChart(plugin, chart) {
-  const streaming = chart.streaming;
+  const streaming = chart.$streaming;
 
   if (streaming.zoomPlugin !== plugin) {
     const resetZoom = streaming.resetZoom = chart.resetZoom;
@@ -114,7 +114,7 @@ export function attachChart(plugin, chart) {
 }
 
 export function detachChart(chart) {
-  const streaming = chart.streaming;
+  const streaming = chart.$streaming;
 
   if (streaming.zoomPlugin) {
     chart.resetZoom = streaming.resetZoom;
