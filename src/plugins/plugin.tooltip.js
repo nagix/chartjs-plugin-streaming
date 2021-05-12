@@ -2,14 +2,17 @@ import {getAxisMap} from '../helpers/helpers.streaming';
 
 const transitionKeys = {x: ['x', 'caretX'], y: ['y', 'caretY']};
 
-export function updateTooltip(tooltip) {
-  const activeTooltip = tooltip.getActiveElements()[0];
+export function update(...args) {
+  const me = this;
+  const element = me.getActiveElements()[0];
 
-  if (activeTooltip) {
-    const meta = tooltip._chart.getDatasetMeta(activeTooltip.datasetIndex);
+  if (element) {
+    const meta = me._chart.getDatasetMeta(element.datasetIndex);
 
-    tooltip.$streaming = getAxisMap(tooltip, transitionKeys, meta);
+    me.$streaming = getAxisMap(me, transitionKeys, meta);
   } else {
-    tooltip.$streaming = {};
+    me.$streaming = {};
   }
+
+  me.constructor.prototype.update.call(me, ...args);
 }

@@ -1,4 +1,4 @@
-import {each, noop, isFinite, requestAnimFrame, valueOrDefault} from 'chart.js/helpers';
+import {callback as call, each, noop, requestAnimFrame, valueOrDefault} from 'chart.js/helpers';
 
 export function clamp(value, lower, upper) {
   return Math.min(Math.max(value, lower), upper);
@@ -14,14 +14,10 @@ export function getAxisMap(element, {x, y}, {xAxisID, yAxisID}) {
   const axisMap = {};
 
   each(x, key => {
-    if (isFinite(element[key])) {
-      axisMap[key] = {axisId: xAxisID};
-    }
+    axisMap[key] = {axisId: xAxisID};
   });
   each(y, key => {
-    if (isFinite(element[key])) {
-      axisMap[key] = {axisId: yAxisID};
-    }
+    axisMap[key] = {axisId: yAxisID};
   });
   return axisMap;
 }
@@ -29,7 +25,7 @@ export function getAxisMap(element, {x, y}, {xAxisID, yAxisID}) {
 /**
 * Cancel animation polyfill
 */
-export const cancelAnimFrame = (function() {
+const cancelAnimFrame = (function() {
   if (typeof window === 'undefined') {
     return noop;
   }
@@ -38,11 +34,20 @@ export const cancelAnimFrame = (function() {
 
 export function startFrameRefreshTimer(context, func) {
   if (!context.frameRequestID) {
-    const frameRefresh = function() {
-      func();
-      context.frameRequestID = requestAnimFrame.call(window, frameRefresh);
+    const refresh = () => {
+      const nextRefresh = context.nextRefresh || 0;
+      const now = Date.now();
+
+      if (nextRefresh <= now) {
+        const newFrameRate = call(func);
+        const frameDuration = 1000 / (Math.max(newFrameRate, 0) || 30);
+        const newNextRefresh = context.nextRefresh + frameDuration || 0;
+
+        context.nextRefresh = newNextRefresh > now ? newNextRefresh : now + frameDuration;
+      }
+      context.frameRequestID = requestAnimFrame.call(window, refresh);
     };
-    context.frameRequestID = requestAnimFrame.call(window, frameRefresh);
+    context.frameRequestID = requestAnimFrame.call(window, refresh);
   }
 }
 
@@ -52,5 +57,29 @@ export function stopFrameRefreshTimer(context) {
   if (frameRequestID) {
     cancelAnimFrame.call(window, frameRequestID);
     delete context.frameRequestID;
+  }
+}
+
+export function stopDataRefreshTimer(context) {
+  const refreshTimerID = context.refreshTimerID;
+
+  if (refreshTimerID) {
+    clearInterval(refreshTimerID);
+    delete context.refreshTimerID;
+    delete context.refreshInterval;
+  }
+}
+
+export function startDataRefreshTimer(context, func, interval) {
+  if (!context.refreshTimerID) {
+    context.refreshTimerID = setInterval(() => {
+      const newInterval = call(func);
+
+      if (context.refreshInterval !== newInterval && !isNaN(newInterval)) {
+        stopDataRefreshTimer(context);
+        startDataRefreshTimer(context, func, newInterval);
+      }
+    }, interval || 0);
+    context.refreshInterval = interval || 0;
   }
 }

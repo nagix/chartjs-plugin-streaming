@@ -1,6 +1,6 @@
 import {defaults, TimeScale} from 'chart.js';
 import {_lookup, callback as call, each, isArray, isFinite, isNumber, noop, clipArea, unclipArea} from 'chart.js/helpers';
-import {resolveOption, startFrameRefreshTimer, stopFrameRefreshTimer} from '../helpers/helpers.streaming';
+import {resolveOption, startFrameRefreshTimer, stopFrameRefreshTimer, startDataRefreshTimer, stopDataRefreshTimer} from '../helpers/helpers.streaming';
 import {getElements} from '../plugins/plugin.annotation';
 
 // Ported from Chart.js 2.8.0 35273ee.
@@ -136,17 +136,14 @@ const datasetPropertyKeys = [
   'rotation'
 ];
 
-function refreshData(scale) {
+function clean(scale) {
   const {chart, id, max} = scale;
   const duration = resolveOption(scale, 'duration');
   const delay = resolveOption(scale, 'delay');
   const ttl = resolveOption(scale, 'ttl');
   const pause = resolveOption(scale, 'pause');
-  const onRefresh = resolveOption(scale, 'onRefresh');
   const min = Date.now() - (isNaN(ttl) ? duration + delay : ttl);
   let i, start, count, removalRange;
-
-  call(onRefresh, [chart]);
 
   // Remove old data
   each(chart.data.datasets, (dataset, datasetIndex) => {
@@ -198,44 +195,21 @@ function refreshData(scale) {
           count: count
         };
       }
+
+      each(chart._active, (item, index) => {
+        if (item.datasetIndex === datasetIndex && item.index >= start) {
+          if (item.index >= start + count) {
+            item.index -= count;
+          } else {
+            chart._active.splice(index, 1);
+          }
+        }
+      }, null, true);
     }
   });
   if (removalRange) {
     chart.data.labels.splice(removalRange.start, removalRange.count);
   }
-
-  chart.update('quiet');
-}
-
-function stopDataRefreshTimer(scale) {
-  const realtime = scale.$realtime;
-  const refreshTimerID = realtime.refreshTimerID;
-
-  if (refreshTimerID) {
-    clearInterval(refreshTimerID);
-    delete realtime.refreshTimerID;
-    delete realtime.refreshInterval;
-  }
-}
-
-function startDataRefreshTimer(scale) {
-  const realtime = scale.$realtime;
-  const interval = resolveOption(scale, 'refresh');
-
-  if (realtime.refreshTimerID) {
-    return;
-  }
-
-  realtime.refreshTimerID = setInterval(() => {
-    const newInterval = resolveOption(scale, 'refresh');
-
-    refreshData(scale);
-    if (realtime.refreshInterval !== newInterval && !isNaN(newInterval)) {
-      stopDataRefreshTimer(scale);
-      startDataRefreshTimer(scale);
-    }
-  }, interval);
-  realtime.refreshInterval = interval;
 }
 
 function transition(element, id, translate) {
@@ -273,7 +247,6 @@ function scroll(scale) {
   }
 
   // Shift all the elements leftward or downward
-
   each(chart.data.datasets, (dataset, datasetIndex) => {
     const meta = chart.getDatasetMeta(datasetIndex);
     const {data: elements = [], dataset: element} = meta;
@@ -283,6 +256,7 @@ function scroll(scale) {
     }
     if (element) {
       transition(element, id, offset);
+      delete element._path;
     }
   });
 
@@ -292,7 +266,9 @@ function scroll(scale) {
   }
 
   // Shift tooltip leftward or downward
-  transition(tooltip, id, offset);
+  if (tooltip) {
+    transition(tooltip, id, offset);
+  }
 
   scale.max = now - delay;
   scale.min = scale.max - duration;
@@ -308,8 +284,18 @@ export default class RealTimeScale extends TimeScale {
   }
 
   init(scaleOpts, opts) {
+    const me = this;
+
     super.init(scaleOpts, opts);
-    startDataRefreshTimer(this);
+    startDataRefreshTimer(me.$realtime, () => {
+      const chart = me.chart;
+      const onRefresh = resolveOption(me, 'onRefresh');
+
+      call(onRefresh, [chart], me);
+      clean(me);
+      chart.update('quiet');
+      return resolveOption(me, 'refresh');
+    });
   }
 
   update(maxWidth, maxHeight, margins) {
@@ -322,10 +308,19 @@ export default class RealTimeScale extends TimeScale {
     if (resolveOption(me, 'pause')) {
       stopFrameRefreshTimer(realtime);
     } else {
+      if (!realtime.frameRequestID) {
+        realtime.head = Date.now();
+      }
       startFrameRefreshTimer(realtime, () => {
+        const chart = me.chart;
+        const streaming = chart.$streaming;
+
         scroll(me);
+        if (streaming) {
+          call(streaming.render, [chart]);
+        }
+        return resolveOption(me, 'frameRate');
       });
-      realtime.head = Date.now();
     }
 
     options.bounds = undefined;
@@ -419,10 +414,10 @@ export default class RealTimeScale extends TimeScale {
   }
 
   destroy() {
-    const me = this;
+    const realtime = this.$realtime;
 
-    stopFrameRefreshTimer(me.$realtime);
-    stopDataRefreshTimer(me);
+    stopFrameRefreshTimer(realtime);
+    stopDataRefreshTimer(realtime);
   }
 
   _generate() {

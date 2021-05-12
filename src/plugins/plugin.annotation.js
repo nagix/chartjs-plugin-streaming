@@ -1,5 +1,5 @@
 import {registry} from 'chart.js';
-import {isFinite, valueOrDefault} from 'chart.js/helpers';
+import {isFinite} from 'chart.js/helpers';
 
 function scaleValue(scale, value, fallback) {
   value = typeof value === 'number' ? value : scale.parse(value);
@@ -51,20 +51,17 @@ function updateBoxAnnotation(element, chart, options) {
 
 function updateLineAnnotation(element, chart, options) {
   const {scales, chartArea} = chart;
-  const {scaleID, value, endValue} = options;
+  const {scaleID, value} = options;
   const scale = scales[scaleID];
   const {top, left, bottom, right} = chartArea;
   const streaming = element.$streaming = {};
 
   if (scale) {
     const isHorizontal = scale.isHorizontal();
-    const min = scaleValue(scale, value);
-    const max = scaleValue(scale, valueOrDefault(endValue, value));
+    const pixel = scaleValue(scale, value);
 
-    if (min.transitionable) {
+    if (pixel.transitionable) {
       streaming[isHorizontal ? 'x' : 'y'] = {axisId: scaleID};
-    }
-    if (max.transitionable) {
       streaming[isHorizontal ? 'x2' : 'y2'] = {axisId: scaleID};
     }
     return isHorizontal ? {top, bottom} : {left, right};
