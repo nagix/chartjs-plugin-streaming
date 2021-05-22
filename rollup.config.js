@@ -6,6 +6,7 @@ const terser = require('rollup-plugin-terser').terser;
 const pkg = require('./package.json');
 
 const input = 'src/index.js';
+const inputESM = 'src/index.esm.js';
 
 const banner = `/*!
  * ${pkg.name} v${pkg.version}
@@ -68,7 +69,7 @@ module.exports = [
     ]
   },
   {
-    input,
+    input: inputESM,
     plugins: [
       json(),
       resolve(),
