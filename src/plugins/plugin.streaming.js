@@ -1,4 +1,4 @@
-import {Chart, defaults, registry} from 'chart.js';
+import {Chart, DatasetController, defaults, registry} from 'chart.js';
 import {each, noop, getRelativePosition, clipArea, unclipArea} from 'chart.js/helpers';
 import {getAxisMap} from '../helpers/helpers.streaming';
 import {attachChart as annotationAttachChart, detachChart as annotationDetachChart} from '../plugins/plugin.annotation';
@@ -26,7 +26,7 @@ function update(mode) {
 
       // Set transition mode to 'quiet'
       controller._setStyle = function(element, index, _mode, active) {
-        Chart.DatasetController.prototype._setStyle.call(this, element, index, 'quiet', active);
+        DatasetController.prototype._setStyle.call(this, element, index, 'quiet', active);
       };
     });
   }
