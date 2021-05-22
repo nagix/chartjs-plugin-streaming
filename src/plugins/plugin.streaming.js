@@ -79,16 +79,12 @@ export default {
   },
 
   afterInit(chart) {
-    const tooltip = chart.tooltip;
-
     chart.update = update;
-    if (tooltip) {
-      tooltip.update = tooltipUpdate;
-    }
   },
 
   beforeUpdate(chart) {
     const {scales, elements} = chart.options;
+    const tooltip = chart.tooltip;
 
     each(scales, ({type}) => {
       if (type === 'realtime') {
@@ -96,6 +92,10 @@ export default {
         elements.line.capBezierPoints = false;
       }
     });
+
+    if (tooltip) {
+      tooltip.update = tooltipUpdate;
+    }
 
     try {
       const plugin = registry.getPlugin('annotation');
