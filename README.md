@@ -246,6 +246,8 @@ The following commands will then be available from the repository root:
 ```bash
 npm run build      # build dist files
 npm run build:dev  # build and watch for changes
+npm run docs       # build docs
+npm run docs:dev   # build docs and run the doc server locally
 npm run lint       # perform code linting
 npm run package    # create an archive with dist files and samples
 ```

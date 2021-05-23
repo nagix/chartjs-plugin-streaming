@@ -1,8 +1,7 @@
-/dist
-/node_modules
-/package-lock.json
 .DS_Store
 .idea
-.vscode
+.vscode/
 bower.json
+dist/
+node_modules/
 *.swp
