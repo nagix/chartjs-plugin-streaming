@@ -158,7 +158,8 @@ function clean(scale) {
       if (pause) {
         // If the scale is paused, preserve the visible data points
         for (i = 0; i < length; ++i) {
-          if (!(controller.getParsed(i)[axis] < max)) {
+          const point = controller.getParsed(i);
+          if (point && !(point[axis] < max)) {
             break;
           }
         }
@@ -168,7 +169,8 @@ function clean(scale) {
       }
 
       for (i = start; i < length; ++i) {
-        if (!(controller.getParsed(i)[axis] <= min)) {
+        const point = controller.getParsed(i);
+        if (!point || !(point[axis] <= min)) {
           break;
         }
       }
