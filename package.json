@@ -9,6 +9,7 @@
   "unpkg": "dist/chartjs-plugin-streaming.min.js",
   "main": "dist/chartjs-plugin-streaming.js",
   "module": "dist/chartjs-plugin-streaming.esm.js",
+  "types": "types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/nagix/chartjs-plugin-streaming.git"
@@ -25,7 +26,8 @@
   ],
   "files": [
     "bower.json",
-    "dist/*.js"
+    "dist/*.js",
+    "types/*.d.ts"
   ],
   "directories": {
     "doc": "docs",

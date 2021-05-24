@@ -24,7 +24,7 @@ module.exports = {
     }],
     ['redirect', {
       redirectors: [
-        // Default sample page when accessing /samples.
+        {base: '/tutorials', alternative: ['plainjs/scripts']},
         {base: '/samples', alternative: ['charts/line-horizontal']}
       ]
     }],
@@ -98,9 +98,53 @@ module.exports = {
     },
     nav: [
       {text: 'Home', link: '/'},
+      {text: 'Tutorials', link: '/tutorials/'},
       {text: 'Samples', link: '/samples/'}
     ],
     sidebar: {
+      '/tutorials/': [
+        {
+          title: 'Plain JS',
+          children: [
+            'plainjs/scripts',
+            'plainjs/canvas',
+            'plainjs/chart',
+            'plainjs/stream',
+            'plainjs/delay',
+            'plainjs/color'
+          ]
+        },
+        {
+          title: 'Angular 2+',
+          children: [
+            'angular/app',
+            'angular/install',
+            'angular/import',
+            'angular/canvas',
+            'angular/chart',
+            'angular/stream'
+          ]
+        },
+        {
+          title: 'React',
+          children: [
+            'react/app',
+            'react/install',
+            'react/chart',
+            'react/stream'
+          ]
+        },
+        {
+          title: 'Vue',
+          children: [
+            'vue/app',
+            'vue/install',
+            'vue/main',
+            'vue/chart',
+            'vue/stream'
+          ]
+        }
+      ],
       '/samples/': [
         {
           title: 'Charts',
