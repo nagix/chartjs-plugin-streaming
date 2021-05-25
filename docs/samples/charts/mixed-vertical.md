@@ -8,7 +8,7 @@ const data = {
       label: 'Dataset 1 (Line)',
       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
       borderColor: Utils.CHART_COLORS.red,
-      tension: 0.4,
+      cubicInterpolationMode: 'monotone',
       data: []
     },
     {

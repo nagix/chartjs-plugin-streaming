@@ -98,10 +98,20 @@ module.exports = {
     },
     nav: [
       {text: 'Home', link: '/'},
+      {text: 'Guide', link: '/guide/'},
       {text: 'Tutorials', link: '/tutorials/'},
       {text: 'Samples', link: '/samples/'}
     ],
     sidebar: {
+      '/guide/': [
+        '',
+        'getting-started',
+        'options',
+        'data-feed-models',
+        'integration',
+        'performance',
+        'migration'
+      ],
       '/tutorials/': [
         {
           title: 'Plain JS',

@@ -15,7 +15,7 @@ const data = {
       label: 'Dataset 2 (Cubic Interpolation)',
       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
       borderColor: Utils.CHART_COLORS.blue,
-      tension: 0.4,
+      cubicInterpolationMode: 'monotone',
       data: []
     }
   ]
