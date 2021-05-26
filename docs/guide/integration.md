@@ -11,6 +11,7 @@ This plugin requires chartjs-plugin-annotation **1.x**.
 :::
 
 ```js
+const myChart = new Chart(ctx, {
   options: {
     plugins: {
       annotation: {
@@ -32,6 +33,7 @@ This plugin requires chartjs-plugin-annotation **1.x**.
       }
     }
   }
+});
 ```
 
 Note that `chartjs-plugin-annotation.js` needs to be included before `chartjs-plugin-streaming.js`.
@@ -45,6 +47,7 @@ This plugin requires chartjs-plugin-datalabels **2.x**.
 :::
 
 ```js
+const myChart = new Chart(ctx, {
   options: {
     plugins: {
       datalabels: {
@@ -61,6 +64,7 @@ This plugin requires chartjs-plugin-datalabels **2.x**.
       }
     }
   }
+});
 ```
 
 Note that `chartjs-plugin-datalabels.js` needs to be included before `chartjs-plugin-streaming.js`.
@@ -102,6 +106,7 @@ This plugin requires chartjs-plugin-zoom **1.x**.
 Unlike other scale types, the `min`, `max` and `minRange` in the `limits` options are not used. Instead, the `minDelay`, `maxDelay`, `minDuration` and `maxDuration` limit the range of the `delay` and `duration` option values.
 
 ```js
+const myChart = new Chart(ctx, {
   options: {
     plugins: {
       zoom: {
@@ -130,6 +135,7 @@ Unlike other scale types, the `min`, `max` and `minRange` in the `limits` option
       }
     }
   }
+});
 ```
 
 Note that `chartjs-plugin-zoom.js` needs to be included before `chartjs-plugin-streaming.js`.

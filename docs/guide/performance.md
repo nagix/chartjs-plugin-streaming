@@ -5,6 +5,7 @@
 If you are using this plugin on resource constrained devices or drawing multiple charts on a large screen, it might be a good idea to decrease the frame rate to lower CPU usage. The following settings also reduce CPU usage by disabling animations, and improve general page performance.
 
 ```js
+const myChart = new Chart(ctx, {
   options: {
     animation: false,
     plugins: {
@@ -13,4 +14,5 @@ If you are using this plugin on resource constrained devices or drawing multiple
       }
     }
   }
+});
 ```

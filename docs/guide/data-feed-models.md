@@ -9,7 +9,7 @@ In the pull model, the user code needs to ask for new data and pull it from a da
 For example:
 
 ```js
-{
+const myChart = new Chart(ctx, {
   type: 'line',             // 'line', 'bar', 'bubble' and 'scatter' types are supported
   data: {
     datasets: [{
@@ -26,7 +26,7 @@ For example:
           delay: 1000,      // delay of 1000 ms, so upcoming values are known before plotting a line
           pause: false,     // chart is not paused
           ttl: undefined,   // data will be automatically deleted as it disappears off the chart
-          frameRate: 30     // data points are drawn 30 times every second
+          frameRate: 30,    // data points are drawn 30 times every second
 
           // a callback to update datasets
           onRefresh: chart => {
@@ -41,7 +41,7 @@ For example:
       }
     }
   }
-}
+});
 ```
 
 ## Pull Model (Polling Based) - Asynchronous
@@ -55,7 +55,7 @@ This model is suitable for data sources such as web servers, Kafka (REST Proxy),
 For example:
 
 ```js
-{
+const myChart = new Chart(ctx, {
   options: {
     scales: {
       x: {
@@ -77,7 +77,7 @@ For example:
       }
     }
   }
-}
+});
 ```
 
 ## Push Model (Listening Based)
