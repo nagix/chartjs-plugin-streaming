@@ -42,8 +42,7 @@
     "lint-js": "eslint \"**/*.html\" \"**/*.js\"",
     "lint-md": "eslint \"**/*.md\"",
     "lint": "concurrently \"npm:lint-*\"",
-    "package": "concurrently \"npm:build\" \"npm:samples\" && node scripts/create-packages",
-    "samples": "node scripts/create-samples"
+    "package": "npm run build && node scripts/create-packages"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
@@ -63,11 +62,8 @@
     "eslint-plugin-es": "^4.1.0",
     "eslint-plugin-html": "^6.1.2",
     "eslint-plugin-markdown": "^2.1.0",
-    "fs-extra": "^10.0.0",
-    "glob": "^7.1.6",
     "luxon": "^1.26.0",
     "ng-hammerjs": "^2.0.8",
-    "replacestream": "^4.0.3",
     "rollup": "^2.45.1",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-cleanup": "^3.2.1",

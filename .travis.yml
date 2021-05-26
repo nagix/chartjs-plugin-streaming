@@ -9,6 +9,8 @@ before_script:
 
 script:
   - npm run lint
+  - ./scripts/docs-config.sh
+  - npm run docs
   - npm run package
   - npm run bower
 
@@ -22,6 +24,11 @@ after_script:
 
 deploy:
   - provider: script
+    script: ./scripts/deploy-docs.sh
+    skip_cleanup: true
+    on:
+      all_branches: true
+  - provider: script
     script: ./scripts/release.sh
     skip_cleanup: true
     on:
@@ -31,6 +38,7 @@ deploy:
     file:
       - "./dist/chartjs-plugin-streaming.js"
       - "./dist/chartjs-plugin-streaming.min.js"
+      - "./dist/chartjs-plugin-streaming.esm.js"
       - "./dist/chartjs-plugin-streaming.tgz"
       - "./dist/chartjs-plugin-streaming.zip"
     skip_cleanup: true

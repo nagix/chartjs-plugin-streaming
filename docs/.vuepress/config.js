@@ -1,7 +1,7 @@
 const BRANCH = process.env.BRANCH || (process.env.NODE_ENV === 'development' ? 'local' : '');
 const IS_DEV = BRANCH ? !BRANCH.match(/^v\d\.\d\.\d/) : false;
 const DOCS_VERSION = "VERSION";
-const BASE = IS_DEV ? '/docs/master/' : `/docs/${DOCS_VERSION}/`;
+const BASE = IS_DEV ? '/chartjs-plugin-streaming/master/' : `/chartjs-plugin-streaming/${DOCS_VERSION}/`;
 const REPO_NAME = 'nagix/chartjs-plugin-streaming';
 const REPO_URL = `https://github.com/${REPO_NAME}`;
 
@@ -10,7 +10,7 @@ module.exports = {
   theme: 'chartjs',
   title: 'chartjs-plugin-streaming',
   description: 'Chart.js plugin for live streaming data',
-  // base: BASE,
+  base: BASE,
   head: [
     ['link', {rel: 'icon', href: '/logo.png'}]
   ],

@@ -13,7 +13,6 @@ const inputs = [
   path.join(root, 'LICENSE.md'),
   path.join(root, 'README.md'),
 ];
-const samplesDir = path.join(root, 'dist', 'samples');
 
 const targets = [
   {format: 'tar', ext: 'tgz', options: {gzip: true}},
@@ -28,11 +27,6 @@ const targets = [
         'exists: make sure to execute "npm run build" first');
     }
   }
-  if (!fs.existsSync(samplesDir)) {
-    throw new Error(
-      `The directory "${path.relative(root, samplesDir)}" does not ` +
-      'exists: make sure to execute "npm run samples" first');
-  }
 
   await Promise.all(targets.map((target) => {
     const dest = path.join(root, 'dist', `${pkg.name}.${target.ext}`);
@@ -40,7 +34,6 @@ const targets = [
     for (const input of inputs) {
       archive.file(input, {name: path.basename(input)});
     }
-    archive.directory(samplesDir, path.basename(samplesDir));
 
     archive.pipe(fs.createWriteStream(dest));
     return archive.finalize();
