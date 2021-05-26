@@ -39,7 +39,7 @@
     "build:dev": "rollup -c --watch",
     "docs": "npm run build && vuepress build docs --no-cache",
     "docs:dev": "npm run build && vuepress dev docs --no-cache",
-    "lint-js": "eslint \"**/*.html\" \"**/*.js\"",
+    "lint-js": "eslint \"**/*.js\"",
     "lint-md": "eslint \"**/*.md\"",
     "lint": "concurrently \"npm:lint-*\"",
     "package": "npm run build && node scripts/create-packages"
