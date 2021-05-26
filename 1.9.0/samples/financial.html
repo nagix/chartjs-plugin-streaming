@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>chartjs-plugin-streaming sample</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+	<script src="https://cdn.jsdelivr.net/gh/chartjs/chartjs-chart-financial@f0c37e1dc24923a02c7793df8a292921db4b46cb/docs/chartjs-chart-financial.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.9.0"></script>
+	<style>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+		.chart {
+			margin: auto;
+			width: 75%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="chart">
+		<canvas id="myChart"></canvas>
+	</div>
+	<div class="container mt-3">
+		<ul class="nav nav-tabs mb-2" id="myTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" id="js-tab" data-toggle="tab" href="#js" role="tab" aria-controls="js" aria-selected="true">JavaScript</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" id="html-tab" data-toggle="tab" href="#html" role="tab" aria-controls="html" aria-selected="false">HTML</a>
+			</li>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade show active" id="js" role="tabpanel" aria-labelledby="js-tab">
+				<pre class="prettyprint lang-js p-3 bg-light">function onRefresh(chart) {
+	var t = Date.now();
+	var data = chart.data.datasets[0].data;
+	var last;
+
+	t -= t % 5000;
+	if (data.length === 0) {
+		data.push({x: t - 5000, o: 99, h: 101, l: 98, c: 100});
+	}
+	last = data[data.length - 1];
+	if (t !== last.x) {
+		var c = last.c;
+		last = {x: t, o: c, h: c, l: c, c: c};
+		data.push(last);
+	}
+	last.c += Math.random() - 0.5;
+	last.h = Math.max(last.h, last.c);
+	last.l = Math.min(last.l, last.c);
+}
+
+var config = {
+	type: 'candlestick',
+	data: {
+		datasets: [{
+			data: [],
+			fractionalDigitsCount: 2
+		}]
+	},
+	options: {
+		title: {
+			display: true,
+			text: 'Financial chart sample'
+		},
+		legend: {
+			display: false,
+		},
+		scales: {
+			xAxes: [{
+				type: 'realtime',
+				realtime: {
+					duration: 120000,
+					refresh: 500,
+					delay: 0,
+					onRefresh: onRefresh
+				}
+			}]
+		},
+		tooltips: {
+			position: 'nearest',
+			intersect: false
+		},
+		animation: {
+			duration: 0
+		}
+	}
+};
+
+window.onload = function() {
+	var ctx = document.getElementById('myChart').getContext('2d');
+	window.myChart = new Chart(ctx, config);
+};</pre>
+			</div>
+			<div class="tab-pane fade" id="html" role="tabpanel" aria-labelledby="html-tab">
+				<pre class="prettyprint lang-html p-3 bg-light">&lt;head&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/gh/chartjs/chartjs-chart-financial@f0c37e1dc24923a02c7793df8a292921db4b46cb/docs/chartjs-chart-financial.js"&gt;&lt;/script&gt;
+	&lt;script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.9.0"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;div&gt;
+		&lt;canvas id="myChart"&gt;&lt;/canvas&gt;
+	&lt;/div&gt;
+&lt;/body&gt;</pre>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function onRefresh(chart) {
+			var t = Date.now();
+			var data = chart.data.datasets[0].data;
+			var last;
+
+			t -= t % 5000;
+			if (data.length === 0) {
+				data.push({x: t - 5000, o: 99, h: 101, l: 98, c: 100});
+			}
+			last = data[data.length - 1];
+			if (t !== last.x) {
+				var c = last.c;
+				last = {x: t, o: c, h: c, l: c, c: c};
+				data.push(last);
+			}
+			last.c += Math.random() - 0.5;
+			last.h = Math.max(last.h, last.c);
+			last.l = Math.min(last.l, last.c);
+		}
+
+		var config = {
+			type: 'candlestick',
+			data: {
+				datasets: [{
+					data: [],
+					fractionalDigitsCount: 2
+				}]
+			},
+			options: {
+				title: {
+					display: true,
+					text: 'Financial chart sample'
+				},
+				legend: {
+					display: false,
+				},
+				scales: {
+					xAxes: [{
+						type: 'realtime',
+						realtime: {
+							duration: 120000,
+							refresh: 500,
+							delay: 0,
+							onRefresh: onRefresh
+						}
+					}]
+				},
+				tooltips: {
+					position: 'nearest',
+					intersect: false
+				},
+				animation: {
+					duration: 0
+				}
+			}
+		};
+
+		window.onload = function() {
+			var ctx = document.getElementById('myChart').getContext('2d');
+			window.myChart = new Chart(ctx, config);
+		};
+	</script>
+</body>
+
+</html>
