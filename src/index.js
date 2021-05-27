@@ -4,6 +4,6 @@ import RealTimeScale from './scales/scale.realtime';
 
 const registerables = [StreamingPlugin, RealTimeScale];
 
-Chart.register(...registerables);
+Chart.register(registerables);
 
-export {StreamingPlugin, RealTimeScale, registerables as default};
+export default registerables;
