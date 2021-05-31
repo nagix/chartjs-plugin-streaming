@@ -1,6 +1,6 @@
 # Create a chart
 
-And, here’s what it can look like in our component class. Import chartjs-plugin-streaming and register it in the constructor. In the component class, define datasets and options with a realtime scale.
+And, here’s what it can look like in our component class. Import chartjs-plugin-streaming and register it. In the component class, define datasets and options with a realtime scale.
 
 #### src/app/app.component.ts
 
@@ -9,6 +9,8 @@ import { Component } from '@angular/core';
 import { Chart } from 'chart.js';
 import 'chartjs-adapter-luxon';
 import StreamingPlugin from 'chartjs-plugin-streaming';
+
+Chart.register(StreamingPlugin);
 
 @Component({
   selector: 'app-root',
@@ -28,8 +30,5 @@ export class AppComponent {
       }
     }
   };
-  constructor() {
-    Chart.register(StreamingPlugin);
-  }
 }
 ```

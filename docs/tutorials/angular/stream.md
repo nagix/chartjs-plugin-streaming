@@ -10,6 +10,8 @@ import { Chart } from 'chart.js';
 import 'chartjs-adapter-luxon';
 import StreamingPlugin from 'chartjs-plugin-streaming';
 
+Chart.register(StreamingPlugin);
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -49,9 +51,6 @@ export class AppComponent {
       }
     }
   };
-  constructor() {
-    Chart.register(...StreamingPlugin);
-  }
 }
 ```
 

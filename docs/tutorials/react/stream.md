@@ -11,10 +11,9 @@ import 'chartjs-adapter-luxon';
 import StreamingPlugin from 'chartjs-plugin-streaming';
 import './App.css';
 
+Chart.register(StreamingPlugin);
+
 class App extends Component {
-  componentWillMount() {
-    Chart.register(StreamingPlugin);
-  }
   render() {
     return (
       <Line
