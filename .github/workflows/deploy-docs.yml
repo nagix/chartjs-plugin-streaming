@@ -13,7 +13,6 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
     - run: npm ci
-    - run: npm run build
     - run: ./scripts/docs-config.sh "master"
     - run: npm run docs
     - run: ./scripts/deploy-docs.sh "master"

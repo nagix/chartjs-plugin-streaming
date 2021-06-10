@@ -9,7 +9,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - run: npm ci
-      - run: npm run build
       - run: ./scripts/docs-config.sh "release"
       - run: npm run docs
       - run: npm run bower
@@ -35,7 +34,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - run: npm ci
-      - run: npm run build
       - run: ./scripts/docs-config.sh
       - run: npm run docs
       - run: ./scripts/deploy-docs.sh
