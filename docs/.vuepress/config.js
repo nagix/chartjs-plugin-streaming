@@ -42,12 +42,12 @@ module.exports = {
             items: [
               {
                 text: 'Development (master)',
-                link: '/master/'
+                link: '/chartjs-plugin-streaming/master/'
               },
               {
                 type: 'versions',
                 text: '{{version}}{{tag|suffix}}',
-                link: '/{{version|link}}/',
+                link: '/chartjs-plugin-streaming/{{version|link}}/',
                 exclude: /^0\.|1\.[0-8]\./,
                 group: 'minor'
               }
