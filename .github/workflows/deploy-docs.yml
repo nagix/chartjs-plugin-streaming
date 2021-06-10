@@ -1,0 +1,22 @@
+name: Deploy docs
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    if: github.repository_owner == 'nagix'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+    - run: npm ci
+    - run: ./scripts/docs-config.sh "master"
+    - run: npm run docs
+    - run: ./scripts/deploy-docs.sh "master"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_AUTH_TOKEN }}
+        GH_AUTH_EMAIL: ${{ secrets.GH_AUTH_EMAIL }}
+        GH_AUTH_NAME: ${{ secrets.GH_AUTH_NAME }}

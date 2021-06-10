@@ -1,0 +1,43 @@
+name: Release
+
+on: workflow_dispatch
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - run: npm ci
+      - run: ./scripts/docs-config.sh "release"
+      - run: npm run docs
+      - run: npm run bower
+      - run: npm run package
+      - run: node scripts/attach-gh-assets.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_AUTH_TOKEN }}
+          DEBUG: api
+      - run: node scripts/create-release-tag.js
+        env:
+          GH_AUTH_EMAIL: ${{ secrets.GH_AUTH_EMAIL }}
+          GH_AUTH_NAME: ${{ secrets.GH_AUTH_NAME }}
+      - run: ./scripts/deploy-docs.sh "release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_AUTH_TOKEN }}
+          GH_AUTH_EMAIL: ${{ secrets.GH_AUTH_EMAIL }}
+          GH_AUTH_NAME: ${{ secrets.GH_AUTH_NAME }}
+
+  create-docs-tag:
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+      - run: npm ci
+      - run: ./scripts/docs-config.sh
+      - run: npm run docs
+      - run: ./scripts/deploy-docs.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_AUTH_TOKEN }}
+          GH_AUTH_EMAIL: ${{ secrets.GH_AUTH_EMAIL }}
+          GH_AUTH_NAME: ${{ secrets.GH_AUTH_NAME }}

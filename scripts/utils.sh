@@ -1,17 +1,21 @@
 #!/bin/bash
 
-function get_version {
-    if [[ "$TRAVIS_BRANCH" =~ ^release.*$ ]]; then
-        # Travis executes this script from the repository root, so at the same level than package.json
-        VERSION=$(node -p -e "require('./package.json').version")
-        if [[ "$VERSION" =~ -(alpha|beta|rc) ]]; then
-        	echo "next"
-        else
-        	echo $VERSION
-        fi
-    elif [ "$TRAVIS_BRANCH" == "master" ]; then
-        echo "master"
+VERSION=$(node -p -e "require('./package.json').version")
+
+function tag_from_version {
+  local version=$1
+  local mode=$2
+  local tag=''
+  if [ "$mode" == "master" ]; then
+    tag=master
+  elif [[ "$version" =~ ^[^-]+$ ]]; then
+    if [ "$mode" == "release" ]; then
+      tag=$version
     else
-        echo ""
+      tag=latest
     fi
+  else
+    tag=next
+  fi
+  echo $tag
 }

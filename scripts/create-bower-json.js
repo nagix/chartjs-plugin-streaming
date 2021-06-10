@@ -11,10 +11,9 @@ const json = JSON.stringify({
   version: pkg.version,
   main: pkg.main,
   ignore: [
+    '.github',
     '.codeclimate.yml',
     '.gitignore',
-    '.npmignore',
-    '.travis.yml',
     'scripts'
   ]
 }, null, 2);
