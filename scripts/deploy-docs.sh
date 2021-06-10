@@ -35,7 +35,7 @@ git add --all
 git remote add auth-origin $TARGET_REPO_URL
 git config --global user.email "$GH_AUTH_EMAIL"
 git config --global user.name "$GH_AUTH_NAME"
-git commit -m "Deploy $VERSION from $GITHUB_REPOSITORY" -m "Commit: $GITHUB_SHA"
+git commit -m "Deploy $TAG from $GITHUB_REPOSITORY" -m "Commit: $GITHUB_SHA"
 git push -q auth-origin $TARGET_BRANCH
 git remote rm auth-origin
 
