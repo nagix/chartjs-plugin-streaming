@@ -14,7 +14,6 @@ const json = JSON.stringify({
     '.codeclimate.yml',
     '.gitignore',
     '.npmignore',
-    '.travis.yml',
     'scripts'
   ]
 }, null, 2);

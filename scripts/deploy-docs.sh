@@ -6,29 +6,21 @@ source ./scripts/utils.sh
 
 TARGET_DIR='gh-pages'
 TARGET_BRANCH='gh-pages'
-TARGET_REPO_URL="https://$GITHUB_AUTH_TOKEN@github.com/$TRAVIS_REPO_SLUG.git"
+TARGET_REPO_URL="https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY.git"
 
-VERSION=$(get_version)
-VERSION_REGEX='[[:digit:]]+.[[:digit:]]+.[[:digit:]]+(-.*)?'
+VERSION=$(node -p -e "require('./package.json').version")
+MODE=$1
+TAG=$(tag_from_version "$VERSION" "$MODE")
 
-# Make sure that this script is executed only for the release and master branches
-if [ "$VERSION" == "" ]; then
-    echo "Skipping deploy because this is not the master or release branch"
-    exit 0
+if [ "$MODE" == "release" -a "$TAG" == "next" ]; then
+  echo "Skipping deploy because this is prerelease version"
+  exit 0
 fi
 
-function update_latest {
-    local latest=($(ls -v | egrep '^('$VERSION_REGEX')$' | tail -1))
-    if [ "$latest" == "" ]; then latest='master'; fi
-    rm -f latest
-    ln -s $latest latest
-}
-
-function deploy_files {
-    local version=$1
-    rm -rf "$version"
-    cp -r ../dist/docs $version
-    update_latest
+function deploy_tagged_files {
+  local tag=$1
+  rm -rf $tag
+  cp -r ../dist/docs $tag
 }
 
 # Clone the gh-pages branch in the repository 
@@ -36,14 +28,14 @@ git clone -b $TARGET_BRANCH $TARGET_REPO_URL $TARGET_DIR
 cd $TARGET_DIR
 
 # Copy generated documentation
-deploy_files $VERSION
+deploy_tagged_files $TAG
 
-git add -A
+git add --all
 
 git remote add auth-origin $TARGET_REPO_URL
-git config --global user.email "$GITHUB_AUTH_EMAIL"
-git config --global user.name "nagix"
-git commit -m "Deploy $VERSION from $TRAVIS_REPO_SLUG" -m "Commit: $TRAVIS_COMMIT"
+git config --global user.email "$GH_AUTH_EMAIL"
+git config --global user.name "$GH_AUTH_NAME"
+git commit -m "Deploy $VERSION from $GITHUB_REPOSITORY" -m "Commit: $GITHUB_SHA"
 git push -q auth-origin $TARGET_BRANCH
 git remote rm auth-origin
 
