@@ -74,7 +74,7 @@ Note that `chartjs-plugin-datalabels.js` needs to be included before `chartjs-pl
 By using together with [chartjs-chart-financial](https://github.com/chartjs/chartjs-chart-financial), auto-scrollable financial charts can be created.
 
 ::: warning COMPATIBILITY NOTE
-chartjs-chart-financial is still pre-release. We confirmed that it works with the [commit #5d62fd1](https://github.com/chartjs/chartjs-chart-financial/blob/5d62fd1b5ca8b022fc5185a44824e087566174f4/docs/chartjs-chart-financial.js).
+chartjs-chart-financial is still pre-release. We confirmed that it works with the [commit #5dcdca5](https://github.com/chartjs/chartjs-chart-financial/blob/5dcdca5001671a7cfd840a055a16ce113c8ab05a/docs/chartjs-chart-financial.js).
 :::
 
 ```js

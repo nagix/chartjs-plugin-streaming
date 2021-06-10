@@ -28,11 +28,11 @@ module.exports = {
         {base: '/samples', alternative: ['charts/line-horizontal']}
       ]
     }],
-    /*
     ['@simonbrunel/vuepress-plugin-versions', {
       filters: {
         suffix: (tag) => tag ? ` (${tag})` : '',
-        title: (v, vars) => window.location.href.includes('master') ? 'Development (master)' : v + (vars.tag ? ` (${tag})` : '')
+        title: (v, vars) => window.location.href.includes('master') ? 'Development (master)' : v + (vars.tag ? ` (${tag})` : ''),
+        link: (v, vars) => vars.prerelease ? 'next' : v
       },
       menu: {
         text: '{{version|title}}',
@@ -41,16 +41,14 @@ module.exports = {
             text: 'Documentation',
             items: [
               {
-                target: '_self',
                 text: 'Development (master)',
-                link: '/docs/master/'
+                link: '/master/'
               },
               {
                 type: 'versions',
                 text: '{{version}}{{tag|suffix}}',
-                link: '/docs/{{version}}/',
-                target: '_self',
-                exclude: /^[01]\./,
+                link: '/{{version|link}}/',
+                exclude: /^0\.|1\.[0-8]\./,
                 group: 'minor'
               }
             ]
@@ -61,7 +59,6 @@ module.exports = {
               {
                 type: 'versions',
                 limit: 5,
-                target: '_blank',
                 group: 'patch',
                 link: `${REPO_URL}/releases/tag/v{{version}}`
               }
@@ -70,7 +67,6 @@ module.exports = {
         ]
       }
     }]
-    */
   ],
   chainWebpack: (config) => {
     config.merge({
