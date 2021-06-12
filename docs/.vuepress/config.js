@@ -96,7 +96,6 @@ module.exports = {
     docsDir: 'docs',
     editLinks: true,
     logo: '/logo.png',
-    lastUpdated: 'Last Updated',
     searchPlaceholder: 'Search...',
     chart: {
       imports: [
@@ -110,6 +109,7 @@ module.exports = {
         label: 'English',
         selectText: 'Languages',
         editLinkText: 'Edit this page',
+        lastUpdated: 'Last Updated',
         nav: [
           {text: 'Home', link: '/'},
           {text: 'Guide', link: '/guide/'},
@@ -207,6 +207,7 @@ module.exports = {
         label: '日本語',
         selectText: '言語',
         editLinkText: 'このページを編集',
+        lastUpdated: '最終更新日時',
         nav: [
           {text: 'ホーム', link: '/ja/'},
           {text: 'ガイド', link: '/ja/guide/'},
