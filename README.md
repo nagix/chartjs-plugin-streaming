@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/.vuepress/public/logo.svg" style="width: 300px;">
+</p>
+
 # chartjs-plugin-streaming
 
 [![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming/latest.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-streaming) [![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming/next.svg?style=flat-square)](https://npmjs.com/package/chartjs-plugin-streaming) [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/nagix/chartjs-plugin-streaming/CI?style=flat-square)](https://github.com/nagix/chartjs-plugin-streaming/actions?query=workflow%3ACI+branch%3Amaster) [![Code Climate](https://img.shields.io/codeclimate/maintainability/nagix/chartjs-plugin-streaming.svg?style=flat-square)](https://codeclimate.com/github/nagix/chartjs-plugin-streaming) [![Awesome](https://awesome.re/badge-flat2.svg)](https://github.com/chartjs/awesome)
