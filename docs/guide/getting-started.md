@@ -32,7 +32,7 @@ Read more about jsDeliver versioning on their [website](http://www.jsdelivr.com/
 
 [![github](https://img.shields.io/github/release/nagix/chartjs-plugin-streaming.svg?include_prereleases&sort=semver&style=flat-square&maxAge=600)](https://github.com/nagix/chartjs-plugin-streaming/releases/latest) [![github downloads](https://img.shields.io/github/downloads/nagix/chartjs-plugin-streaming/total.svg?style=flat-square&maxAge=600)](http://www.somsubhra.com/github-release-stats/?username=nagix&repository=chartjs-plugin-streaming)
 
-You can download the latest version of `chartjs-plugin-streaming` from the [GitHub releases](https://github.com/nagix/chartjs-plugin-streaming/releases):
+You can download the latest version of `chartjs-plugin-streaming` from the [GitHub Releases](https://github.com/nagix/chartjs-plugin-streaming/releases):
 
 - `chartjs-plugin-streaming.js` (recommended for development)
 - `chartjs-plugin-streaming.min.js` (recommended for production)
@@ -72,7 +72,7 @@ Chart.register(ChartStreaming);
 Once imported, the plugin needs to be registered globally.
 
 ::: warning IMPORTANT
-`chartjs-plugin-streaming` does not function as inline plugin. See also [Chart.js &rsaquo; Using plugins](https://www.chartjs.org/docs/latest/developers/plugins.html).
+`chartjs-plugin-streaming` does not function as an inline plugin. See also [Chart.js &rsaquo; Using plugins](https://www.chartjs.org/docs/latest/developers/plugins.html).
 :::
 
 ## Configuration
@@ -94,7 +94,7 @@ Chart.defaults.set('plugins.streaming', {
 const chart = new Chart(ctx, {
   options: {
     plugins: {
-      // Change options for ALL labels of THIS CHART
+      // Change options for ALL axes of THIS CHART
       streaming: {
         duration: 20000
       }
@@ -102,7 +102,7 @@ const chart = new Chart(ctx, {
     scales: {
       x: {
         type: 'realtime',
-        // Change options only for labels of THIS AXIS
+        // Change options only for THIS AXIS
         realtime: {
           duration: 20000
         }

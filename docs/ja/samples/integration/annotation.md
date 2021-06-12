@@ -1,20 +1,20 @@
-# Zoom
+# Annotation
 
-Integration with [chartjs-plugin-zoom](https://github.com/chartjs/chartjs-plugin-zoom)
+[chartjs-plugin-annotation](https://github.com/chartjs/chartjs-plugin-annotation) との連携
 
 ```js chart-editor
 // <block:setup:1>
 const data = {
   datasets: [
     {
-      label: 'Dataset 1 (Linear Interpolation)',
+      label: 'データセット1 (線形補間)',
       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
       borderColor: Utils.CHART_COLORS.red,
       borderDash: [8, 4],
       data: []
     },
     {
-      label: 'Dataset 2 (Cubic Interpolation)',
+      label: 'データセット2 (キュービック補間)',
       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
       borderColor: Utils.CHART_COLORS.blue,
       cubicInterpolationMode: 'monotone',
@@ -24,6 +24,7 @@ const data = {
 };
 
 const onRefresh = chart => {
+  const box = chart.options.plugins.annotation.annotations.box;
   const now = Date.now();
   chart.data.datasets.forEach(dataset => {
     dataset.data.push({
@@ -31,13 +32,20 @@ const onRefresh = chart => {
       y: Utils.rand(-100, 100)
     });
   });
+  if (!(box.xMax >= now - 22000)) {
+    box.xMin = now - 2000;
+    box.xMax = now + 8000;
+    box.yMin = Utils.rand(-100, 100);
+    box.yMax = Utils.rand(-100, 100);
+    chart.update('none');
+  }
 };
 // </block:setup>
 
 // <block:actions:2>
 const actions = [
   {
-    name: 'Randomize',
+    name: 'ランダム化',
     handler(chart) {
       chart.data.datasets.forEach(dataset => {
         dataset.data.forEach(dataObj => {
@@ -48,12 +56,12 @@ const actions = [
     }
   },
   {
-    name: 'Add Dataset',
+    name: 'データセット追加',
     handler(chart) {
       const datasets = chart.data.datasets;
       const dsColor = Utils.namedColor(datasets.length);
       const newDataset = {
-        label: 'Dataset ' + (datasets.length + 1),
+        label: 'データセット' + (datasets.length + 1),
         backgroundColor: Utils.transparentize(dsColor, 0.5),
         borderColor: dsColor,
         data: []
@@ -63,32 +71,26 @@ const actions = [
     }
   },
   {
-    name: 'Add Data',
+    name: 'データ追加',
     handler(chart) {
       onRefresh(chart);
       chart.update();
     }
   },
   {
-    name: 'Remove Dataset',
+    name: 'データセット削除',
     handler(chart) {
       chart.data.datasets.pop();
       chart.update();
     }
   },
   {
-    name: 'Remove Data',
+    name: 'データ削除',
     handler(chart) {
       chart.data.datasets.forEach(dataset => {
         dataset.data.shift();
       });
       chart.update();
-    }
-  },
-  {
-    name: 'Reset Zoom',
-    handler(chart) {
-      chart.resetZoom('none');
     }
   }
 ];
@@ -112,7 +114,7 @@ const config = {
       y: {
         title: {
           display: true,
-          text: 'Value'
+          text: '値'
         }
       }
     },
@@ -120,26 +122,29 @@ const config = {
       intersect: false
     },
     plugins: {
-      zoom: {
-        pan: {
-          enabled: true,
-          mode: 'x'
-        },
-        zoom: {
-          pinch: {
-            enabled: true
+      annotation: {
+        annotations: {
+          line: {
+            drawTime: 'afterDatasetsDraw',
+            type: 'line',
+            scaleID: 'y',
+            value: Utils.rand(-100, 100),
+            borderColor: 'black',
+            borderWidth: 5,
+            label: {
+              backgroundColor: 'red',
+              content: 'Test Label',
+              enabled: true
+            }
           },
-          wheel: {
-            enabled: true
-          },
-          mode: 'x'
-        },
-        limits: {
-          x: {
-            minDelay: 0,
-            maxDelay: 4000,
-            minDuration: 1000,
-            maxDuration: 20000
+          box: {
+            drawTime: 'beforeDatasetsDraw',
+            type: 'box',
+            xMin: 0,
+            xMax: 0,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.purple, 0.5),
+            borderColor: Utils.CHART_COLORS.purple,
+            borderWidth: 1
           }
         }
       }
@@ -149,8 +154,8 @@ const config = {
 // </block:config>
 
 const pluginOpts = config.options.plugins;
-pluginOpts.annotation = false;
 pluginOpts.datalabels = false;
+pluginOpts.zoom = false;
 
 module.exports = {
   actions: actions,
@@ -158,23 +163,23 @@ module.exports = {
 };
 ```
 
-For plain JavaScript, use script tags in the following order.
+プレーンな JavaScript の場合、script タグを以下の順序で指定します。
 
 ```html
 <script src="path/to/chartjs/dist/chart.min.js"></script>
 <script src="path/to/luxon/dist/luxon.min.js"></script>
 <script src="path/to/chartjs-adapter-luxon/dist/chartjs-adapter-luxon.min.js"></script>
-<script src="path/to/chartjs-plugin-annotation/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="path/to/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js"></script>
 <script src="path/to/chartjs-plugin-streaming/dist/chartjs-plugin-streaming.min.js"></script>
 ```
 
-For bundlers, import and register modules to the chart.
+バンドラーを使う場合は、モジュールをインポートしてチャートに登録します。
 
 ```js
 import {Chart} from 'chart.js';
 import 'chartjs-adapter-luxon';
-import ZoomPlugin from 'chartjs-plugin-zoom';
+import AnnotationPlugin from 'chartjs-plugin-annotation';
 import StreamingPlugin from 'chartjs-plugin-streaming';
 
-Chart.register(ZoomPlugin, StreamingPlugin);
+Chart.register(AnnotationPlugin, StreamingPlugin);
 ````

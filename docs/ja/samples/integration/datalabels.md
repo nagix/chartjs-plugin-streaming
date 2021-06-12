@@ -1,20 +1,20 @@
-# Zoom
+# Data Labels
 
-Integration with [chartjs-plugin-zoom](https://github.com/chartjs/chartjs-plugin-zoom)
+[chartjs-plugin-datalabels](https://github.com/chartjs/chartjs-plugin-datalabels) との連携
 
 ```js chart-editor
 // <block:setup:1>
 const data = {
   datasets: [
     {
-      label: 'Dataset 1 (Linear Interpolation)',
+      label: 'データセット1 (線形補間)',
       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
       borderColor: Utils.CHART_COLORS.red,
       borderDash: [8, 4],
       data: []
     },
     {
-      label: 'Dataset 2 (Cubic Interpolation)',
+      label: 'データセット2 (キュービック補間)',
       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
       borderColor: Utils.CHART_COLORS.blue,
       cubicInterpolationMode: 'monotone',
@@ -28,7 +28,7 @@ const onRefresh = chart => {
   chart.data.datasets.forEach(dataset => {
     dataset.data.push({
       x: now,
-      y: Utils.rand(-100, 100)
+      y: Math.round(Utils.rand(-100, 100))
     });
   });
 };
@@ -37,23 +37,23 @@ const onRefresh = chart => {
 // <block:actions:2>
 const actions = [
   {
-    name: 'Randomize',
+    name: 'ランダム化',
     handler(chart) {
       chart.data.datasets.forEach(dataset => {
         dataset.data.forEach(dataObj => {
-          dataObj.y = Utils.rand(-100, 100);
+          dataObj.y = Math.round(Utils.rand(-100, 100));
         });
       });
       chart.update();
     }
   },
   {
-    name: 'Add Dataset',
+    name: 'データセット追加',
     handler(chart) {
       const datasets = chart.data.datasets;
       const dsColor = Utils.namedColor(datasets.length);
       const newDataset = {
-        label: 'Dataset ' + (datasets.length + 1),
+        label: 'データセット' + (datasets.length + 1),
         backgroundColor: Utils.transparentize(dsColor, 0.5),
         borderColor: dsColor,
         data: []
@@ -63,32 +63,26 @@ const actions = [
     }
   },
   {
-    name: 'Add Data',
+    name: 'データ追加',
     handler(chart) {
       onRefresh(chart);
       chart.update();
     }
   },
   {
-    name: 'Remove Dataset',
+    name: 'データセット削除',
     handler(chart) {
       chart.data.datasets.pop();
       chart.update();
     }
   },
   {
-    name: 'Remove Data',
+    name: 'データ削除',
     handler(chart) {
       chart.data.datasets.forEach(dataset => {
         dataset.data.shift();
       });
       chart.update();
-    }
-  },
-  {
-    name: 'Reset Zoom',
-    handler(chart) {
-      chart.resetZoom('none');
     }
   }
 ];
@@ -112,7 +106,7 @@ const config = {
       y: {
         title: {
           display: true,
-          text: 'Value'
+          text: '値'
         }
       }
     },
@@ -120,28 +114,16 @@ const config = {
       intersect: false
     },
     plugins: {
-      zoom: {
-        pan: {
-          enabled: true,
-          mode: 'x'
+      datalabels: {
+        backgroundColor: context => context.dataset.borderColor,
+        padding: 4,
+        borderRadius: 4,
+        clip: true,
+        color: 'white',
+        font: {
+          weight: 'bold'
         },
-        zoom: {
-          pinch: {
-            enabled: true
-          },
-          wheel: {
-            enabled: true
-          },
-          mode: 'x'
-        },
-        limits: {
-          x: {
-            minDelay: 0,
-            maxDelay: 4000,
-            minDuration: 1000,
-            maxDuration: 20000
-          }
-        }
+        formatter: value => value.y
       }
     }
   }
@@ -150,7 +132,7 @@ const config = {
 
 const pluginOpts = config.options.plugins;
 pluginOpts.annotation = false;
-pluginOpts.datalabels = false;
+pluginOpts.zoom = false;
 
 module.exports = {
   actions: actions,
@@ -158,23 +140,23 @@ module.exports = {
 };
 ```
 
-For plain JavaScript, use script tags in the following order.
+プレーンな JavaScript の場合、script タグを以下の順序で指定します。
 
 ```html
 <script src="path/to/chartjs/dist/chart.min.js"></script>
 <script src="path/to/luxon/dist/luxon.min.js"></script>
 <script src="path/to/chartjs-adapter-luxon/dist/chartjs-adapter-luxon.min.js"></script>
-<script src="path/to/chartjs-plugin-annotation/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="path/to/chartjs-plugin-annotation/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="path/to/chartjs-plugin-streaming/dist/chartjs-plugin-streaming.min.js"></script>
 ```
 
-For bundlers, import and register modules to the chart.
+バンドラーを使う場合は、モジュールをインポートしてチャートに登録します。
 
 ```js
 import {Chart} from 'chart.js';
 import 'chartjs-adapter-luxon';
-import ZoomPlugin from 'chartjs-plugin-zoom';
+import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import StreamingPlugin from 'chartjs-plugin-streaming';
 
-Chart.register(ZoomPlugin, StreamingPlugin);
+Chart.register(DataLabelsPlugin, StreamingPlugin);
 ````

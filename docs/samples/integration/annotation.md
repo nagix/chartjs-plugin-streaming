@@ -181,5 +181,5 @@ import 'chartjs-adapter-luxon';
 import AnnotationPlugin from 'chartjs-plugin-annotation';
 import StreamingPlugin from 'chartjs-plugin-streaming';
 
-Chart.register(AnnotationPlugin, ...StreamingPlugin);
+Chart.register(AnnotationPlugin, StreamingPlugin);
 ````

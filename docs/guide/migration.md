@@ -28,7 +28,7 @@ Chart.defaults.set('plugins.streaming', {
 });
 ```
 
-See [Getting Started > Configuration](getting-started.html#configuration) for details.
+See [Getting Started &rsaquo; Configuration](getting-started.html#configuration) for details.
 
 #### Transition Mode for Update
 
@@ -40,5 +40,5 @@ Chart.js v3 introduced the transition mode argument, and this plugin now support
 chart.update('quiet');
 ```
 
-See [Data Feed Models > Pull Model (Polling Based) - Asynchronous](data-feed-models.html#pull-model-polling-based-asynchronous) for details.
+See [Data Feed Models &rsaquo; Pull Model (Polling Based) - Asynchronous](data-feed-models.html#pull-model-polling-based-asynchronous) for details.
 

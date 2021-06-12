@@ -9,11 +9,20 @@ module.exports = {
   dest: 'dist/docs',
   theme: 'chartjs',
   title: 'chartjs-plugin-streaming',
-  description: 'Chart.js plugin for live streaming data',
   base: BASE,
   head: [
     ['link', {rel: 'icon', href: '/logo.png'}]
   ],
+  locales: {
+    '/': {
+      lang: 'en-US',
+      description: 'Chart.js plugin for live streaming data'
+    },
+    '/ja/': {
+      lang: 'ja-JP',
+      description: 'リアルタイムストリーミングデータ向け Chart.js プラグイン'
+    }
+  },
   plugins: [
     ['flexsearch'],
     ['@vuepress/html-redirect', {
@@ -25,7 +34,9 @@ module.exports = {
     ['redirect', {
       redirectors: [
         {base: '/tutorials', alternative: ['plainjs/scripts']},
-        {base: '/samples', alternative: ['charts/line-horizontal']}
+        {base: '/samples', alternative: ['charts/line-horizontal']},
+        {base: '/ja/tutorials', alternative: ['plainjs/scripts']},
+        {base: '/ja/samples', alternative: ['charts/line-horizontal']}
       ]
     }],
     ['@simonbrunel/vuepress-plugin-versions', {
@@ -42,11 +53,13 @@ module.exports = {
             items: [
               {
                 text: 'Development (master)',
+                target: '_self',
                 link: '/chartjs-plugin-streaming/master/'
               },
               {
                 type: 'versions',
                 text: '{{version}}{{tag|suffix}}',
+                target: '_self',
                 link: '/chartjs-plugin-streaming/{{version|link}}/',
                 exclude: /^0\.|1\.[0-8]\./,
                 group: 'minor'
@@ -92,97 +105,201 @@ module.exports = {
         ['scripts/utils.js', 'Utils']
       ]
     },
-    nav: [
-      {text: 'Home', link: '/'},
-      {text: 'Guide', link: '/guide/'},
-      {text: 'Tutorials', link: '/tutorials/'},
-      {text: 'Samples', link: '/samples/'}
-    ],
-    sidebar: {
-      '/guide/': [
-        '',
-        'getting-started',
-        'options',
-        'data-feed-models',
-        'integration',
-        'performance',
-        'migration'
-      ],
-      '/tutorials/': [
-        {
-          title: 'Plain JS',
-          children: [
-            'plainjs/scripts',
-            'plainjs/canvas',
-            'plainjs/chart',
-            'plainjs/stream',
-            'plainjs/delay',
-            'plainjs/color'
-          ]
-        },
-        {
-          title: 'Angular 2+',
-          children: [
-            'angular/app',
-            'angular/install',
-            'angular/import',
-            'angular/canvas',
-            'angular/chart',
-            'angular/stream'
-          ]
-        },
-        {
-          title: 'React',
-          children: [
-            'react/app',
-            'react/install',
-            'react/chart',
-            'react/stream'
-          ]
-        },
-        {
-          title: 'Vue',
-          children: [
-            'vue/app',
-            'vue/install',
-            'vue/main',
-            'vue/chart',
-            'vue/stream'
+    locales: {
+      '/': {
+        label: 'English',
+        selectText: 'Languages',
+        editLinkText: 'Edit this page',
+        nav: [
+          {text: 'Home', link: '/'},
+          {text: 'Guide', link: '/guide/'},
+          {text: 'Tutorials', link: '/tutorials/'},
+          {text: 'Samples', link: '/samples/'}
+        ],
+        sidebar: {
+          '/guide/': [
+            '',
+            'getting-started',
+            'options',
+            'data-feed-models',
+            'integration',
+            'performance',
+            'migration'
+          ],
+          '/tutorials/': [
+            {
+              title: 'Plain JS',
+              children: [
+                'plainjs/scripts',
+                'plainjs/canvas',
+                'plainjs/chart',
+                'plainjs/stream',
+                'plainjs/delay',
+                'plainjs/color'
+              ]
+            },
+            {
+              title: 'Angular 2+',
+              children: [
+                'angular/app',
+                'angular/install',
+                'angular/import',
+                'angular/canvas',
+                'angular/chart',
+                'angular/stream'
+              ]
+            },
+            {
+              title: 'React',
+              children: [
+                'react/app',
+                'react/install',
+                'react/chart',
+                'react/stream'
+              ]
+            },
+            {
+              title: 'Vue',
+              children: [
+                'vue/app',
+                'vue/install',
+                'vue/main',
+                'vue/chart',
+                'vue/stream'
+              ]
+            }
+          ],
+          '/samples/': [
+            {
+              title: 'Charts',
+              children: [
+                'charts/line-horizontal',
+                'charts/line-vertical',
+                'charts/bar-horizontal',
+                'charts/bar-vertical',
+                'charts/mixed-horizontal',
+                'charts/mixed-vertical',
+                'charts/bubble-horizontal',
+                'charts/bubble-vertical'
+              ]
+            },
+            {
+              title: 'Integration',
+              children: [
+                'integration/datalabels',
+                'integration/annotation',
+                'integration/zoom',
+                'integration/financial'
+              ]
+            },
+            {
+              title: 'Advanced',
+              children: [
+                'advanced/interactions',
+                'advanced/reverse',
+                'advanced/push'
+              ]
+            }
           ]
         }
-      ],
-      '/samples/': [
-        {
-          title: 'Charts',
-          children: [
-            'charts/line-horizontal',
-            'charts/line-vertical',
-            'charts/bar-horizontal',
-            'charts/bar-vertical',
-            'charts/mixed-horizontal',
-            'charts/mixed-vertical',
-            'charts/bubble-horizontal',
-            'charts/bubble-vertical'
-          ]
-        },
-        {
-          title: 'Integration',
-          children: [
-            'integration/datalabels',
-            'integration/annotation',
-            'integration/zoom',
-            'integration/financial'
-          ]
-        },
-        {
-          title: 'Advanced',
-          children: [
-            'advanced/interactions',
-            'advanced/reverse',
-            'advanced/push'
+      },
+      '/ja/': {
+        label: '日本語',
+        selectText: '言語',
+        editLinkText: 'このページを編集',
+        nav: [
+          {text: 'ホーム', link: '/ja/'},
+          {text: 'ガイド', link: '/ja/guide/'},
+          {text: 'チュートリアル', link: '/ja/tutorials/'},
+          {text: 'サンプル', link: '/ja/samples/'}
+        ],
+        sidebar: {
+          '/ja/guide/': [
+            '',
+            'getting-started',
+            'options',
+            'data-feed-models',
+            'integration',
+            'performance',
+            'migration'
+          ],
+          '/ja/tutorials/': [
+            {
+              title: 'プレーン JS',
+              children: [
+                'plainjs/scripts',
+                'plainjs/canvas',
+                'plainjs/chart',
+                'plainjs/stream',
+                'plainjs/delay',
+                'plainjs/color'
+              ]
+            },
+            {
+              title: 'Angular 2+',
+              children: [
+                'angular/app',
+                'angular/install',
+                'angular/import',
+                'angular/canvas',
+                'angular/chart',
+                'angular/stream'
+              ]
+            },
+            {
+              title: 'React',
+              children: [
+                'react/app',
+                'react/install',
+                'react/chart',
+                'react/stream'
+              ]
+            },
+            {
+              title: 'Vue',
+              children: [
+                'vue/app',
+                'vue/install',
+                'vue/main',
+                'vue/chart',
+                'vue/stream'
+              ]
+            }
+          ],
+          '/ja/samples/': [
+            {
+              title: 'チャート',
+              children: [
+                'charts/line-horizontal',
+                'charts/line-vertical',
+                'charts/bar-horizontal',
+                'charts/bar-vertical',
+                'charts/mixed-horizontal',
+                'charts/mixed-vertical',
+                'charts/bubble-horizontal',
+                'charts/bubble-vertical'
+              ]
+            },
+            {
+              title: '連携',
+              children: [
+                'integration/datalabels',
+                'integration/annotation',
+                'integration/zoom',
+                'integration/financial'
+              ]
+            },
+            {
+              title: 'その他',
+              children: [
+                'advanced/interactions',
+                'advanced/reverse',
+                'advanced/push'
+              ]
+            }
           ]
         }
-      ]
+      }
     }
   }
 };

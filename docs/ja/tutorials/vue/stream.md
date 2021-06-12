@@ -1,6 +1,6 @@
-# Stream data
+# データを流し込む
 
-You can append the data in the callback function and add more chart options. The browser refreshes and displays a live streaming chart. See the Chart.js [documentation](https://www.chartjs.org/docs/2.8.0), [samples](https://www.chartjs.org/samples) and vue-chartjs [documentation](https://vue-chartjs.org/#/Home) for the customization options.
+コールバック関数でデータを追加し、様々なチャートオプションを指定することができます。ブラウザは自動更新され、ストリーミングチャートが表示されます。カスタマイズのオプションについては Chart.js の[ドキュメント](https://www.chartjs.org/docs/2.8.0)や[サンプル](https://www.chartjs.org/samples)、vue-chartjs の[ドキュメント](https://vue-chartjs.org/#/Home)をご覧ください。
 
 #### src/components/MyChart.vue
 
@@ -14,14 +14,14 @@ export default {
   mounted () {
     this.renderChart({
       datasets: [{
-        label: 'Dataset 1',
+        label: 'データセット 1',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         borderColor: 'rgb(255, 99, 132)',
         borderDash: [8, 4],
         fill: true,
         data: []
       }, {
-        label: 'Dataset 2',
+        label: 'データセット 2',
         backgroundColor: 'rgba(54, 162, 235, 0.5)',
         borderColor: 'rgb(54, 162, 235)',
         cubicInterpolationMode: 'monotone',
@@ -51,6 +51,6 @@ export default {
 </script>
 ```
 
-...and you're done!
+...これで完了です！
 
-See also [GitHub repository](https://github.com/nagix/chartjs-plugin-streaming) and [samples](../../samples).
+[GitHub リポジトリ](https://github.com/nagix/chartjs-plugin-streaming)と[サンプル](../../samples)もご覧ください。

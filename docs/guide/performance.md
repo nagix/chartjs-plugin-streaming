@@ -7,10 +7,10 @@ If you are using this plugin on resource constrained devices or drawing multiple
 ```js
 const myChart = new Chart(ctx, {
   options: {
-    animation: false,
+    animation: false,  // disable animations
     plugins: {
       streaming: {
-        frameRate: 5  // chart is drawn 5 times every second
+        frameRate: 5   // chart is drawn 5 times every second
       }
     }
   }

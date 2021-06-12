@@ -1,6 +1,6 @@
-# Create a chart component
+# チャートコンポーネントを作成する
 
-Now you’ll want to create a chart component named MyChart with a realtime scale. Import the `Line` chart component from vue-chartjs as well as chartjs-plugin-streaming, and extend it.
+realtime スケールを持つ MyChart という名前のチャートコンポーネントを作成します。vue-chartjs の `Line` チャートコンポーネント、chartjs-plugin-streaming をインポートして拡張します。
 
 #### src/components/MyChart.vue
 

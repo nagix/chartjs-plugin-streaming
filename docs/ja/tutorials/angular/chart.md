@@ -1,6 +1,6 @@
-# Create a chart
+# チャートを作成する
 
-And, here’s what it can look like in our component class. Import chartjs-plugin-streaming and register it. In the component class, define datasets and options with a realtime scale.
+そして、コンポーネントクラスはこのようになります。chartjs-plugin-streaming をインポートして登録します。コンポーネントクラスの中で、データセットおよび realtime スケールのオプションを定義します。
 
 #### src/app/app.component.ts
 
