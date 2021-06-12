@@ -30,6 +30,10 @@ Chart.defaults.set('plugins.streaming', {
 
 See [Getting Started &rsaquo; Configuration](getting-started.html#configuration) for details.
 
+#### Time scale override
+
+Due to historical reasons, auto-scrolling was enabled for not only 'realtime' scales but also 'time' scales in the previous version. In version 2.x, auto-scrolling is enabled only for 'realtime' scales.
+
 #### Transition Mode for Update
 
 When you append data outside the `onRefresh` callback function, `chart.update()` needs to be called explicitly. To avoid interrupting the current animation, the previous version provided support for the `preservation` config property for the `update` function, but it is no longer supported.
