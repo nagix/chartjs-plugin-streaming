@@ -1,20 +1,20 @@
 # Zoom
 
-Integration with [chartjs-plugin-zoom](https://github.com/chartjs/chartjs-plugin-zoom)
+[chartjs-plugin-zoom](https://github.com/chartjs/chartjs-plugin-zoom) との連携
 
 ```js chart-editor
 // <block:setup:1>
 const data = {
   datasets: [
     {
-      label: 'Dataset 1 (Linear Interpolation)',
+      label: 'データセット1 (線形補間)',
       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
       borderColor: Utils.CHART_COLORS.red,
       borderDash: [8, 4],
       data: []
     },
     {
-      label: 'Dataset 2 (Cubic Interpolation)',
+      label: 'データセット2 (キュービック補間)',
       backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
       borderColor: Utils.CHART_COLORS.blue,
       cubicInterpolationMode: 'monotone',
@@ -37,7 +37,7 @@ const onRefresh = chart => {
 // <block:actions:2>
 const actions = [
   {
-    name: 'Randomize',
+    name: 'ランダム化',
     handler(chart) {
       chart.data.datasets.forEach(dataset => {
         dataset.data.forEach(dataObj => {
@@ -48,12 +48,12 @@ const actions = [
     }
   },
   {
-    name: 'Add Dataset',
+    name: 'データセット追加',
     handler(chart) {
       const datasets = chart.data.datasets;
       const dsColor = Utils.namedColor(datasets.length);
       const newDataset = {
-        label: 'Dataset ' + (datasets.length + 1),
+        label: 'データセット' + (datasets.length + 1),
         backgroundColor: Utils.transparentize(dsColor, 0.5),
         borderColor: dsColor,
         data: []
@@ -63,21 +63,21 @@ const actions = [
     }
   },
   {
-    name: 'Add Data',
+    name: 'データ追加',
     handler(chart) {
       onRefresh(chart);
       chart.update();
     }
   },
   {
-    name: 'Remove Dataset',
+    name: 'データセット削除',
     handler(chart) {
       chart.data.datasets.pop();
       chart.update();
     }
   },
   {
-    name: 'Remove Data',
+    name: 'データ削除',
     handler(chart) {
       chart.data.datasets.forEach(dataset => {
         dataset.data.shift();
@@ -86,7 +86,7 @@ const actions = [
     }
   },
   {
-    name: 'Reset Zoom',
+    name: 'ズームリセット',
     handler(chart) {
       chart.resetZoom('none');
     }
@@ -112,7 +112,7 @@ const config = {
       y: {
         title: {
           display: true,
-          text: 'Value'
+          text: '値'
         }
       }
     },
@@ -158,7 +158,7 @@ module.exports = {
 };
 ```
 
-For plain JavaScript, use script tags in the following order.
+プレーンな JavaScript の場合、script タグを以下の順序で指定します。
 
 ```html
 <script src="path/to/chartjs/dist/chart.min.js"></script>
@@ -168,7 +168,7 @@ For plain JavaScript, use script tags in the following order.
 <script src="path/to/chartjs-plugin-streaming/dist/chartjs-plugin-streaming.min.js"></script>
 ```
 
-For bundlers, import and register modules to the chart.
+バンドラーを使う場合は、モジュールをインポートしてチャートに登録します。
 
 ```js
 import {Chart} from 'chart.js';
