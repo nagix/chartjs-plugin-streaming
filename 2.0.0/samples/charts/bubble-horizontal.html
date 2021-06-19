@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Bubble (Horizontal Scroll) | chartjs-plugin-streaming</title>
+    <meta name="generator" content="VuePress 1.8.2">
+    <link rel="icon" href="/chartjs-plugin-streaming/2.0.0/logo.png">
+    <meta name="description" content="Chart.js plugin for live streaming data">
+    <link rel="preload" href="/chartjs-plugin-streaming/2.0.0/assets/css/0.styles.fd2249d9.css" as="style"><link rel="preload" href="/chartjs-plugin-streaming/2.0.0/assets/js/app.cea288a2.js" as="script"><link rel="preload" href="/chartjs-plugin-streaming/2.0.0/assets/js/2.70a9daed.js" as="script"><link rel="preload" href="/chartjs-plugin-streaming/2.0.0/assets/js/65.bae3aa3f.js" as="script"><link rel="preload" href="/chartjs-plugin-streaming/2.0.0/assets/js/3.d17b986a.js" as="script"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/10.aa7f1eac.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/11.c4322539.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/12.7985c198.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/13.d884bd4c.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/14.10051eff.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/15.f563da73.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/16.44f6a1e4.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/17.409543d1.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/18.1d4ed765.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/19.9e5d2fff.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/20.ee35d61d.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/21.b5209f3e.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/22.8f7688cc.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/23.6a3d8028.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/24.419cc8c5.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/25.ac8e9277.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/26.0143894a.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/27.38ecb3d3.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/28.a50386e8.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/29.3d3355da.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/30.76f1be41.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/31.0d55e031.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/32.a765a616.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/33.431332a2.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/34.7385470d.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/35.6526b7e0.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/36.d04284b0.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/37.1b6db43d.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/38.e01b0820.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/39.9c95cc74.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/4.dbabc7ef.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/40.45833822.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/41.87ab8f13.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/42.d19a8a16.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/43.46982234.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/44.18bbc6e9.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/45.a5615293.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/46.f7b95386.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/47.b1d29615.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/48.ec053c40.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/49.d6a7f38b.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/5.3cacf664.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/50.4eea97cc.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/51.b1b31d9a.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/52.329253dd.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/53.2f9510a1.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/54.5cfe7a38.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/55.95aa710a.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/56.6c15fe1c.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/57.78d103c4.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/58.11395d7c.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/59.c55e69e9.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/6.6cda2312.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/60.e69ad958.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/61.977bf7b4.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/62.8a61a324.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/63.00f7c627.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/64.25759f81.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/66.a3866b49.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/67.9a8e0b68.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/68.757589f5.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/69.1f3b4909.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/7.aac7786e.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/70.4c6c2a62.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/71.03086c3e.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/72.904e43e5.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/73.b0785a0d.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/74.98619620.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/75.aa54f177.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/76.362b651b.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/77.7e41ee3c.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/78.d550891d.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/79.35151229.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/8.6e56aeb3.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/80.e0cfa33d.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/81.88f87ec1.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/82.d0020a25.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/83.c10d95a1.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/84.2a41f5e0.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/85.7b4a8f8a.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/86.4a7c5bb0.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/87.e6b5c845.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/88.92826ee0.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/89.d9a8315a.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/9.a0399e6f.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/90.d29f6518.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/91.e0d13c05.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/92.8b66e63f.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/93.b017853b.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/94.fcd482fe.js"><link rel="prefetch" href="/chartjs-plugin-streaming/2.0.0/assets/js/95.a628984f.js">
+    <link rel="stylesheet" href="/chartjs-plugin-streaming/2.0.0/assets/css/0.styles.fd2249d9.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/chartjs-plugin-streaming/2.0.0/" class="home-link router-link-active"><img src="/chartjs-plugin-streaming/2.0.0/logo.png" alt="chartjs-plugin-streaming" class="logo"> <span class="site-name can-hide">chartjs-plugin-streaming</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/chartjs-plugin-streaming/2.0.0/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/chartjs-plugin-streaming/2.0.0/guide/" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/chartjs-plugin-streaming/2.0.0/tutorials/" class="nav-link">
+  Tutorials
+</a></div><div class="nav-item"><a href="/chartjs-plugin-streaming/2.0.0/samples/" class="nav-link router-link-active">
+  Samples
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Select language" class="dropdown-title"><span class="title">Languages</span> <span class="arrow down"></span></button> <button type="button" aria-label="Select language" class="mobile-dropdown-title"><span class="title">Languages</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/chartjs-plugin-streaming/2.0.0/samples/charts/bubble-horizontal.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  English
+</a></li><li class="dropdown-item"><!----> <a href="/chartjs-plugin-streaming/2.0.0/ja/samples/charts/bubble-horizontal.html" class="nav-link">
+  日本語
+</a></li></ul></div></div> <a href="https://github.com/nagix/chartjs-plugin-streaming" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/chartjs-plugin-streaming/2.0.0/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/chartjs-plugin-streaming/2.0.0/guide/" class="nav-link">
+  Guide
+</a></div><div class="nav-item"><a href="/chartjs-plugin-streaming/2.0.0/tutorials/" class="nav-link">
+  Tutorials
+</a></div><div class="nav-item"><a href="/chartjs-plugin-streaming/2.0.0/samples/" class="nav-link router-link-active">
+  Samples
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Select language" class="dropdown-title"><span class="title">Languages</span> <span class="arrow down"></span></button> <button type="button" aria-label="Select language" class="mobile-dropdown-title"><span class="title">Languages</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/chartjs-plugin-streaming/2.0.0/samples/charts/bubble-horizontal.html" aria-current="page" class="nav-link router-link-exact-active router-link-active">
+  English
+</a></li><li class="dropdown-item"><!----> <a href="/chartjs-plugin-streaming/2.0.0/ja/samples/charts/bubble-horizontal.html" class="nav-link">
+  日本語
+</a></li></ul></div></div> <a href="https://github.com/nagix/chartjs-plugin-streaming" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading open"><span>Charts</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/line-horizontal.html" class="sidebar-link">Line (Horizontal Scroll)</a></li><li><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/line-vertical.html" class="sidebar-link">Line (Vertical Scroll)</a></li><li><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/bar-horizontal.html" class="sidebar-link">Bar (Horizontal Scroll)</a></li><li><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/bar-vertical.html" class="sidebar-link">Bar (Vertical Scroll)</a></li><li><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/mixed-horizontal.html" class="sidebar-link">Mixed (Horizontal Scroll)</a></li><li><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/mixed-vertical.html" class="sidebar-link">Mixed (Vertical Scroll)</a></li><li><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/bubble-horizontal.html" aria-current="page" class="active sidebar-link">Bubble (Horizontal Scroll)</a></li><li><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/bubble-vertical.html" class="sidebar-link">Bubble (Vertical Scroll)</a></li></ul></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Integration</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable depth-0"><p class="sidebar-heading"><span>Advanced</span> <span class="arrow right"></span></p> <!----></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="bubble-horizontal-scroll"><a href="#bubble-horizontal-scroll" class="header-anchor">#</a> Bubble (Horizontal Scroll)</h1> <div class="chart-editor" data-v-365c20ab><div class="chart-view" data-v-365c20ab><canvas></canvas></div> <div class="chart-actions" data-v-2afd21f1 data-v-365c20ab></div> <div class="code-editor" data-v-66ca8197 data-v-365c20ab><div class="code-editor-header" data-v-66ca8197><div class="code-editor-tabs" data-v-66ca8197><button class="code-editor-tab active" data-v-66ca8197>
+        config
+      </button><button class="code-editor-tab" data-v-66ca8197>
+        setup
+      </button><button class="code-editor-tab" data-v-66ca8197>
+        actions
+      </button></div> <div class="code-editor-tools" data-v-66ca8197><!----> <a href="https://github.com/nagix/chartjs-plugin-streaming/blob/master/docs/samples/charts/bubble-horizontal.md" title="View on GitHub" target="_blank" class="code-editor-tool fab fa-github fa-lg" data-v-66ca8197></a></div></div> <div class="code-editor-views" data-v-66ca8197><div class="editor-textarea ps" data-v-05f11386 data-v-66ca8197><div class="editor-textarea-content" data-v-05f11386><div class="prism-editor-wrapper" data-v-05f11386><div class="prism-editor__container"><textarea spellCheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" data-gramm="false" placeholder="" data-testid="textarea" class="prism-editor__textarea">const config = {
+  type: 'bubble',
+  data: data,
+  options: {
+    scales: {
+      x: {
+        type: 'realtime',
+        realtime: {
+          duration: 20000,
+          refresh: 1000,
+          delay: 2000,
+          onRefresh: onRefresh
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Value'
+        }
+      }
+    },
+    interaction: {
+      intersect: false
+    }
+  }
+};</textarea><pre data-testid="preview" class="prism-editor__editor"><span class="token keyword">const</span> config <span class="token operator">=</span> <span class="token punctuation">{</span>
+  type<span class="token operator">:</span> <span class="token string">'bubble'</span><span class="token punctuation">,</span>
+  data<span class="token operator">:</span> data<span class="token punctuation">,</span>
+  options<span class="token operator">:</span> <span class="token punctuation">{</span>
+    scales<span class="token operator">:</span> <span class="token punctuation">{</span>
+      x<span class="token operator">:</span> <span class="token punctuation">{</span>
+        type<span class="token operator">:</span> <span class="token string">'realtime'</span><span class="token punctuation">,</span>
+        realtime<span class="token operator">:</span> <span class="token punctuation">{</span>
+          duration<span class="token operator">:</span> <span class="token number">20000</span><span class="token punctuation">,</span>
+          refresh<span class="token operator">:</span> <span class="token number">1000</span><span class="token punctuation">,</span>
+          delay<span class="token operator">:</span> <span class="token number">2000</span><span class="token punctuation">,</span>
+          onRefresh<span class="token operator">:</span> onRefresh
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      y<span class="token operator">:</span> <span class="token punctuation">{</span>
+        title<span class="token operator">:</span> <span class="token punctuation">{</span>
+          display<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+          text<span class="token operator">:</span> <span class="token string">'Value'</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    interaction<span class="token operator">:</span> <span class="token punctuation">{</span>
+      intersect<span class="token operator">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span><br /></pre></div></div></div></div><div class="editor-textarea ps" style="display:none;" data-v-05f11386 data-v-66ca8197><div class="editor-textarea-content" data-v-05f11386><div class="prism-editor-wrapper" data-v-05f11386><div class="prism-editor__container"><textarea spellCheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" data-gramm="false" placeholder="" data-testid="textarea" class="prism-editor__textarea">const data = {
+  datasets: [
+    {
+      label: 'Dataset 1',
+      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+      borderColor: Utils.CHART_COLORS.red,
+      data: []
+    },
+    {
+      label: 'Dataset 2',
+      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
+      borderColor: Utils.CHART_COLORS.blue,
+      data: []
+    }
+  ]
+};
+const onRefresh = chart =&gt; {
+  const now = Date.now();
+  chart.data.datasets.forEach(dataset =&gt; {
+    dataset.data.push({
+      x: now,
+      y: Utils.rand(-100, 100),
+      r: +Utils.rand(5, 15).toFixed(2)
+    });
+  });
+};</textarea><pre data-testid="preview" class="prism-editor__editor"><span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">{</span>
+  datasets<span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      label<span class="token operator">:</span> <span class="token string">'Dataset 1'</span><span class="token punctuation">,</span>
+      backgroundColor<span class="token operator">:</span> Utils<span class="token punctuation">.</span><span class="token function">transparentize</span><span class="token punctuation">(</span>Utils<span class="token punctuation">.</span><span class="token constant">CHART_COLORS</span><span class="token punctuation">.</span>red<span class="token punctuation">,</span> <span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      borderColor<span class="token operator">:</span> Utils<span class="token punctuation">.</span><span class="token constant">CHART_COLORS</span><span class="token punctuation">.</span>red<span class="token punctuation">,</span>
+      data<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      label<span class="token operator">:</span> <span class="token string">'Dataset 2'</span><span class="token punctuation">,</span>
+      backgroundColor<span class="token operator">:</span> Utils<span class="token punctuation">.</span><span class="token function">transparentize</span><span class="token punctuation">(</span>Utils<span class="token punctuation">.</span><span class="token constant">CHART_COLORS</span><span class="token punctuation">.</span>blue<span class="token punctuation">,</span> <span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      borderColor<span class="token operator">:</span> Utils<span class="token punctuation">.</span><span class="token constant">CHART_COLORS</span><span class="token punctuation">.</span>blue<span class="token punctuation">,</span>
+      data<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> <span class="token function-variable function">onRefresh</span> <span class="token operator">=</span> <span class="token parameter">chart</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> now <span class="token operator">=</span> Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  chart<span class="token punctuation">.</span>data<span class="token punctuation">.</span>datasets<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">dataset</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    dataset<span class="token punctuation">.</span>data<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      x<span class="token operator">:</span> now<span class="token punctuation">,</span>
+      y<span class="token operator">:</span> Utils<span class="token punctuation">.</span><span class="token function">rand</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      r<span class="token operator">:</span> <span class="token operator">+</span>Utils<span class="token punctuation">.</span><span class="token function">rand</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span><br /></pre></div></div></div></div><div class="editor-textarea ps" style="display:none;" data-v-05f11386 data-v-66ca8197><div class="editor-textarea-content" data-v-05f11386><div class="prism-editor-wrapper" data-v-05f11386><div class="prism-editor__container"><textarea spellCheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" data-gramm="false" placeholder="" data-testid="textarea" class="prism-editor__textarea">const actions = [
+  {
+    name: 'Randomize',
+    handler(chart) {
+      chart.data.datasets.forEach(dataset =&gt; {
+        dataset.data.forEach(dataObj =&gt; {
+          dataObj.y = Utils.rand(-100, 100);
+          dataObj.r = +Utils.rand(5, 15).toFixed(2);
+        });
+      });
+      chart.update();
+    }
+  },
+  {
+    name: 'Add Dataset',
+    handler(chart) {
+      const datasets = chart.data.datasets;
+      const dsColor = Utils.namedColor(datasets.length);
+      const newDataset = {
+        label: 'Dataset ' + (datasets.length + 1),
+        backgroundColor: Utils.transparentize(dsColor, 0.5),
+        borderColor: dsColor,
+        data: []
+      };
+      datasets.push(newDataset);
+      chart.update();
+    }
+  },
+  {
+    name: 'Add Data',
+    handler(chart) {
+      onRefresh(chart);
+      chart.update();
+    }
+  },
+  {
+    name: 'Remove Dataset',
+    handler(chart) {
+      chart.data.datasets.pop();
+      chart.update();
+    }
+  },
+  {
+    name: 'Remove Data',
+    handler(chart) {
+      chart.data.datasets.forEach(dataset =&gt; {
+        dataset.data.shift();
+      });
+      chart.update();
+    }
+  }
+];</textarea><pre data-testid="preview" class="prism-editor__editor"><span class="token keyword">const</span> actions <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    name<span class="token operator">:</span> <span class="token string">'Randomize'</span><span class="token punctuation">,</span>
+    <span class="token function">handler</span><span class="token punctuation">(</span><span class="token parameter">chart</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      chart<span class="token punctuation">.</span>data<span class="token punctuation">.</span>datasets<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">dataset</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        dataset<span class="token punctuation">.</span>data<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">dataObj</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+          dataObj<span class="token punctuation">.</span>y <span class="token operator">=</span> Utils<span class="token punctuation">.</span><span class="token function">rand</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          dataObj<span class="token punctuation">.</span>r <span class="token operator">=</span> <span class="token operator">+</span>Utils<span class="token punctuation">.</span><span class="token function">rand</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">,</span> <span class="token number">15</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toFixed</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      chart<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    name<span class="token operator">:</span> <span class="token string">'Add Dataset'</span><span class="token punctuation">,</span>
+    <span class="token function">handler</span><span class="token punctuation">(</span><span class="token parameter">chart</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> datasets <span class="token operator">=</span> chart<span class="token punctuation">.</span>data<span class="token punctuation">.</span>datasets<span class="token punctuation">;</span>
+      <span class="token keyword">const</span> dsColor <span class="token operator">=</span> Utils<span class="token punctuation">.</span><span class="token function">namedColor</span><span class="token punctuation">(</span>datasets<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">const</span> newDataset <span class="token operator">=</span> <span class="token punctuation">{</span>
+        label<span class="token operator">:</span> <span class="token string">'Dataset '</span> <span class="token operator">+</span> <span class="token punctuation">(</span>datasets<span class="token punctuation">.</span>length <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        backgroundColor<span class="token operator">:</span> Utils<span class="token punctuation">.</span><span class="token function">transparentize</span><span class="token punctuation">(</span>dsColor<span class="token punctuation">,</span> <span class="token number">0.5</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        borderColor<span class="token operator">:</span> dsColor<span class="token punctuation">,</span>
+        data<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">;</span>
+      datasets<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>newDataset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      chart<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    name<span class="token operator">:</span> <span class="token string">'Add Data'</span><span class="token punctuation">,</span>
+    <span class="token function">handler</span><span class="token punctuation">(</span><span class="token parameter">chart</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">onRefresh</span><span class="token punctuation">(</span>chart<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      chart<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    name<span class="token operator">:</span> <span class="token string">'Remove Dataset'</span><span class="token punctuation">,</span>
+    <span class="token function">handler</span><span class="token punctuation">(</span><span class="token parameter">chart</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      chart<span class="token punctuation">.</span>data<span class="token punctuation">.</span>datasets<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      chart<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    name<span class="token operator">:</span> <span class="token string">'Remove Data'</span><span class="token punctuation">,</span>
+    <span class="token function">handler</span><span class="token punctuation">(</span><span class="token parameter">chart</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      chart<span class="token punctuation">.</span>data<span class="token punctuation">.</span>datasets<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">dataset</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+        dataset<span class="token punctuation">.</span>data<span class="token punctuation">.</span><span class="token function">shift</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      chart<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span><span class="token punctuation">;</span><br /></pre></div></div></div></div></div></div></div></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/nagix/chartjs-plugin-streaming/edit/master/docs/samples/charts/bubble-horizontal.md" target="_blank" rel="noopener noreferrer">Edit this page</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">6/19/2021, 6:53:43 AM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/chartjs-plugin-streaming/2.0.0/samples/charts/mixed-vertical.html" class="prev">
+        Mixed (Vertical Scroll)
+      </a></span> <span class="next"><a href="/chartjs-plugin-streaming/2.0.0/samples/charts/bubble-vertical.html">
+        Bubble (Vertical Scroll)
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/chartjs-plugin-streaming/2.0.0/assets/js/app.cea288a2.js" defer></script><script src="/chartjs-plugin-streaming/2.0.0/assets/js/2.70a9daed.js" defer></script><script src="/chartjs-plugin-streaming/2.0.0/assets/js/65.bae3aa3f.js" defer></script><script src="/chartjs-plugin-streaming/2.0.0/assets/js/3.d17b986a.js" defer></script>
+  </body>
+</html>
