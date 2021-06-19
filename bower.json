@@ -1,0 +1,14 @@
+{
+  "name": "chartjs-plugin-streaming",
+  "description": "Chart.js plugin for live streaming data",
+  "homepage": "https://nagix.github.io/chartjs-plugin-streaming",
+  "license": "MIT",
+  "version": "2.0.0",
+  "main": "dist/chartjs-plugin-streaming.js",
+  "ignore": [
+    ".github",
+    ".codeclimate.yml",
+    ".gitignore",
+    "scripts"
+  ]
+}
