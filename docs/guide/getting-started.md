@@ -4,10 +4,10 @@
 
 ### npm
 
-[![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming/next.svg?style=flat-square&maxAge=600)](https://npmjs.com/package/chartjs-plugin-streaming) [![npm downloads](https://img.shields.io/npm/dm/chartjs-plugin-streaming.svg?style=flat-square&maxAge=600)](https://npmjs.com/package/chartjs-plugin-streaming)
+[![npm](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?style=flat-square&maxAge=600)](https://npmjs.com/package/chartjs-plugin-streaming) [![npm downloads](https://img.shields.io/npm/dm/chartjs-plugin-streaming.svg?style=flat-square&maxAge=600)](https://npmjs.com/package/chartjs-plugin-streaming)
 
 ```sh
-npm install chartjs-plugin-streaming@next --save
+npm install chartjs-plugin-streaming --save
 ```
 
 ::: tip
@@ -16,12 +16,11 @@ This plugin can also be installed using [Bower](https://bower.io/).
 
 ### CDN
 
-[![jsdelivr](https://img.shields.io/npm/v/chartjs-plugin-streaming/next.svg?label=jsdelivr&style=flat-square&maxAge=600)](https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@next/dist/) [![jsdelivr hits](https://data.jsdelivr.com/v1/package/npm/chartjs-plugin-streaming/badge)](https://www.jsdelivr.com/package/npm/chartjs-plugin-streaming)
+[![jsdelivr](https://img.shields.io/npm/v/chartjs-plugin-streaming.svg?label=jsdelivr&style=flat-square&maxAge=600)](https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@latest/dist/) [![jsdelivr hits](https://data.jsdelivr.com/v1/package/npm/chartjs-plugin-streaming/badge)](https://www.jsdelivr.com/package/npm/chartjs-plugin-streaming)
 
 By default, `https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming` returns the latest (minified) version, however it's [**highly recommended**](https://www.jsdelivr.com/features) to always specify a version in order to avoid breaking changes. This can be achieved by appending `@{version}` to the url:
 
 ```
-https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@next     // pre-release version
 https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0    // exact version
 https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2        // latest 2.x.x
 ```
@@ -30,9 +29,9 @@ Read more about jsDeliver versioning on their [website](http://www.jsdelivr.com/
 
 ### Download
 
-[![github](https://img.shields.io/github/release/nagix/chartjs-plugin-streaming.svg?include_prereleases&sort=semver&style=flat-square&maxAge=600)](https://github.com/nagix/chartjs-plugin-streaming/releases/latest) [![github downloads](https://img.shields.io/github/downloads/nagix/chartjs-plugin-streaming/total.svg?style=flat-square&maxAge=600)](http://www.somsubhra.com/github-release-stats/?username=nagix&repository=chartjs-plugin-streaming)
+[![github](https://img.shields.io/github/release/nagix/chartjs-plugin-streaming.svg?style=flat-square&maxAge=600)](https://github.com/nagix/chartjs-plugin-streaming/releases/latest) [![github downloads](https://img.shields.io/github/downloads/nagix/chartjs-plugin-streaming/total.svg?style=flat-square&maxAge=600)](http://www.somsubhra.com/github-release-stats/?username=nagix&repository=chartjs-plugin-streaming)
 
-You can download the latest version of `chartjs-plugin-streaming` from the [GitHub Releases](https://github.com/nagix/chartjs-plugin-streaming/releases):
+You can download the latest version of `chartjs-plugin-streaming` from the [GitHub Releases](https://github.com/nagix/chartjs-plugin-streaming/releases/latest):
 
 - `chartjs-plugin-streaming.js` (recommended for development)
 - `chartjs-plugin-streaming.min.js` (recommended for production)
@@ -48,7 +47,7 @@ You can download the latest version of `chartjs-plugin-streaming` from the [GitH
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@1.27.0"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@next"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
 ```
 
 ::: warning IMPORTANT

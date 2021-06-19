@@ -1,6 +1,6 @@
 # Stream data
 
-You can append the data in the callback function and add more chart options. The browser refreshes and displays a live streaming chart. See the Chart.js [documentation](https://www.chartjs.org/docs/2.8.0), [samples](https://www.chartjs.org/samples) and vue-chartjs [documentation](https://vue-chartjs.org/#/Home) for the customization options.
+You can append the data in the callback function and add more chart options. The browser refreshes and displays a live streaming chart. See the Chart.js [documentation](https://www.chartjs.org/docs/2.9.4), [samples](https://www.chartjs.org/samples/2.9.4) and vue-chartjs [documentation](https://vue-chartjs.org/#/Home) for the customization options.
 
 #### src/components/MyChart.vue
 

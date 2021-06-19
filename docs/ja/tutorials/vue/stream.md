@@ -1,6 +1,6 @@
 # データを流し込む
 
-コールバック関数でデータを追加し、様々なチャートオプションを指定することができます。ブラウザは自動更新され、ストリーミングチャートが表示されます。カスタマイズのオプションについては Chart.js の[ドキュメント](https://www.chartjs.org/docs/2.8.0)や[サンプル](https://www.chartjs.org/samples)、vue-chartjs の[ドキュメント](https://vue-chartjs.org/#/Home)をご覧ください。
+コールバック関数でデータを追加し、様々なチャートオプションを指定することができます。ブラウザは自動更新され、ストリーミングチャートが表示されます。カスタマイズのオプションについては Chart.js の[ドキュメント](https://www.chartjs.org/docs/2.9.4)や[サンプル](https://www.chartjs.org/samples/2.9.4)、vue-chartjs の[ドキュメント](https://vue-chartjs.org/#/Home)をご覧ください。
 
 #### src/components/MyChart.vue
 
