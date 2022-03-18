@@ -6,7 +6,8 @@ Now you’ll want to create a chart component with a realtime scale. Import char
 
 ```jsx
 import React, { Component } from 'react';
-import { Line, Chart } from 'react-chartjs-2';
+import { Chart } from 'chart.js';
+import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-luxon';
 import StreamingPlugin from 'chartjs-plugin-streaming';
 import './App.css';
