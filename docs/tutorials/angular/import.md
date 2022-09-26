@@ -7,7 +7,7 @@ Now you’ll want to import ng2-chart’s `ChartsModule` into our app module.
 ```ts
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { ChartsModule } from 'ng2-charts';
+import { NgChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
 
@@ -17,7 +17,7 @@ import { AppComponent } from './app.component';
   ],
   imports: [
     BrowserModule,
-    ChartsModule
+    NgChartsModule
   ],
   providers: [],
   bootstrap: [
