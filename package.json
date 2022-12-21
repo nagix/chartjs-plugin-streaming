@@ -54,7 +54,7 @@
     "@vuepress/plugin-google-analytics": "1.8.2",
     "@vuepress/plugin-html-redirect": "^0.1.4",
     "archiver": "^5.3.0",
-    "chart.js": "^3.3.2",
+    "chart.js": "^4.0.1",
     "chartjs-adapter-luxon": "^1.0.0",
     "chartjs-plugin-annotation": "^1.0.2",
     "chartjs-plugin-datalabels": "^2.0.0-rc.1",
@@ -78,6 +78,6 @@
     "vuepress-theme-chartjs": "^0.2.0"
   },
   "peerDependencies": {
-    "chart.js": "^3.0.0"
+    "chart.js": ">=3.0.0"
   }
 }
