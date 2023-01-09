@@ -65,7 +65,7 @@
     "eslint-plugin-es": "^4.1.0",
     "eslint-plugin-html": "^6.1.2",
     "eslint-plugin-markdown": "^2.2.0",
-    "luxon": "^1.27.0",
+    "luxon": "^2.5.2",
     "ng-hammerjs": "^2.0.8",
     "rollup": "^2.52.1",
     "rollup-plugin-analyzer": "^4.0.0",
